@@ -406,3 +406,27 @@ CREATE TABLE IF NOT EXISTS `giveaway_participants` (
     CONSTRAINT `fk_gp_user`     FOREIGN KEY (`user_id`)     REFERENCES `users`(`id`)     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   COMMENT='Người tham gia sự kiện giveaway';
+
+-- ============================================================
+-- 18. REPORTS — Tố cáo vi phạm
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `reports` (
+    `id`             INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `reporter_id`    INT UNSIGNED NOT NULL COMMENT 'Người tố cáo',
+    `target_user_id` INT UNSIGNED DEFAULT NULL COMMENT 'Người bị tố cáo',
+    `product_id`     INT UNSIGNED DEFAULT NULL COMMENT 'Sản phẩm liên quan',
+    `reason`         VARCHAR(100) NOT NULL COMMENT 'Lý do tố cáo',
+    `description`    TEXT DEFAULT NULL COMMENT 'Mô tả chi tiết',
+    `status`         ENUM('pending','resolved','dismissed') NOT NULL DEFAULT 'pending',
+    `admin_note`     TEXT DEFAULT NULL COMMENT 'Ghi chú của Admin',
+    `created_at`     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_reports_reporter` (`reporter_id`),
+    KEY `idx_reports_target`   (`target_user_id`),
+    KEY `idx_reports_status`   (`status`),
+    CONSTRAINT `fk_report_reporter` FOREIGN KEY (`reporter_id`)    REFERENCES `users`(`id`)    ON DELETE CASCADE,
+    CONSTRAINT `fk_report_target`   FOREIGN KEY (`target_user_id`) REFERENCES `users`(`id`)    ON DELETE SET NULL,
+    CONSTRAINT `fk_report_product`  FOREIGN KEY (`product_id`)     REFERENCES `products`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Tố cáo vi phạm';
