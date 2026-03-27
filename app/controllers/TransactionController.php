@@ -126,4 +126,42 @@ class TransactionController extends Controller
             'transactions' => $transactions,
         ]);
     }
+
+    public function updateStatus(): void
+    {
+        Middleware::requireAuth();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('transactions/history');
+            return;
+        }
+
+        $id = (int)$this->input('id');
+        $status = $this->input('status'); // shipping, delivered, completed
+        $user = $this->currentUser();
+
+        $txModel = new Transaction();
+        $tx = $txModel->findById($id);
+
+        if (!$tx) {
+            Flash::set('danger', 'Giao dịch không tồn tại.');
+            $this->redirect('transactions/history');
+            return;
+        }
+
+        $isBuyer = (int)$tx['buyer_id'] === (int)$user['id'];
+        $isSeller = (int)$tx['seller_id'] === (int)$user['id'];
+
+        // Kiểm tra quyền cập nhật
+        if ($isSeller && in_array($status, ['shipping', 'delivered'])) {
+            $txModel->updateOrderStatus($id, $status);
+            Flash::set('success', 'Đã cập nhật trạng thái đơn hàng thành công!');
+        } elseif ($isBuyer && in_array($status, ['completed'])) {
+            $txModel->updateOrderStatus($id, $status);
+            Flash::set('success', 'Bạn đã xác nhận nhận hàng. Cảm ơn bạn!');
+        } else {
+            Flash::set('danger', 'Hành động không hợp lệ hoặc không có quyền.');
+        }
+
+        $this->redirect('transactions/history');
+    }
 }

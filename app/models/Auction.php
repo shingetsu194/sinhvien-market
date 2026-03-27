@@ -39,6 +39,8 @@ class Auction extends Model
             'current_price'        => $currentPrice,
             'floor_price'          => $floorPrice,
             'start_price'          => $startPrice,
+            'decrease_amount'      => $decreaseAmount,  // Fix: thêm để view có thể hiển thị
+            'step_minutes'         => $stepMinutes,     // Fix: thêm để view có thể hiển thị
             'steps_elapsed'        => $stepsElapsed,
             'next_drop_in_seconds' => $nextDropInSeconds,
             'is_at_floor'          => $currentPrice <= $floorPrice,

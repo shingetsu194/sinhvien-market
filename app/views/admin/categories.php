@@ -4,10 +4,7 @@
  * Biến: $categories
  */
 $appUrl = rtrim($_ENV['APP_URL'] ?? '', '/');
-use Core\Controller;
 use Core\Flash;
-$ctrl = new class extends Controller {};
-$csrf = $ctrl->csrfToken();
 
 // Danh sách icon Bootstrap phổ biến cho dropdown
 $icons = [
@@ -74,39 +71,7 @@ $icons = [
               </td>
             </tr>
 
-            <!-- Modal Sửa (per-row) -->
-            <div class="modal fade" id="editModal<?= $cat['id'] ?>" tabindex="-1">
-              <div class="modal-dialog"><div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title">Sửa danh mục</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form method="POST" action="<?= $appUrl ?>/admin/categories/update">
-                  <input type="hidden" name="_csrf"        value="<?= htmlspecialchars($csrf, ENT_QUOTES) ?>">
-                  <input type="hidden" name="category_id"  value="<?= $cat['id'] ?>">
-                  <div class="modal-body">
-                    <div class="mb-3">
-                      <label class="form-label">Tên danh mục</label>
-                      <input type="text" name="name" class="form-control" required
-                             value="<?= htmlspecialchars($cat['name'], ENT_QUOTES) ?>">
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Icon Bootstrap</label>
-                      <select name="icon" class="form-select">
-                        <?php foreach ($icons as $cls => $label): ?>
-                          <option value="<?= $cls ?>" <?= $cat['icon'] === $cls ? 'selected' : '' ?>>
-                            <?= $label ?> (<?= $cls ?>)
-                          </option>
-                        <?php endforeach; ?>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                  </div>
-                </form>
-              </div></div>
-            </div>
+
           <?php endforeach; ?>
         </tbody>
       </table>
@@ -142,5 +107,44 @@ $icons = [
         <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tạo danh mục</button>
       </div>
     </form>
+    </form>
   </div></div>
 </div>
+
+<!-- Modals Sửa danh mục -->
+<?php if (!empty($categories)): ?>
+  <?php foreach ($categories as $cat): ?>
+    <div class="modal fade" id="editModal<?= $cat['id'] ?>" tabindex="-1">
+      <div class="modal-dialog"><div class="modal-content border-0 rounded-4">
+        <div class="modal-header border-bottom-0 pb-0"><h5 class="modal-title fw-bold text-primary">Sửa danh mục</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST" action="<?= $appUrl ?>/admin/categories/update">
+          <input type="hidden" name="_csrf"        value="<?= htmlspecialchars($csrf, ENT_QUOTES) ?>">
+          <input type="hidden" name="category_id"  value="<?= $cat['id'] ?>">
+          <div class="modal-body p-4 pt-3">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Tên danh mục</label>
+              <input type="text" name="name" class="form-control" required
+                     value="<?= htmlspecialchars($cat['name'], ENT_QUOTES) ?>">
+            </div>
+            <div class="mb-0">
+              <label class="form-label fw-bold">Icon Bootstrap</label>
+              <select name="icon" class="form-select">
+                <?php foreach ($icons as $cls => $label): ?>
+                  <option value="<?= $cls ?>" <?= $cat['icon'] === $cls ? 'selected' : '' ?>>
+                    <?= $label ?> (<?= $cls ?>)
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-top-0 bg-light rounded-bottom-4">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-primary px-4 fw-bold">Lưu thay đổi</button>
+          </div>
+        </form>
+      </div></div>
+    </div>
+  <?php endforeach; ?>
+<?php endif; ?>

@@ -7,6 +7,8 @@ use Core\Middleware;
 use Core\Flash;
 use App\Models\Auction;
 use App\Models\Product;
+use App\Models\User;
+use App\Services\NotificationService;
 
 /**
  * AuctionController — Phase 4
@@ -104,6 +106,19 @@ class AuctionController extends Controller
         $success = $this->auctionModel->lockAndBuy($auctionId, $user['id'], $serverPrice);
 
         if ($success) {
+            // Thông báo cho người bán
+            if ($product) {
+                $userModel = new User();
+                $seller = $userModel->findById((int)$product['user_id']);
+                if ($seller) {
+                    NotificationService::notifyItemSold(
+                        (int)$seller['id'], $seller['email'], $seller['name'],
+                        (int)$product['id'], $product['title'],
+                        $user['name'], $serverPrice
+                    );
+                }
+            }
+
             $this->json([
                 'success'    => true,
                 'message'    => 'Chúc mừng! Bạn đã mua thành công với giá ' .

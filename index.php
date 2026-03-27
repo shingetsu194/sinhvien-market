@@ -46,9 +46,10 @@ spl_autoload_register(function (string $class): void {
     // Map các namespace → thư mục
     $prefixes = [
         'App\\Controllers\\' => APP_PATH . '/controllers/',
-        'App\\Models\\' => APP_PATH . '/models/',
-        'Core\\' => CORE_PATH . '/',
-        'Config\\' => CONFIG_PATH . '/',
+        'App\\Models\\'      => APP_PATH . '/models/',
+        'App\\Services\\'    => APP_PATH . '/services/',
+        'Core\\'             => CORE_PATH . '/',
+        'Config\\'           => CONFIG_PATH . '/',
     ];
 
     foreach ($prefixes as $prefix => $baseDir) {
@@ -62,6 +63,10 @@ spl_autoload_register(function (string $class): void {
         }
     }
 });
+
+// ─── Global Error Handler (Phase 13) ───────────────────────────────────────
+use Core\ErrorHandler;
+ErrorHandler::register();
 
 // Load Router và khởi chạy ứng dụng
 use Core\Router;
@@ -80,6 +85,7 @@ $router->post('admin-login', 'Auth', 'adminLogin');
 $router->get('register', 'Auth', 'registerForm');
 $router->post('register', 'Auth', 'register');
 $router->get('logout', 'Auth', 'logout');
+$router->get('account-locked', 'Auth', 'accountLocked'); // Trang thông báo khóa tài khoản
 
 // OTP & Password Reset
 $router->get('verify-otp', 'Auth', 'verifyOtpForm');
@@ -91,6 +97,13 @@ $router->get('reset-password', 'Auth', 'resetPasswordForm');
 $router->post('reset-password', 'Auth', 'resetPassword');
 
 $router->get('dashboard', 'Home', 'dashboard'); // Student dashboard
+
+// ─── Profile ──────────────────────────────────────────────────────────────────
+$router->get('profile', 'Profile', 'show');
+$router->post('profile/update', 'Profile', 'update');
+$router->post('profile/password', 'Profile', 'changePassword');
+$router->post('profile/avatar', 'Profile', 'uploadAvatar');
+
 
 // Products
 $router->get('products', 'Product', 'index');
@@ -108,6 +121,7 @@ $router->get('transactions/zalopay', 'Transaction', 'zalopay');
 $router->post('transactions/zalopay-callback', 'Transaction', 'zalopayCallback');
 
 $router->get('transactions/history', 'Transaction', 'history');
+$router->post('transactions/update-status', 'Transaction', 'updateStatus');
 
 // API (JSON responses cho polling realtime)
 $router->get('api/auction/price', 'Auction', 'apiPrice');
@@ -115,6 +129,7 @@ $router->get('api/auction/price', 'Auction', 'apiPrice');
 // Admin
 $router->get('admin', 'Admin', 'dashboard');
 $router->get('admin/users', 'Admin', 'users');
+$router->get('admin/users/detail', 'Admin', 'userDetail');
 $router->post('admin/users/toggle', 'Admin', 'toggleUser');
 $router->get('admin/products', 'Admin', 'products');
 $router->post('admin/products/approve', 'Admin', 'approveProduct');
@@ -125,6 +140,8 @@ $router->post('admin/categories/store', 'Admin', 'storeCategory');
 $router->post('admin/categories/update', 'Admin', 'updateCategory');
 $router->post('admin/categories/delete', 'Admin', 'deleteCategory');
 $router->get('admin/reports', 'Admin', 'reports');
+$router->get('admin/system-reports', 'Admin', 'systemReports');
+$router->post('admin/system-reports/resolve', 'Admin', 'resolveReport');
 $router->get('admin/audit-log', 'Admin', 'auditLog');
 
 // Admin Giveaways Phase 11.4
@@ -135,6 +152,33 @@ $router->post('admin/giveaway_spin_api', 'Admin', 'spinGiveawayApi');
 
 // User Giveaways API
 $router->post('api/giveaways/join', 'Giveaway', 'join');
+
+// ─── Chat ────────────────────────────────────────────────────────────────────
+$router->get('chat', 'Chat', 'index');
+$router->get('chat/show', 'Chat', 'show');
+$router->post('chat/start', 'Chat', 'start');
+$router->post('chat/send', 'Chat', 'send');
+$router->get('chat/poll', 'Chat', 'apiPoll');
+$router->get('api/chat/unread', 'Chat', 'apiUnreadCount');
+// API-prefixed aliases (chuẩn hóa Phase 14)
+$router->post('api/chat/send', 'Chat', 'send');
+$router->get('api/chat/poll', 'Chat', 'apiPoll');
+
+// ─── Notifications ───────────────────────────────────────────────────────────
+$router->get('notifications', 'Notification', 'index');
+$router->get('api/notifications/unread', 'Notification', 'apiUnread');
+$router->post('notifications/mark-read', 'Notification', 'markRead');
+
+// ─── Ratings ─────────────────────────────────────────────────────────────────
+$router->post('ratings/create', 'Rating', 'create');
+$router->get('users/profile', 'Rating', 'profile');
+
+// ─── Reports (Tố cáo) ────────────────────────────────────────────────────────
+$router->post('reports/store', 'Report', 'store');
+
+// ─── Wishlist ─────────────────────────────────────────────────────────────────
+$router->post('wishlist/toggle', 'Wishlist', 'toggle');
+$router->get('wishlist', 'Wishlist', 'index');
 
 // ─── Dispatch ────────────────────────────────────────────────────────────────
 $router->dispatch();

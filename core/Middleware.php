@@ -15,13 +15,15 @@ class Middleware
         if (!isset($_SESSION['user'])) {
             Flash::set('error', 'Bạn cần đăng nhập để truy cập trang này.');
             self::redirect('login-role');
+            return;
         }
 
         // Kiểm tra tài khoản có bị khóa không
         if (($_SESSION['user']['is_locked'] ?? 0) == 1) {
-            session_destroy();
-            Flash::set('error', 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin.');
-            self::redirect('login-role');
+            // Lấy thông tin khóa mới nhất từ DB và cập nhật session
+            // (Không destroy session để giữ thông tin hiển thị ở trang thông báo)
+            self::redirect('account-locked');
+            return;
         }
     }
 

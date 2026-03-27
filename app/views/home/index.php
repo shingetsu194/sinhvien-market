@@ -119,7 +119,7 @@ function hp(int $price): string {
 
 <!-- ─── GIVEAWAY EVENT ───────────────────────────────────────────── -->
 <?php if (!empty($giveaway)): ?>
-<section class="hp-giveaway">
+<section class="hp-giveaway" id="giveaway">
   <div class="hp-gw-blob-1"></div>
   <div class="hp-gw-blob-2"></div>
   <div class="container" style="position:relative;z-index:2">
@@ -179,9 +179,9 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('_csrf', '<?= htmlspecialchars($this->csrfToken() ?? "") ?>');
         const response = await fetch('<?= $appUrl ?>/api/giveaways/join', { method: 'POST', body: formData });
         const result = await response.json();
-        if (result.status === 'success') { alert(result.msg); window.location.reload(); }
+        if (result.success) { alert(result.message || 'Đăng ký thành công!'); window.location.reload(); }
         else {
-          alert(result.msg || 'Có lỗi xảy ra.');
+          alert((result.error && result.error.message) || 'Có lỗi xảy ra.');
           btn.disabled = false;
           btn.innerHTML = '<i class="bi bi-controller me-2"></i>Tham gia vòng quay ngay!';
         }
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- ─── ĐẤU GIÁ HOT ─────────────────────────────────────────────── -->
 <?php if (!empty($auctionProducts)): ?>
-<section style="padding:72px 0;background:#fff">
+<section style="padding:72px 0;background:var(--bg, #fff);transition:background .3s">
   <div class="container">
     <div class="d-flex justify-content-between align-items-end mb-5">
       <div>
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <?php endif; ?>
 
 <!-- ─── DANH MỤC ────────────────────────────────────────────────── -->
-<section style="padding:72px 0;background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%)">
+<section class="hp-category-section" style="padding:72px 0">
   <div class="container">
     <div class="text-center mb-5">
       <span class="hp-section-badge">
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </section>
 
 <!-- ─── SẢN PHẨM MỚI NHẤT ──────────────────────────────────────── -->
-<section style="padding:72px 0;background:#fff">
+<section style="padding:72px 0;background:var(--card-bg, #fff);transition:background .3s">
   <div class="container">
     <div class="d-flex justify-content-between align-items-end mb-5">
       <div>
@@ -605,9 +605,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ── Auction Card ────────────────────────────────── */
 .hp-auction-card {
-  background:#fff;border-radius:20px;
-  border:1.5px solid #e2e8f0;overflow:hidden;
-  transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;
+  background:var(--card-bg, #fff);border-radius:20px;
+  border:1.5px solid var(--border, #e2e8f0);overflow:hidden;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s,background .3s,border-color .3s;
 }
 .hp-auction-card:hover { transform:translateY(-8px);box-shadow:0 20px 50px rgba(239,68,68,.18);border-color:#fca5a5; }
 .hp-auction-img {
@@ -631,7 +631,7 @@ document.addEventListener('DOMContentLoaded', () => {
 .hp-auction-body { padding:1rem 1.1rem; }
 .hp-auction-cat { font-size:.75rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.35rem; }
 .hp-auction-title {
-  font-weight:700;font-size:.95rem;color:#0f172a;line-height:1.35;
+  font-weight:700;font-size:.95rem;color:var(--text, #0f172a);line-height:1.35;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
 .hp-auction-price { font-size:1.4rem;font-weight:900;color:#ef4444; }
@@ -649,10 +649,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ── Category Card ───────────────────────────────── */
 .hp-cat-card {
-  background:#fff;border-radius:20px;
-  border:1.5px solid #e2e8f0;padding:1.5rem 1rem;
+  background:var(--card-bg, #fff);border-radius:20px;
+  border:1.5px solid var(--border, #e2e8f0);padding:1.5rem 1rem;
   text-align:center;
-  transition:all .32s cubic-bezier(.34,1.56,.64,1);
+  transition:all .32s cubic-bezier(.34,1.56,.64,1),background .3s;
   cursor:pointer;
 }
 .hp-cat-card:hover {
@@ -666,13 +666,13 @@ document.addEventListener('DOMContentLoaded', () => {
   display:flex;align-items:center;justify-content:center;
   margin:0 auto 12px;font-size:1.5rem;color:#fff;
 }
-.hp-cat-name { font-size:.82rem;font-weight:700;color:#334155;line-height:1.3; }
+.hp-cat-name { font-size:.82rem;font-weight:700;color:var(--dark-3, #334155);line-height:1.3; }
 
 /* ── Product Card ────────────────────────────────── */
 .hp-product-card {
-  background:#fff;border-radius:18px;
-  border:1.5px solid #e2e8f0;overflow:hidden;
-  transition:transform .32s cubic-bezier(.34,1.56,.64,1),box-shadow .28s;
+  background:var(--card-bg, #fff);border-radius:18px;
+  border:1.5px solid var(--border, #e2e8f0);overflow:hidden;
+  transition:transform .32s cubic-bezier(.34,1.56,.64,1),box-shadow .28s,background .3s,border-color .3s;
 }
 .hp-product-card:hover { transform:translateY(-7px);box-shadow:0 18px 42px rgba(99,102,241,.14);border-color:#c7d2fe; }
 .hp-product-img { height:160px;background:#f8fafc;position:relative;overflow:hidden; }
@@ -686,7 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
 .hp-product-body { padding:.85rem; }
 .hp-product-cat { font-size:.72rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.3rem; }
 .hp-product-title {
-  font-size:.88rem;font-weight:700;color:#0f172a;line-height:1.35;
+  font-size:.88rem;font-weight:700;color:var(--text, #0f172a);line-height:1.35;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   margin-bottom:.5rem;
 }
@@ -732,4 +732,22 @@ document.addEventListener('DOMContentLoaded', () => {
   transition:all .25s;text-decoration:none;
 }
 .hp-cta-btn-glass:hover { background:rgba(255,255,255,.22);color:#fff;transform:translateY(-2px); }
+
+/* ── Dark Mode overrides ───────────────────────────── */
+.hp-category-section {
+  background: linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);
+  transition: background .3s;
+}
+[data-theme="dark"] .hp-category-section {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+}
+[data-theme="dark"] .hp-cat-icon[style*="background:#f1f5f9"] {
+  background: #334155 !important;
+}
+[data-theme="dark"] .hp-auction-img { background: #1e293b; }
+[data-theme="dark"] .hp-product-img { background: #1e293b; }
+[data-theme="dark"] .hp-auction-cat,
+[data-theme="dark"] .hp-product-cat { color: #64748b; }
+[data-theme="dark"] .hp-auction-orig { color: #64748b; }
+[data-theme="dark"] .hp-cat-name[style] { color: var(--muted) !important; }
 </style>

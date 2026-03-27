@@ -66,11 +66,11 @@ $typeLabel = [
       <table class="table table-hover align-middle">
         <thead class="table-light">
           <tr>
-            <th>Sản phẩm</th>
-            <th>Loại GD & Vai trò</th>
-            <th>Thanh toán</th>
-            <th class="text-end">Số tiền</th>
-            <th>Ngày GD & Địa chỉ</th>
+            <th width="25%">Sản phẩm</th>
+            <th width="15%">Vai trò</th>
+            <th width="20%">Trạng thái Đơn hàng & TT</th>
+            <th width="15%" class="text-end">Số tiền</th>
+            <th width="25%">Ngày & Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -117,21 +117,34 @@ $typeLabel = [
                 </div>
               </td>
 
-              <!-- Thanh toán -->
+              <!-- Trạng thái -->
               <td>
-                <div class="small fw-600 mb-1">
+                <div class="small fw-600 mb-2">
                   <?php
                     if ($t['payment_method'] === 'cod') echo '<i class="bi bi-cash text-success me-1"></i>COD';
                     elseif ($t['payment_method'] === 'banking') echo '<i class="bi bi-bank text-primary me-1"></i>Chuyển khoản';
                     elseif ($t['payment_method'] === 'zalopay') echo '<i class="bi bi-wallet2 text-info me-1"></i>ZaloPay';
                     else echo 'N/A';
                   ?>
+                  <?php if ($t['payment_status'] === 'paid'): ?>
+                    | <span class="text-success small"><i class="bi bi-check-circle me-1"></i>Đã TT</span>
+                  <?php else: ?>
+                    | <span class="text-warning small"><i class="bi bi-clock me-1"></i>Chờ TT</span>
+                  <?php endif; ?>
                 </div>
-                <?php if ($t['payment_status'] === 'paid'): ?>
-                  <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i>Đã thanh toán</span>
-                <?php else: ?>
-                  <span class="badge bg-warning-subtle text-warning border border-warning-subtle"><i class="bi bi-clock me-1"></i>Chờ thanh toán</span>
-                <?php endif; ?>
+                
+                <?php 
+                  $os = $t['order_status'] ?? 'pending';
+                  $osTheme = 'secondary';
+                  $osText = 'Chờ xác nhận';
+                  if ($os === 'shipping') { $osTheme = 'info'; $osText = 'Đang giao hàng'; }
+                  elseif ($os === 'delivered') { $osTheme = 'primary'; $osText = 'Đã giao đến nơi'; }
+                  elseif ($os === 'received' || $os === 'completed') { $osTheme = 'success'; $osText = 'Hoàn tất'; }
+                  elseif ($os === 'cancelled') { $osTheme = 'danger'; $osText = 'Đã hủy'; }
+                ?>
+                <span class="badge bg-<?= $osTheme ?>-subtle text-<?= $osTheme ?> border border-<?= $osTheme ?>-subtle px-2 py-1">
+                  <i class="bi bi-box-seam me-1"></i><?= $osText ?>
+                </span>
               </td>
 
               <!-- Số tiền -->
@@ -143,12 +156,40 @@ $typeLabel = [
                 <?php endif; ?>
               </td>
 
-              <!-- Ngày -->
-              <td class="small text-muted text-nowrap">
+              <!-- Ngày & Hành động -->
+              <td class="small text-muted">
                 <div class="mb-1"><i class="bi bi-clock me-1"></i><?= date('d/m/Y H:i', strtotime($t['created_at'])) ?></div>
-                <div class="text-truncate" style="max-width: 200px;" title="<?= htmlspecialchars($t['shipping_address'] ?? 'Không có', ENT_QUOTES) ?>">
-                  <i class="bi bi-geo-alt me-1"></i><?= htmlspecialchars($t['shipping_address'] ?? 'Không có', ENT_QUOTES) ?>
+                <div class="text-truncate mb-2" style="max-width: 220px;" title="<?= htmlspecialchars($t['shipping_address'] ?? 'Không có', ENT_QUOTES) ?>">
+                  <i class="bi bi-geo-alt me-1"></i><?= htmlspecialchars($t['shipping_address'] ?? 'Không có địa chỉ', ENT_QUOTES) ?>
                 </div>
+
+                <!-- Action buttons -->
+                <?php if ($os !== 'completed' && $os !== 'received' && $os !== 'cancelled'): ?>
+                  <form action="<?= $appUrl ?>/transactions/update-status" method="POST" class="mt-2 text-start">
+                    <input type="hidden" name="id" value="<?= $t['id'] ?>">
+                    
+                    <?php if (!$isBuyer): // Seller actions ?>
+                      <?php if ($os === 'pending'): ?>
+                        <input type="hidden" name="status" value="shipping">
+                        <button type="submit" class="btn btn-sm btn-info text-white rounded-pill px-3 shadow-sm" onclick="return confirm('Xác nhận bạn đã đóng gói và bắt đầu giao hàng?');">
+                          <i class="bi bi-truck me-1"></i>Gửi hàng
+                        </button>
+                      <?php elseif ($os === 'shipping'): ?>
+                        <input type="hidden" name="status" value="delivered">
+                        <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
+                          <i class="bi bi-geo me-1"></i>Đã đến nơi
+                        </button>
+                      <?php endif; ?>
+                    <?php else: // Buyer actions ?>
+                      <?php if ($os === 'shipping' || $os === 'delivered'): ?>
+                        <input type="hidden" name="status" value="completed">
+                        <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm fw-bold" onclick="return confirm('Xác nhận bạn đã nhận được hàng và hàng đúng mô tả?');">
+                          <i class="bi bi-check-circle-fill me-1"></i>Đã nhận hàng
+                        </button>
+                      <?php endif; ?>
+                    <?php endif; ?>
+                  </form>
+                <?php endif; ?>
               </td>
             </tr>
           <?php endforeach; ?>

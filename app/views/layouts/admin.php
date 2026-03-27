@@ -24,8 +24,13 @@ function isActive(string $keyword, string $current): string {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="<?= $appUrl ?>/public/css/style.css" rel="stylesheet">
+  <script>
+    // Áp dụng theme từ localStorage trước khi render body để tránh chớp màn hình (FOUC)
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
   <style>
-    body { background: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text); }
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
     .admin-wrapper { display: flex; min-height: 100vh; }
@@ -115,15 +120,15 @@ function isActive(string $keyword, string $current): string {
 
     /* ── Topbar ────────────────────────────────────── */
     .admin-topbar {
-      background: #fff;
-      border-bottom: 1px solid #e2e8f0;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
       padding: .85rem 1.75rem;
       display: flex; align-items: center; justify-content: space-between;
       position: sticky; top: 0; z-index: 90;
       box-shadow: 0 1px 8px rgba(0,0,0,.05);
     }
     .admin-topbar-title {
-      font-weight: 800; font-size: 1.15rem; color: #0f172a; margin: 0;
+      font-weight: 800; font-size: 1.15rem; color: var(--text); margin: 0;
       display: flex; align-items: center; gap: .6rem;
     }
     .admin-topbar-title::before {
@@ -141,7 +146,7 @@ function isActive(string $keyword, string $current): string {
       color: #fff; font-weight: 800; font-size: .85rem;
       box-shadow: 0 2px 8px rgba(99,102,241,.35);
     }
-    .topbar-name { font-weight: 700; font-size: .88rem; color: #334155; }
+    .topbar-name { font-weight: 700; font-size: .88rem; color: var(--text); }
     .topbar-role { font-size: .75rem; color: #94a3b8; font-weight: 500; }
 
     /* ── Content area ──────────────────────────────── */
@@ -188,9 +193,12 @@ function isActive(string $keyword, string $current): string {
         <i class="bi bi-gift"></i> Sự kiện Giveaway
       </a>
 
-      <div class="sidebar-section">Báo cáo</div>
+      <div class="sidebar-section">Báo cáo & Vi Phạm</div>
       <a href="<?= $appUrl ?>/admin/reports" class="<?= isActive('admin/reports', $currentUrl) ?>">
-        <i class="bi bi-bar-chart-line"></i> Giao dịch
+        <i class="bi bi-bar-chart-line"></i> Báo cáo giao dịch
+      </a>
+      <a href="<?= $appUrl ?>/admin/system-reports" class="<?= isActive('system-reports', $currentUrl) ?>">
+        <i class="bi bi-shield-exclamation"></i> Tố cáo vi phạm
       </a>
       <a href="<?= $appUrl ?>/admin/audit-log" class="<?= isActive('audit-log', $currentUrl) ?>">
         <i class="bi bi-journal-text"></i> Nhật ký Admin
@@ -209,6 +217,9 @@ function isActive(string $keyword, string $current): string {
     <div class="admin-topbar">
       <h5 class="admin-topbar-title"><?= $title ?></h5>
       <div class="topbar-user-info">
+        <button id="themeToggleBtnAdmin" class="btn btn-sm btn-icon border-0 me-2 d-flex align-items-center justify-content-center" style="width:34px;height:34px;border-radius:50%;background:rgba(99,102,241,.1)" title="Chuyển chế độ Sáng/Tối">
+            <i class="bi bi-moon-stars-fill text-primary"></i>
+        </button>
         <div class="topbar-avatar"><?= mb_strtoupper(mb_substr($user['name'] ?? 'A', 0, 1)) ?></div>
         <div>
           <div class="topbar-name"><?= htmlspecialchars($user['name'] ?? 'Admin', ENT_QUOTES) ?></div>
@@ -231,5 +242,34 @@ function isActive(string $keyword, string $current): string {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Dark Mode Toggle Logic for Admin
+  document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('themeToggleBtnAdmin');
+    if (!btn) return;
+
+    function updateBtn() {
+      const current = document.documentElement.getAttribute('data-theme');
+      if (current === 'dark') {
+        btn.innerHTML = '<i class="bi bi-sun-fill text-warning"></i>';
+        btn.style.background = 'rgba(245,158,11,.1)';
+      } else {
+        btn.innerHTML = '<i class="bi bi-moon-stars-fill text-primary"></i>';
+        btn.style.background = 'rgba(99,102,241,.1)';
+      }
+    }
+    updateBtn();
+
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const current = document.documentElement.getAttribute('data-theme');
+      const nextTheme = current === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('theme', nextTheme);
+      updateBtn();
+    });
+  });
+</script>
 </body>
 </html>

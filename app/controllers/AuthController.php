@@ -57,13 +57,41 @@ class AuthController extends Controller
     {
         $this->processLogin('admin', 'admin-login', '/views/auth/admin_login.php', 'admin');
     }
+    public function accountLocked(): void
+    {
+        // Nếu chưa đăng nhập hoặc không bị khóa, redirect
+        if (!isset($_SESSION['user'])) {
+            $this->redirect('login-role');
+            return;
+        }
+        if (!(($_SESSION['user']['is_locked'] ?? 0) == 1)) {
+            $this->redirect('');
+            return;
+        }
+
+        // Làm mới thông tin khóa từ DB vào session
+        $fresh = $this->userModel->findById($_SESSION['user']['id']);
+        if ($fresh && (int)$fresh['is_locked'] === 1) {
+            $_SESSION['user']['lock_reason']  = $fresh['lock_reason']  ?? null;
+            $_SESSION['user']['locked_at']    = $fresh['locked_at']    ?? null;
+            $_SESSION['user']['locked_until'] = $fresh['locked_until'] ?? null;
+        } elseif ($fresh && (int)$fresh['is_locked'] === 0) {
+            // Admin đã mở khóa — cập nhật session và cho vào bình thường
+            $_SESSION['user']['is_locked'] = 0;
+            $this->redirect('');
+            return;
+        }
+
+        $appUrl = rtrim($_ENV['APP_URL'] ?? '', '/');
+        include APP_PATH . '/views/auth/account_locked.php';
+    }
 
     private function processLogin(string $expectedRole, string $redirectBack, string $viewFile, string $redirectSuccess): void
     {
         Middleware::requireGuest();
 
         if (!$this->verifyCsrf()) {
-            Flash::set('danger', 'Phiên làm việc hết hạn. Vui lòng thử lại.');
+
             $this->redirect($redirectBack);
             return;
         }
@@ -121,9 +149,18 @@ class AuthController extends Controller
         }
 
         if ((int)$user['is_locked'] === 1) {
-            Flash::set('danger', 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin.');
-            $csrf = $this->csrfToken();
-            include APP_PATH . $viewFile;
+            // Lưu thông tin khóa vào session để hiển thị trên trang thông báo
+            $_SESSION['user'] = [
+                'id'           => $user['id'],
+                'name'         => $user['name'],
+                'email'        => $user['email'],
+                'role'         => $user['role'],
+                'is_locked'    => 1,
+                'lock_reason'  => $user['lock_reason']  ?? null,
+                'locked_at'    => $user['locked_at']    ?? null,
+                'locked_until' => $user['locked_until'] ?? null,
+            ];
+            $this->redirect('account-locked');
             return;
         }
 

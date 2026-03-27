@@ -180,18 +180,52 @@ $p = $product;
     </div>
     <div class="col-lg-4">
       <div class="card-sv p-4 hover-lift">
-        <h5 class="fw-700 mb-3">Thông tin người bán</h5>
-        <div class="d-flex align-items-center gap-3">
-          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-               style="width:48px;height:48px;font-size:1.4rem;font-weight:700">
-            <?= mb_strtoupper(mb_substr($p['seller_name'], 0, 1)) ?>
-          </div>
-          <div>
-            <div class="fw-700"><?= htmlspecialchars($p['seller_name'], ENT_QUOTES) ?></div>
-            <div class="small text-muted">Sinh viên / Thành viên</div>
-          </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-700 mb-0">Thông tin người bán</h5>
+          <?php if (isset($user) && $user['id'] !== $p['user_id']): ?>
+          <button class="btn btn-sm btn-outline-danger rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#reportModal">
+            <i class="bi bi-flag-fill me-1"></i>Tố cáo
+          </button>
+          <?php endif; ?>
         </div>
+        <div class="d-flex align-items-center gap-3">
+          <a href="<?= $appUrl ?>/users/profile?id=<?= $p['user_id'] ?>" class="text-decoration-none text-dark d-flex align-items-center gap-3 w-100 hover-opacity">
+            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                 style="width:48px;height:48px;font-size:1.4rem;font-weight:700">
+              <?= mb_strtoupper(mb_substr($p['seller_name'], 0, 1)) ?>
+            </div>
+            <div>
+              <div class="fw-700 text-primary-hover"><?= htmlspecialchars($p['seller_name'], ENT_QUOTES) ?></div>
+              <div class="small text-muted">Sinh viên / Thành viên</div>
+            </div>
+            <div class="ms-auto text-muted">
+              <i class="bi bi-chevron-right"></i>
+            </div>
+          </a>
+        </div>
+        
+        <!-- Nút Liên hệ người bán (Bổ sung do Bug 1) -->
+        <?php if ($user && (int)$p['user_id'] !== (int)$user['id']): ?>
+          <form action="<?= $appUrl ?>/chat/start" method="POST" class="mt-3">
+            <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf, ENT_QUOTES) ?>">
+            <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
+            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" style="padding: .6rem 1rem">
+              <i class="bi bi-chat-dots-fill"></i> Liên hệ người bán
+            </button>
+          </form>
+        <?php elseif (!$user): ?>
+          <a href="<?= $appUrl ?>/login" class="btn btn-outline-primary w-100 rounded-pill fw-bold mt-3 d-flex align-items-center justify-content-center gap-2" style="padding: .6rem 1rem">
+            <i class="bi bi-box-arrow-in-right"></i> Đăng nhập để liên hệ
+          </a>
+        <?php endif; ?>
+
       </div>
+      
+      <style>
+      .hover-opacity:hover { opacity: 0.85; }
+      .text-primary-hover { transition: color 0.2s; }
+      .hover-opacity:hover .text-primary-hover { color: #0d6efd; }
+      </style>
     </div>
   </div>
 
@@ -361,3 +395,46 @@ document.getElementById('checkoutForm').addEventListener('submit', function() {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
 });
 </script>
+
+<!-- ─── Modal Tố Cáo (Report) ──────────────────────────────── -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <div class="modal-header bg-danger text-white border-bottom-0 pb-3 rounded-top-4">
+        <h5 class="modal-title fw-bold" id="reportModalLabel"><i class="bi bi-shield-exclamation me-2"></i>Báo cáo vi phạm</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="<?= $appUrl ?>/reports/store" method="POST">
+        <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf, ENT_QUOTES) ?>">
+        <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
+        <input type="hidden" name="target_user_id" value="<?= $p['user_id'] ?>">
+
+        <div class="modal-body p-4">
+          <p class="text-muted small mb-4">Chúng tôi sát cánh cùng bạn để xây dựng cộng đồng mua bán an toàn. Vui lòng cung cấp chi tiết vi phạm để được xử lý nhanh nhất.</p>
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Lý do báo cáo <span class="text-danger">*</span></label>
+            <select name="reason" class="form-select" required>
+              <option value="">-- Chọn lý do --</option>
+              <option value="Hàng giả / Trái pháp luật">Hàng giả / Cấm buôn bán</option>
+              <option value="Lừa đảo">Người bán có dấu hiệu lừa đảo</option>
+              <option value="Phản cảm">Hình ảnh / Nội dung phản cảm</option>
+              <option value="Ngôn từ đe dọa">Ngôn từ đe dọa / Quấy rối</option>
+              <option value="Khác">Lý do khác</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Chi tiết vi phạm <span class="text-danger">*</span></label>
+            <textarea name="description" class="form-control" rows="4" placeholder="Mô tả cụ thể hành vi vi phạm..." required></textarea>
+          </div>
+        </div>
+        
+        <div class="modal-footer bg-light border-top-0 rounded-bottom-4">
+          <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Hủy</button>
+          <button type="submit" class="btn btn-danger px-4 rounded-pill fw-semibold"><i class="bi bi-send-fill me-2"></i>Gửi báo cáo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -5,8 +5,20 @@
 public/uploads/*
 !public/uploads/.gitkeep
 
-# Hệ thống
+# Hệ thống & Logs
 .DS_Store
 Thumbs.db
 *.log
 /vendor/
+/storage/logs/*
+!/storage/logs/.gitkeep
+
+# Temporary Scripts
+check_db.php
+check_ga.php
+extend_ga.php
+fix_ga.php
+test_db.php
+debug_otp.log
+mock_mail.log
+database/alter_lock_reason.php

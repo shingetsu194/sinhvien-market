@@ -15,7 +15,7 @@ class AuditLog extends Model
     public function log(int $adminId, string $action, string $targetType, int $targetId, ?string $note = null): void
     {
         $this->execute(
-            'INSERT INTO audit_logs (admin_id, action, target_type, target_id, note) VALUES (?, ?, ?, ?, ?)',
+            'INSERT INTO audit_logs (admin_id, action, target_type, target_id, details) VALUES (?, ?, ?, ?, ?)',
             [$adminId, $action, $targetType, $targetId, $note]
         );
     }

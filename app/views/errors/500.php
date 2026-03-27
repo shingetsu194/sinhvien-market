@@ -1,6 +1,6 @@
 <?php
 /**
- * Error 404 — Không tìm thấy trang
+ * Error 500 — Lỗi máy chủ
  */
 $appUrl = rtrim($_ENV['APP_URL'] ?? '', '/');
 ?>
@@ -9,7 +9,7 @@ $appUrl = rtrim($_ENV['APP_URL'] ?? '', '/');
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Không tìm thấy trang — SinhVienMarket</title>
+  <title>Lỗi máy chủ — SinhVienMarket</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -34,20 +34,20 @@ $appUrl = rtrim($_ENV['APP_URL'] ?? '', '/');
     }
     .icon-wrap {
       width: 88px; height: 88px;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      background: linear-gradient(135deg, #ef4444, #dc2626);
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: 2.5rem; margin: 0 auto 1.5rem;
-      box-shadow: 0 0 0 12px rgba(99,102,241,.15), 0 16px 40px rgba(99,102,241,.35);
-      animation: float 3s ease-in-out infinite alternate;
+      box-shadow: 0 0 0 12px rgba(239,68,68,.15), 0 16px 40px rgba(239,68,68,.4);
+      animation: pulse 2.5s ease-in-out infinite;
     }
-    @keyframes float {
-      from { transform: translateY(0); }
-      to   { transform: translateY(-10px); }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 12px rgba(239,68,68,.1), 0 16px 40px rgba(239,68,68,.3); }
+      50%       { box-shadow: 0 0 0 20px rgba(239,68,68,.05), 0 16px 40px rgba(239,68,68,.45); }
     }
     .code {
       font-size: 5rem; font-weight: 900;
-      background: linear-gradient(90deg, #a78bfa, #f472b6);
+      background: linear-gradient(90deg, #ef4444, #f97316);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
       line-height: 1; margin-bottom: .5rem;
@@ -63,37 +63,37 @@ $appUrl = rtrim($_ENV['APP_URL'] ?? '', '/');
       transition: all .2s; box-shadow: 0 8px 24px rgba(99,102,241,.4);
     }
     .btn-home:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(99,102,241,.55); color: #fff; }
-    .btn-shop {
+    .btn-back {
       display: inline-flex; align-items: center; gap: .5rem;
       background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
       color: rgba(255,255,255,.75); font-weight: 600; font-size: .9rem;
       padding: .7rem 1.6rem; border-radius: 12px; text-decoration: none;
       transition: all .2s;
     }
-    .btn-shop:hover { background: rgba(255,255,255,.15); color: #fff; }
-    .brand {
-      display: block; margin-bottom: .25rem;
-      font-size: .78rem; color: rgba(255,255,255,.4); letter-spacing: .5px;
+    .btn-back:hover { background: rgba(255,255,255,.15); color: #fff; }
+    .footer-note {
+      margin-top: 2rem;
+      font-size: .78rem; color: rgba(255,255,255,.3);
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="icon-wrap">🔍</div>
-    <div class="code">404</div>
-    <h1>Trang không tồn tại</h1>
-    <p>Trang bạn đang tìm kiếm đã bị xóa, đổi địa chỉ, hoặc chưa bao giờ tồn tại. Hãy quay về trang chủ để tiếp tục!</p>
+    <div class="icon-wrap">⚙️</div>
+    <div class="code">500</div>
+    <h1>Lỗi máy chủ nội bộ</h1>
+    <p>Hệ thống đang gặp sự cố kỹ thuật. Đội ngũ của chúng tôi đã được thông báo và đang khắc phục. Xin lỗi vì sự bất tiện này!</p>
     <div class="actions">
       <a href="<?= $appUrl ?>" class="btn-home">
         <i class="bi bi-house-fill"></i>Về trang chủ
       </a>
-      <a href="<?= $appUrl ?>/products" class="btn-shop">
-        <i class="bi bi-bag"></i>Mua sắm ngay
+      <a href="javascript:history.back()" class="btn-back">
+        <i class="bi bi-arrow-left"></i>Quay lại
       </a>
     </div>
-    <span class="brand" style="margin-top:2rem">
-      <i class="bi bi-shop-window me-1"></i>SinhVienMarket
-    </span>
+    <div class="footer-note">
+      <i class="bi bi-shield-check me-1"></i>Lỗi đã được ghi nhật ký tự động.
+    </div>
   </div>
 </body>
 </html>

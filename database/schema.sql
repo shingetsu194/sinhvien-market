@@ -28,6 +28,9 @@ CREATE TABLE `users` (
     `avatar`     VARCHAR(255) DEFAULT NULL COMMENT 'Đường dẫn ảnh đại diện',
     `role`       ENUM('student', 'admin') NOT NULL DEFAULT 'student',
     `is_locked`  TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 = bị khóa bởi Admin',
+    `lock_reason`  VARCHAR(255) DEFAULT NULL COMMENT 'Lý do bị khóa bởi Admin',
+    `locked_at`    TIMESTAMP NULL DEFAULT NULL COMMENT 'Thời điểm bị khóa',
+    `locked_until` TIMESTAMP NULL DEFAULT NULL COMMENT 'Khóa đến khi nào (NULL = vĩnh viễn)',
     -- Phase 11.2 - OTP & Security
     `security_question` VARCHAR(255) DEFAULT NULL,
     `security_answer`   VARCHAR(255) DEFAULT NULL,
@@ -35,6 +38,12 @@ CREATE TABLE `users` (
     `otp_expires_at`    TIMESTAMP NULL DEFAULT NULL,
     `is_verified`       TINYINT(1) DEFAULT 0,
     `last_verified_at`  TIMESTAMP NULL DEFAULT NULL,
+    `university`        VARCHAR(200) DEFAULT NULL COMMENT 'Trường / Khoa',
+    `student_id`        VARCHAR(30)  DEFAULT NULL COMMENT 'MSSV (tùy chọn)',
+    `dormitory_address` VARCHAR(255) DEFAULT NULL COMMENT 'Ký túc xá / Địa chỉ giao nhận',
+    `social_contact`    VARCHAR(255) DEFAULT NULL COMMENT 'Zalo / Facebook liên hệ',
+    `bio`               TEXT         DEFAULT NULL COMMENT 'Tiểu sử ngắn',
+    `available_time`    VARCHAR(100) DEFAULT NULL COMMENT 'Thời gian online',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
@@ -128,6 +137,10 @@ CREATE TABLE `transactions` (
     `amount`     DECIMAL(12, 0) NOT NULL COMMENT 'Giá giao dịch (VND)',
     `type`       ENUM('auction', 'direct') NOT NULL DEFAULT 'direct'
                  COMMENT 'auction = đấu giá ngược, direct = mua thường',
+    `order_status` ENUM('pending', 'shipping', 'delivered', 'received', 'completed', 'cancelled') NOT NULL DEFAULT 'pending',
+    `payment_method`  ENUM('cod', 'banking', 'zalopay') NOT NULL DEFAULT 'cod',
+    `shipping_address` TEXT DEFAULT NULL,
+    `payment_status`  ENUM('pending', 'paid', 'refunded') NOT NULL DEFAULT 'pending',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     KEY `idx_product_id` (`product_id`),
@@ -179,6 +192,105 @@ CREATE TABLE `audit_logs` (
 --  RESET FOREIGN KEY CHECKS
 -- ============================================================
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ============================================================
+--  8. CONVERSATIONS — Cuộc hội thoại giữa người mua & người bán
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `conversations` (
+    `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `product_id` INT UNSIGNED NOT NULL COMMENT 'Sản phẩm đang liên hệ',
+    `buyer_id`   INT UNSIGNED NOT NULL COMMENT 'Người hỏi mua',
+    `seller_id`  INT UNSIGNED NOT NULL COMMENT 'Người bán',
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_conv` (`product_id`, `buyer_id`, `seller_id`),
+    KEY `idx_buyer_id`  (`buyer_id`),
+    KEY `idx_seller_id` (`seller_id`),
+    CONSTRAINT `fk_conv_product` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_conv_buyer`   FOREIGN KEY (`buyer_id`)   REFERENCES `users`(`id`)    ON DELETE CASCADE,
+    CONSTRAINT `fk_conv_seller`  FOREIGN KEY (`seller_id`)  REFERENCES `users`(`id`)    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Cuộc hội thoại giữa người mua và người bán về một sản phẩm';
+
+-- ============================================================
+--  9. MESSAGES — Tin nhắn trong cuộc hội thoại
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `messages` (
+    `id`              INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `conversation_id` INT UNSIGNED NOT NULL,
+    `sender_id`       INT UNSIGNED NOT NULL COMMENT 'Người gửi',
+    `body`            TEXT NOT NULL COMMENT 'Nội dung tin nhắn',
+    `is_read`         TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 = chưa đọc',
+    `created_at`      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_conv_id`   (`conversation_id`),
+    KEY `idx_sender_id` (`sender_id`),
+    KEY `idx_is_read`   (`is_read`),
+    CONSTRAINT `fk_msg_conv`   FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_msg_sender` FOREIGN KEY (`sender_id`)       REFERENCES `users`(`id`)         ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Tin nhắn trong cuộc hội thoại';
+
+-- ============================================================
+--  10. NOTIFICATIONS — Hộp thông báo in-app cho mỗi user
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `notifications` (
+    `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `user_id`    INT UNSIGNED NOT NULL COMMENT 'Người nhận thông báo',
+    `type`       VARCHAR(50)  NOT NULL COMMENT 'product_approved|product_rejected|item_sold|wishlist_drop|new_message',
+    `title`      VARCHAR(200) NOT NULL COMMENT 'Tiêu đề thông báo',
+    `body`       TEXT DEFAULT NULL COMMENT 'Nội dung chi tiết',
+    `link`       VARCHAR(255) DEFAULT NULL COMMENT 'URL khi click vào thông báo',
+    `is_read`    TINYINT(1) NOT NULL DEFAULT 0,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_notif_user_id` (`user_id`),
+    KEY `idx_notif_is_read` (`is_read`),
+    KEY `idx_notif_created` (`created_at`),
+    CONSTRAINT `fk_notif_user` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Thông báo in-app cho từng người dùng';
+
+-- ============================================================
+--  11. WISHLISTS — Danh sách yêu thích của sinh viên
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `wishlists` (
+    `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `user_id`       INT UNSIGNED NOT NULL,
+    `product_id`    INT UNSIGNED NOT NULL,
+    `price_at_save` DECIMAL(12, 0) DEFAULT NULL COMMENT 'Giá lúc thêm vào (để phát hiện giảm giá)',
+    `created_at`    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_wishlist` (`user_id`, `product_id`),
+    KEY `idx_wish_product` (`product_id`),
+    CONSTRAINT `fk_wish_user`    FOREIGN KEY (`user_id`)    REFERENCES `users`(`id`)    ON DELETE CASCADE,
+    CONSTRAINT `fk_wish_product` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Danh sách sản phẩm yêu thích của sinh viên';
+
+-- ============================================================
+--  12. RATINGS — Đánh giá & uy tín người bán sau giao dịch
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `ratings` (
+    `id`             INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `transaction_id` INT UNSIGNED NOT NULL COMMENT 'Giao dịch tham chiếu (chỉ vote 1 lần/giao dịch)',
+    `rater_id`       INT UNSIGNED NOT NULL COMMENT 'Người đánh giá (buyer)',
+    `ratee_id`       INT UNSIGNED NOT NULL COMMENT 'Người được đánh giá (seller)',
+    `product_id`     INT UNSIGNED NOT NULL,
+    `stars`          TINYINT UNSIGNED NOT NULL COMMENT '1–5 sao',
+    `comment`        TEXT DEFAULT NULL COMMENT 'Nhận xét tự do',
+    `created_at`     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_rating_tx` (`transaction_id`),
+    KEY `idx_ratee_id`       (`ratee_id`),
+    KEY `idx_rater_id`       (`rater_id`),
+    KEY `idx_rating_product` (`product_id`),
+    CONSTRAINT `fk_rating_tx`      FOREIGN KEY (`transaction_id`) REFERENCES `transactions`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_rating_rater`   FOREIGN KEY (`rater_id`)       REFERENCES `users`(`id`)        ON DELETE CASCADE,
+    CONSTRAINT `fk_rating_ratee`   FOREIGN KEY (`ratee_id`)       REFERENCES `users`(`id`)        ON DELETE CASCADE,
+    CONSTRAINT `fk_rating_product` FOREIGN KEY (`product_id`)     REFERENCES `products`(`id`)     ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Đánh giá uy tín người bán sau khi giao dịch hoàn tất';
 
 -- ============================================================
 --  SEED DATA - Dữ liệu mẫu ban đầu
@@ -237,5 +349,60 @@ INSERT INTO `products` (`user_id`, `category_id`, `title`, `description`, `type`
 -- Giá khởi điểm: 80.000đ, giá sàn: 30.000đ, giảm 5.000đ mỗi 10 phút
 INSERT INTO `auctions`
     (`product_id`, `start_price`, `floor_price`, `decrease_amount`, `step_minutes`, `started_at`)
-VALUES
     (3, 80000, 30000, 5000, 10, NOW());
+
+-- ============================================================
+-- 15. REPORTS - Hệ thống Tố cáo người dùng/sản phẩm
+-- ============================================================
+DROP TABLE IF EXISTS `reports`;
+CREATE TABLE `reports` (
+    `id`             INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `reporter_id`    INT UNSIGNED NOT NULL,
+    `target_user_id` INT UNSIGNED DEFAULT NULL COMMENT 'ID của người bị tố cáo',
+    `product_id`     INT UNSIGNED DEFAULT NULL COMMENT 'ID của sản phẩm bị tố cáo',
+    `reason`         VARCHAR(255) NOT NULL COMMENT 'Lý do: Lừa đảo, Phản cảm, Hàng giả...',
+    `description`    TEXT NOT NULL COMMENT 'Chi tiết tố cáo',
+    `status`         ENUM('pending', 'resolved', 'ignored') NOT NULL DEFAULT 'pending',
+    `admin_note`     TEXT DEFAULT NULL COMMENT 'Ghi chú của Admin sau xử lý',
+    `created_at`     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_status` (`status`),
+    CONSTRAINT `fk_reports_reporter` FOREIGN KEY (`reporter_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Báo cáo vi phạm (Sản phẩm / Người dùng) gửi cho Admin';
+
+-- ============================================================
+-- 16. GIVEAWAYS — Sự kiện quay số tặng thưởng
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `giveaways` (
+    `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `title`       VARCHAR(200) NOT NULL COMMENT 'Tên sự kiện',
+    `description` TEXT DEFAULT NULL COMMENT 'Mô tả sự kiện',
+    `image`       VARCHAR(255) DEFAULT NULL COMMENT 'Ảnh banner sự kiện',
+    `end_time`    TIMESTAMP NOT NULL COMMENT 'Thời điểm kết thúc',
+    `status`      ENUM('active', 'ended') NOT NULL DEFAULT 'active',
+    `winner_id`   INT UNSIGNED DEFAULT NULL COMMENT 'ID người thắng (sau khi quay)',
+    `created_at`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_giveaway_status`    (`status`),
+    KEY `idx_giveaway_end_time`  (`end_time`),
+    KEY `idx_giveaway_winner_id` (`winner_id`),
+    CONSTRAINT `fk_giveaway_winner` FOREIGN KEY (`winner_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Sự kiện quay số tặng thưởng';
+
+-- ============================================================
+-- 17. GIVEAWAY_PARTICIPANTS — Người tham gia sự kiện
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `giveaway_participants` (
+    `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `giveaway_id` INT UNSIGNED NOT NULL,
+    `user_id`     INT UNSIGNED NOT NULL,
+    `joined_at`   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_giveaway_user` (`giveaway_id`, `user_id`),
+    KEY `idx_gp_user_id` (`user_id`),
+    CONSTRAINT `fk_gp_giveaway` FOREIGN KEY (`giveaway_id`) REFERENCES `giveaways`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_gp_user`     FOREIGN KEY (`user_id`)     REFERENCES `users`(`id`)     ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Người tham gia sự kiện giveaway';

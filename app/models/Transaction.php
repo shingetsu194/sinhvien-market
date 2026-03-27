@@ -57,6 +57,14 @@ class Transaction extends Model
     }
 
     /**
+     * Cập nhật trạng thái giao hàng (Order Tracking)
+     */
+    public function updateOrderStatus(int $id, string $status): void
+    {
+        $this->execute('UPDATE transactions SET order_status = ? WHERE id = ?', [$status, $id]);
+    }
+
+    /**
      * Lấy tất cả giao dịch (Admin)
      */
     public function getAll(string $fromDate = '', string $toDate = '', int $limit = 1000): array

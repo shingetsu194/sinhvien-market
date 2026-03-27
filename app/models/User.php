@@ -78,21 +78,87 @@ class User extends Model
     }
 
     /**
+     * Cập nhật thông tin hồ sơ cá nhân
+     */
+    public function updateProfile(int $userId, array $data): void
+    {
+        $this->execute(
+            'UPDATE users SET
+                name              = ?,
+                phone             = ?,
+                university        = ?,
+                student_id        = ?,
+                dormitory_address = ?,
+                social_contact    = ?,
+                bio               = ?,
+                available_time    = ?
+             WHERE id = ?',
+            [
+                $data['name'],
+                $data['phone']             ?? null,
+                $data['university']        ?? null,
+                $data['student_id']        ?? null,
+                $data['dormitory_address'] ?? null,
+                $data['social_contact']    ?? null,
+                $data['bio']               ?? null,
+                $data['available_time']    ?? null,
+                $userId,
+            ]
+        );
+    }
+
+    /**
+     * Cập nhật đường dẫn ảnh đại diện
+     */
+    public function changeAvatar(int $userId, string $path): void
+    {
+        $this->execute('UPDATE users SET avatar = ? WHERE id = ?', [$path, $userId]);
+    }
+
+    /**
      * Lấy tất cả user (cho Admin)
      * @return array<int, array<string, mixed>>
      */
     public function all(): array
     {
-        return $this->query('SELECT id, name, email, role, is_locked, created_at FROM users ORDER BY created_at DESC');
+        return $this->query('SELECT id, name, email, phone, role, is_locked, lock_reason, locked_at, locked_until, created_at FROM users ORDER BY created_at DESC');
     }
 
     /**
      * Toggle trạng thái khóa tài khoản
-     * @param int $newLock  1 = khóa, 0 = mở khóa
+     * @param int         $newLock    1 = khóa, 0 = mở khóa
+     * @param string|null $reason     Lý do khóa (chỉ cần khi khóa)
+     * @param string|null $lockedUntil DATETIME khóa đến khi nào (NULL = vĩnh viễn)
      */
-    public function toggleLock(int $userId, int $newLock): void
+    public function toggleLock(int $userId, int $newLock, string $reason = '', ?string $lockedUntil = null): void
     {
-        $this->execute('UPDATE users SET is_locked = ? WHERE id = ?', [$newLock, $userId]);
+        if ($newLock === 1) {
+            $this->execute(
+                'UPDATE users SET is_locked = 1, lock_reason = ?, locked_at = NOW(), locked_until = ? WHERE id = ?',
+                [$reason, $lockedUntil, $userId]
+            );
+        } else {
+            // Mở khóa: xóa hết thông tin khóa
+            $this->execute(
+                'UPDATE users SET is_locked = 0, lock_reason = NULL, locked_at = NULL, locked_until = NULL WHERE id = ?',
+                [$userId]
+            );
+        }
+    }
+
+    /**
+     * Lấy đầy đủ thông tin user (cho Admin xem chi tiết)
+     */
+    public function findByIdFull(int $id): ?array
+    {
+        return $this->queryOne(
+            'SELECT id, name, email, phone, role,
+                    is_locked, lock_reason, locked_at, locked_until,
+                    is_verified, last_verified_at, security_question,
+                    created_at
+             FROM users WHERE id = ? LIMIT 1',
+            [$id]
+        );
     }
 
     /**
