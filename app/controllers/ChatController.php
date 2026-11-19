@@ -205,7 +205,14 @@ class ChatController extends Controller
                         $prompt = "Bạn là AI trợ lý bán hàng tự động của SinhVienMarket. Người dùng đang hỏi hoặc chào hỏi về món đồ cũ:\n";
                         $prompt .= "- Tên sản phẩm: {$p['title']}\n";
                         $prompt .= "- Giá: {$p['price']} VNĐ\n";
-                        $prompt .= "- Tình trạng bề ngoài: {$p['condition']}\n";
+                        // Raw enum values ("like_new") made the bot claim items were brand new.
+                        $conditionLabel = [
+                            'new' => 'mới, chưa sử dụng',
+                            'like_new' => 'như mới (đã dùng ít)',
+                            'used' => 'đã qua sử dụng',
+                            'worn' => 'cũ, có dấu hiệu hao mòn',
+                        ][$p['condition']] ?? (string)$p['condition'];
+                        $prompt .= "- Tình trạng bề ngoài: {$conditionLabel}\n";
                         // Products have no address column: use the seller's own address, and
                         // never let the bot invent a meeting place when there is none.
                         $seller = (new \App\Models\User())->findById((int)$conv['seller_id']);
