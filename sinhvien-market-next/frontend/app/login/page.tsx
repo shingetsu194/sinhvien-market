@@ -20,6 +20,7 @@ import { clearFlash, setFlash } from "@/lib/flash";
 import { applyApiFieldErrors } from "@/lib/forms";
 import { addRecentAccount } from "@/lib/recent-accounts";
 import { useGuestRedirect } from "@/lib/use-guest-redirect";
+import { googleLoginErrorMessage } from "@/lib/constants/auth";
 import { loginSchema, type LoginInput } from "@/lib/validation/auth";
 
 export default function LoginPage() {
@@ -33,6 +34,17 @@ export default function LoginPage() {
   const [rateLimitError, setRateLimitError] = useState<string | null>(null);
   const [generalError, setGeneralError] = useState<string | null>(null);
   const [googleNotice, setGoogleNotice] = useState<string | null>(null);
+  const [googleError, setGoogleError] = useState<string | null>(null);
+
+  // The PHP Google callback redirects here with ?oauth_error=<code> on failure.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const message = googleLoginErrorMessage(url.searchParams.get("oauth_error"));
+    if (!message) return;
+    url.searchParams.delete("oauth_error");
+    window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+    queueMicrotask(() => setGoogleError(message));
+  }, []);
 
   const {
     register,
@@ -135,6 +147,12 @@ export default function LoginPage() {
       {generalError && (
         <Alert variant="danger" className="mb-4">
           {generalError}
+        </Alert>
+      )}
+
+      {googleError && (
+        <Alert variant="danger" className="mb-4">
+          {googleError}
         </Alert>
       )}
 

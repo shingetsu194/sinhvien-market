@@ -53,16 +53,20 @@ class GoogleAuthController extends Controller
     public function callback(): void
     {
         // 1. Kiểm tra lỗi từ Google
+        // Next.js cannot read PHP Flash messages, so every failure also carries
+        // ?oauth_error=<code> (shown by the /login page) and is logged.
         if (isset($_GET['error'])) {
+            error_log('Google OAuth: provider returned error=' . preg_replace('/[^a-z_]/i', '', (string)$_GET['error']));
             Flash::set('error', 'Đăng nhập Google bị hủy: ' . htmlspecialchars($_GET['error']));
-            $this->redirect('/login');
+            $this->redirect('/login?oauth_error=cancelled');
             return;
         }
 
         // 2. Kiểm tra state chống CSRF
         if (empty($_GET['state']) || $_GET['state'] !== ($_SESSION['oauth_state'] ?? '')) {
+            error_log('Google OAuth: state mismatch (session cookie missing or expired?)');
             Flash::set('error', 'Yêu cầu không hợp lệ. Vui lòng thử lại.');
-            $this->redirect('/login');
+            $this->redirect('/login?oauth_error=state');
             return;
         }
         unset($_SESSION['oauth_state']);
@@ -73,7 +77,7 @@ class GoogleAuthController extends Controller
 
         if (empty($tokenData['access_token'])) {
             Flash::set('error', 'Không thể xác thực với Google. Vui lòng thử lại.');
-            $this->redirect('/login');
+            $this->redirect('/login?oauth_error=token');
             return;
         }
 
@@ -82,7 +86,7 @@ class GoogleAuthController extends Controller
 
         if (empty($googleUser['email'])) {
             Flash::set('error', 'Không lấy được thông tin từ Google. Vui lòng thử lại.');
-            $this->redirect('/login');
+            $this->redirect('/login?oauth_error=profile');
             return;
         }
 
@@ -143,8 +147,35 @@ class GoogleAuthController extends Controller
             CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_TIMEOUT        => 10,
         ]);
+        return $this->decodeGoogleResponse($ch, 'token exchange');
+    }
+
+    /**
+     * Run a Google request and decode its JSON, logging why it failed
+     * (cURL/TLS error such as a missing CA bundle, or Google's error code).
+     * Never logs the authorization code, tokens or response bodies.
+     */
+    private function decodeGoogleResponse(\CurlHandle $ch, string $step): array
+    {
         $response = curl_exec($ch);
-        return json_decode($response, true) ?? [];
+        if ($response === false) {
+            error_log(sprintf(
+                'Google OAuth %s failed: cURL %d %s%s',
+                $step,
+                curl_errno($ch),
+                curl_error($ch),
+                curl_errno($ch) === 60 ? ' (set curl.cainfo/openssl.cafile to a CA bundle in php.ini)' : ''
+            ));
+            return [];
+        }
+        $data = json_decode((string)$response, true);
+        $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if (!is_array($data) || $status >= 400) {
+            $error = is_array($data) ? (string)($data['error'] ?? '') : 'invalid_json';
+            error_log(sprintf('Google OAuth %s failed: HTTP %d %s', $step, $status, preg_replace('/[^a-z_]/i', '', $error)));
+            return [];
+        }
+        return $data;
     }
 
     private function fetchGoogleUser(string $accessToken): array
@@ -156,8 +187,7 @@ class GoogleAuthController extends Controller
             CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_TIMEOUT        => 10,
         ]);
-        $response = curl_exec($ch);
-        return json_decode($response, true) ?? [];
+        return $this->decodeGoogleResponse($ch, 'userinfo');
     }
 
     private function loginUser(array $user): void
