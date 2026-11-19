@@ -206,7 +206,13 @@ class ChatController extends Controller
                         $prompt .= "- Tên sản phẩm: {$p['title']}\n";
                         $prompt .= "- Giá: {$p['price']} VNĐ\n";
                         $prompt .= "- Tình trạng bề ngoài: {$p['condition']}\n";
-                        $prompt .= "- Nơi giao dịch: " . ($p['seller_address'] ?? 'Khu vực ĐHQG TP.HCM') . "\n";
+                        // Products have no address column: use the seller's own address, and
+                        // never let the bot invent a meeting place when there is none.
+                        $seller = (new \App\Models\User())->findById((int)$conv['seller_id']);
+                        $sellerAddress = trim((string)($seller['dormitory_address'] ?? ''));
+                        $prompt .= "- Nơi giao dịch: " . ($sellerAddress !== ''
+                            ? $sellerAddress
+                            : 'chưa có, hãy mời khách nhắn để thống nhất, không tự bịa địa điểm') . "\n";
                         $prompt .= "\nKhách hàng vừa nhắn tin nhắn đầu tiên: \"$body\"\n";
                         $prompt .= "\nNhiệm vụ của bạn: Đóng vai người bán hàng, hãy trả lời thật ngắn gọn (dưới 40 chữ), thân thiện năng động chuẩn sinh viên, xưng hô 'mình' và 'cậu' hoặc 'bạn'. Có thể dựa vào nội dung khách nhắn để nương theo, nếu khách chỉ chào thì bạn cũng chào lại và giới thiệu tắt về sản phẩm.";
 
