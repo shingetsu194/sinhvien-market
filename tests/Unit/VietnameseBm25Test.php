@@ -12,6 +12,16 @@ class VietnameseBm25Test extends TestCase
         self::assertSame('ban phim co dam da', VietnameseBm25::stripDiacritics('Bàn Phím Cơ ĐẬM ĐÀ'));
     }
 
+    public function test_decomposed_unicode_input_is_normalised_like_precomposed(): void
+    {
+        // "Nồi cơm điện" typed as base letters + combining marks (NFD):
+        // ô = o + U+0302, ̀ = U+0300, ơ = o + U+031B, ệ = e + U+0302 + U+0323; đ stays precomposed.
+        $nfd = "No\u{0302}\u{0300}i co\u{031B}m \u{0111}ie\u{0302}\u{0323}n";
+        self::assertSame('noi com dien', VietnameseBm25::stripDiacritics($nfd));
+        $scores = VietnameseBm25::scores($nfd, [1 => 'Nồi cơm điện mini 0.8L', 2 => 'Ấm đun siêu tốc']);
+        self::assertGreaterThan(0.5, $scores[1]);
+    }
+
     public function test_tokenizer_drops_stopwords_and_adds_bigrams(): void
     {
         self::assertSame(['ban', 'phim', 'ban_phim'], VietnameseBm25::tokenize('Cần tìm mua bàn phím cho KTX'));

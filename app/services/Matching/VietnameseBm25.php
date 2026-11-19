@@ -36,7 +36,10 @@ final class VietnameseBm25
                 }
             }
         }
-        return strtr(mb_strtolower($text), self::$table);
+        // Decomposed input (Unikey "Unicode tổ hợp", macOS paste) carries tone/horn
+        // marks as separate combining characters: drop them, then map precomposed letters.
+        $text = (string)preg_replace('/\p{Mn}+/u', '', mb_strtolower($text));
+        return strtr($text, self::$table);
     }
 
     /** @return list<string> unigrams then adjacent bigrams */
