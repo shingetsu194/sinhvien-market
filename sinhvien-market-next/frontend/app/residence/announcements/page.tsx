@@ -60,7 +60,7 @@ function ResidenceAnnouncementsContent() {
   const labels = { announcement: "Thông báo", event: "Sự kiện", rule: "Nội quy" };
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div><p className="text-sm text-muted">Cổng sinh viên</p><h1 className="text-3xl font-black text-fg">Thông tin khu lưu trú</h1></div>
         <Link href="/residence" className="rounded-xl border border-border px-4 py-2 text-sm font-semibold">Hồ sơ lưu trú</Link>
@@ -93,7 +93,7 @@ function ResidenceAnnouncementsContent() {
           </article>
         ))}
       </div>
-    </main>
+    </div>
   );
 }
 

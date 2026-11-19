@@ -89,10 +89,10 @@ function FinanceAdminContent() {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Không đối soát được thanh toán."); }
     finally { setBusy(false); }
   }
-  if (!loadingUser && !canManage) return <main className="p-8">Bạn không có quyền quản lý tài chính.</main>;
+  if (!loadingUser && !canManage) return <div className="p-8">Bạn không có quyền quản lý tài chính.</div>;
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div><p className="text-sm text-muted">Quản trị khu lưu trú</p><h1 className="text-3xl font-black text-fg">Phí và hóa đơn</h1></div>
         <Link href="/admin/residence" className="rounded-xl border border-border px-4 py-2 font-semibold">Quản lý lưu trú</Link>
@@ -136,7 +136,7 @@ function FinanceAdminContent() {
           <strong>{money(invoice.totalAmount)} · Còn {money(invoice.outstandingAmount)} · {invoice.status}</strong>
         </article>)}
       </section>
-    </main>
+    </div>
   );
 }
 

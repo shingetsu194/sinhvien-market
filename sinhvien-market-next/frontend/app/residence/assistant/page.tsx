@@ -19,7 +19,7 @@ function AssistantContent() {
     finally { setBusy(false); }
   }
 
-  return <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+  return <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
     <header>
       <p className="text-sm font-bold uppercase tracking-widest text-primary">Trợ lý cục bộ</p>
       <h1 className="mt-2 text-3xl font-black text-fg">Hỏi nội quy ký túc xá</h1>
@@ -38,7 +38,7 @@ function AssistantContent() {
       {answer.sources.length > 0 && <div className="mt-4"><h3 className="text-sm font-bold">Nguồn</h3><ul className="mt-1 list-inside list-disc text-sm">{answer.sources.map((source) => <li key={source.id}>{source.title}</li>)}</ul></div>}
       <p className="mt-4 text-xs text-muted">Tra cứu từ khóa cục bộ · {answer.modelKey}. Xác nhận với Ban quản lý nếu câu trả lời chưa rõ.</p>
     </section>}
-  </main>;
+  </div>;
 }
 
 export default function ResidenceAssistantPage() {

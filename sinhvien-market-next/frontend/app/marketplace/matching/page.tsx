@@ -28,7 +28,7 @@ function MarketplaceMatchingContent() {
     finally { setLoading(false); }
   }
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex items-end justify-between gap-3"><div><p className="text-sm text-muted">Marketplace</p><h1 className="text-3xl font-black text-fg">Tìm sản phẩm phù hợp</h1></div><Link href="/products" className="text-sm font-semibold text-primary">Tìm kiếm thông thường</Link></div>
       <form onSubmit={search} className="grid gap-3 rounded-2xl border border-border p-5 sm:grid-cols-[1fr_auto]">
         <input required minLength={2} maxLength={500} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Mô tả mặt hàng bạn cần..." className="min-w-0 flex-1 rounded-xl border border-border bg-bg px-4 py-3 text-fg" />
@@ -61,7 +61,7 @@ function MarketplaceMatchingContent() {
           </article>)}
         </div>
       </section>}
-    </main>
+    </div>
   );
 }
 export default function MarketplaceMatchingPage() {

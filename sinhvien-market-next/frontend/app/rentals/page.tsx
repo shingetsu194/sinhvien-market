@@ -71,7 +71,7 @@ function RentalsContent() {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Không gửi được đề nghị thuê."); }
     finally { setBusy(false); }
   }
-  return <main className="mx-auto max-w-6xl space-y-6 px-4 py-8">
+  return <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
     <header><p className="text-sm font-bold uppercase tracking-widest text-primary">KTX SinhVienMarket</p><h1 className="mt-2 text-3xl font-black text-fg">Mặt bằng cho thuê</h1><p className="mt-2 text-sm text-muted">Xem mặt bằng, gửi đề nghị thuê và theo dõi hợp đồng.</p></header>
     {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
     {notice && <p role="status" className="rounded-xl bg-emerald-50 p-4 text-emerald-800">{notice}</p>}
@@ -87,6 +87,6 @@ function RentalsContent() {
       <button disabled={busy} className="rounded-xl bg-primary px-4 py-3 font-bold text-white disabled:opacity-50">Gửi đề nghị thuê</button>
     </form>}
     {user && <section className="grid gap-6 md:grid-cols-2"><div className="rounded-2xl border border-border bg-surface p-5"><h2 className="text-xl font-bold">Đề nghị của tôi</h2>{applications.map((app) => <p key={app.id} className="border-b border-border py-3 text-sm">{app.applicationNumber} · {app.spaceName} · {app.status} · {app.startDate} – {app.endDate}{app.contractNumber && ` · ${app.contractNumber}`}</p>)}</div><div className="rounded-2xl border border-border bg-surface p-5"><h2 className="text-xl font-bold">Hợp đồng</h2>{contracts.map((contract) => <p key={contract.id} className="border-b border-border py-3 text-sm">{contract.contractNumber} · {contract.spaceName} · {contract.status} · {contract.startDate} – {contract.endDate} · {Number(contract.monthlyPrice).toLocaleString("vi-VN")}/tháng</p>)}</div></section>}
-  </main>;
+  </div>;
 }
 export default function RentalsPage() { return <MainShell><RentalsContent /></MainShell>; }

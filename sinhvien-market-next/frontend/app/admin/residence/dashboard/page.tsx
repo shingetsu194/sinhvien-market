@@ -30,12 +30,12 @@ function DashboardContent() {
     return () => { active = false; };
   }, [authorizedRole, loadingUser]);
 
-  return <main className="mx-auto max-w-6xl space-y-6 px-4 py-8">
+  return <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
     <header><p className="text-sm font-bold uppercase tracking-widest text-primary">Ban quản lý KTX</p><h1 className="mt-2 text-3xl font-black text-fg">Dashboard vận hành</h1><p className="mt-2 text-sm text-muted">Chỉ hiển thị số liệu tổng hợp, không có tên, email, ghi chú hay mã định danh cư dân.</p></header>
     {!user && !loadingUser && <p className="rounded-xl border border-border p-5">Đăng nhập bằng tài khoản quản lý để xem dashboard.</p>}
     {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
     {metrics && <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{cards.map(([key, label]) => <article key={key} className="rounded-2xl border border-border bg-surface p-5"><p className="text-sm text-muted">{label}</p><p className="mt-2 text-3xl font-black text-fg">{metrics[key].toLocaleString("vi-VN")}</p></article>)}</section>}
-  </main>;
+  </div>;
 }
 
 export default function ResidenceDashboardPage() {

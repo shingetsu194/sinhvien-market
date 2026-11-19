@@ -50,9 +50,9 @@ function MatchingEvaluationContent() {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Không lưu được đánh giá."); }
     finally { setBusy(false); }
   }
-  if (!loadingUser && !canManage) return <main className="p-8">Bạn không có quyền xem đánh giá matching.</main>;
+  if (!loadingUser && !canManage) return <div className="p-8">Bạn không có quyền xem đánh giá matching.</div>;
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <h1 className="text-3xl font-black text-fg">Đánh giá tìm kiếm marketplace</h1>
       <p className="mt-2 text-sm text-muted">Dữ liệu gán nhãn là danh sách ID sản phẩm liên quan do người đánh giá cung cấp; metric đo baseline hiện tại, không khẳng định chất lượng ngữ nghĩa.</p>
       <p className="mt-1 text-sm text-muted">Truy vấn là đầu vào test dạng REQUEST; hiện hệ thống chưa có thực thể REQUEST riêng.</p>
@@ -70,7 +70,7 @@ function MatchingEvaluationContent() {
           <tbody>{evaluations.map((item) => <tr key={item.id} className="border-t border-border"><td className="p-3">{item.query_text}</td><td className="p-3">{Number(item.precision_at_5).toFixed(2)}</td><td className="p-3">{Number(item.recall_at_5).toFixed(2)}</td><td className="p-3">{Number(item.mrr_at_5).toFixed(2)}</td><td className="p-3">{Number(item.ndcg_at_5).toFixed(2)}</td><td className="p-3">{item.model_key} · {item.evaluator_name}</td></tr>)}</tbody>
         </table>
       </section>
-    </main>
+    </div>
   );
 }
 export default function MatchingEvaluationPage() {

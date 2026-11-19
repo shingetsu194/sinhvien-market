@@ -74,7 +74,7 @@ function ResidenceFinanceContent() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm text-muted">Cổng sinh viên</p>
@@ -146,7 +146,7 @@ function ResidenceFinanceContent() {
           </ul>
         )}
       </section>
-    </main>
+    </div>
   );
 }
 

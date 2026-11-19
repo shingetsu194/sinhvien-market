@@ -128,7 +128,7 @@ function ResidenceContent() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">
@@ -330,7 +330,7 @@ function ResidenceContent() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
 

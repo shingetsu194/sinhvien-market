@@ -165,10 +165,10 @@ function OperationsContent() {
   }
 
   if (loadingUser) return <div className="p-8">Đang tải…</div>;
-  if (!canManage) return <main className="mx-auto max-w-4xl p-8">Bạn không có quyền quản lý ký túc xá.</main>;
+  if (!canManage) return <div className="mx-auto max-w-4xl p-8">Bạn không có quyền quản lý ký túc xá.</div>;
   const rows = inventory?.[resource] as unknown as Array<Record<string, unknown>> | undefined;
   return (
-    <main className="mx-auto max-w-7xl space-y-8 px-4 py-8">
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8">
       <header>
         <p className="text-sm font-bold uppercase tracking-widest text-primary">Ban quản lý KTX</p>
         <h1 className="mt-2 text-3xl font-black text-fg">Cơ sở vật chất & vận hành</h1>
@@ -290,7 +290,7 @@ function OperationsContent() {
           </div>}
         </article>)}</div>
       </section>
-    </main>
+    </div>
   );
 }
 

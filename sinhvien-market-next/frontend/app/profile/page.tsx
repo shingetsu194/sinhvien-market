@@ -387,7 +387,7 @@ function ProfileContent() {
           </div>
         </aside>
 
-        <main className="min-w-0 space-y-5">
+        <div className="min-w-0 space-y-5">
           {tab === "info" && (
             <>
               <section className="rounded-2xl border border-border bg-surface">
@@ -760,7 +760,7 @@ function ProfileContent() {
               </form>
             </section>
           )}
-        </main>
+        </div>
       </div>
     </div>
   );

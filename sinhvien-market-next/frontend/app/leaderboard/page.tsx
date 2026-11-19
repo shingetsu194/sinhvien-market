@@ -88,7 +88,7 @@ function LeaderboardContent() {
   );
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
       <header className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-blue-900 px-6 py-12 text-center text-white shadow-xl sm:py-16">
         <div
           aria-hidden="true"
@@ -260,7 +260,7 @@ function LeaderboardContent() {
           )}
         </>
       )}
-    </main>
+    </div>
   );
 }
 
