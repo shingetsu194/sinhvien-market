@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Core\Database;
+use Config\Database;
 
 /**
  * LoginSession — Lưu lịch sử đăng nhập và phát hiện thiết bị lạ
@@ -13,7 +13,7 @@ class LoginSession
 
     public function __construct()
     {
-        $this->db = Database::getInstance()->getConnection();
+        $this->db = Database::getInstance();
     }
 
     /**
