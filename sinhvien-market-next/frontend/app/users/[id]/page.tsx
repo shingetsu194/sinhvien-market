@@ -105,7 +105,7 @@ function PublicProfilePageContent() {
                   ) : isOwnProfile ? (
                     // Only the owner sees how to earn the badge; other visitors
                     // see nothing, so a Gmail account is not flagged as suspicious.
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-bold text-white shadow-sm ring-2 ring-primary/30">
                       <ShieldCheck className="h-3.5 w-3.5" />
                       Đăng nhập bằng email trường để nhận tích xanh sinh viên
                     </span>
