@@ -113,14 +113,16 @@ try {
     }
 
     $insertProduct = $pdo->prepare(
-        "INSERT INTO products (user_id, category_id, title, description, type, status, price, `condition`)
-         VALUES (?, ?, ?, ?, ?, 'active', ?, ?)"
+        "INSERT INTO products (user_id, category_id, title, description, image, type, status, price, `condition`)
+         VALUES (?, ?, ?, ?, ?, ?, 'active', ?, ?)"
     );
     $insertImage = $pdo->prepare('INSERT INTO product_images (product_id, data, mime) VALUES (?, ?, ?)');
     $images = 0;
     foreach ($offers as $offer) {
         $insertProduct->execute([
             $sellerIds[$offer['seller']], $offer['categoryId'], $offer['title'], $offer['description'],
+            // 'db' = image stored in product_images (same marker as NextApiController uploads).
+            $offer['image'] !== null ? 'db' : null,
             $offer['type'], $offer['price'], $offer['condition'],
         ]);
         if ($offer['image'] !== null) {

@@ -3,7 +3,6 @@
 namespace App\Services\Matching;
 
 use App\Models\MarketplaceMatching;
-use App\Services\LocalMarketplaceEmbeddingService;
 
 /**
  * Smart product search for a buyer REQUEST: semantic (Gemini text+image)
@@ -24,7 +23,6 @@ class SmartSearchService
     public function __construct(
         private readonly GeminiEmbeddingService $gemini = new GeminiEmbeddingService(),
         private readonly MarketplaceMatching $model = new MarketplaceMatching(),
-        private readonly LocalMarketplaceEmbeddingService $local = new LocalMarketplaceEmbeddingService(),
     ) {
     }
 
@@ -222,20 +220,25 @@ class SmartSearchService
         return $candidates;
     }
 
+    /** Same shape as the marketplace list API so the UI reuses one product card. */
     private static function productDto(array $p): array
     {
+        $id = (int)$p['id'];
         return [
-            'id' => (int)$p['id'],
+            'id' => $id,
             'title' => (string)$p['title'],
             'type' => (string)$p['type'],
             'price' => $p['price'] === null ? null : (int)$p['price'],
             'condition' => (string)$p['condition'],
             'categoryId' => (int)$p['category_id'],
             'categoryName' => (string)$p['category_name'],
+            'sellerId' => (int)$p['user_id'],
             'sellerName' => (string)$p['seller_name'],
             'sellerVerified' => (bool)$p['seller_verified'],
             'sellerBuildingName' => $p['seller_building_name'],
-            'hasImage' => (bool)$p['has_image'],
+            'imageUrl' => (int)$p['has_image'] === 1
+                ? rtrim((string)($_ENV['APP_URL'] ?? ''), '/') . '/products/image?id=' . $id : null,
+            'createdAt' => $p['created_at'] ?? null,
         ];
     }
 }

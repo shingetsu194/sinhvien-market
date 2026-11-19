@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\MarketplaceMatching;
 use App\Models\RateLimiter;
 use App\Services\BuyerRequestValidator;
 use App\Services\Matching\SmartSearchService;
@@ -40,7 +41,26 @@ class SmartSearchApiController extends ApiController
         } catch (\InvalidArgumentException $e) {
             $this->validationError($e->getMessage());
         }
+        // "Gần tôi": resolve the searcher's own building from their bed allocation,
+        // so students never pick building ids and the location is verified.
+        $nearMe = filter_var($data['nearMe'] ?? false, FILTER_VALIDATE_BOOL);
+        $notInDormitory = false;
+        if ($nearMe) {
+            if ($userId === null) {
+                $this->error('LOGIN_REQUIRED', 'Đăng nhập để tìm người bán gần bạn.', 401);
+            }
+            $request['buildingId'] = (new MarketplaceMatching())->currentBuildingId($userId);
+            $notInDormitory = $request['buildingId'] === null;
+            if (!$notInDormitory && !isset($request['flags']['location'])) {
+                $soft = is_array($data['flags'] ?? null) && ($data['flags']['location'] ?? '') === 'soft';
+                $request['flags']['location'] = $soft ? 'soft' : 'hard';
+            }
+        }
         $limit = max(1, min(50, (int)($data['limit'] ?? 20)));
-        $this->success((new SmartSearchService())->search($request, $userId, $limit));
+        $result = (new SmartSearchService())->search($request, $userId, $limit);
+        if ($notInDormitory) {
+            $result['warnings'][] = 'not_in_dormitory';
+        }
+        $this->success($result);
     }
 }

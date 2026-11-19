@@ -48,7 +48,7 @@ class MarketplaceMatching extends Model
      */
     public function smartCandidates(?int $excludeUserId = null, int $limit = 500): array
     {
-        $sql = "SELECT p.id, p.user_id, p.title, p.description, p.image, p.type, p.price, p.`condition`,
+        $sql = "SELECT p.id, p.user_id, p.title, p.description, p.image, p.type, p.price, p.`condition`, p.created_at,
                        p.category_id, c.name AS category_name, u.name AS seller_name,
                        u.is_student_verified AS seller_verified,
                        sb.building_id AS seller_building_id, sb.building_name AS seller_building_name,
@@ -76,6 +76,21 @@ class MarketplaceMatching extends Model
         $sql .= ' ORDER BY p.created_at DESC, p.id DESC LIMIT ?';
         $params[] = max(1, min($limit, 1000));
         return $this->query($sql, $params);
+    }
+
+    /** The user's current dormitory building (active bed allocation), or null if not in the dormitory. */
+    public function currentBuildingId(int $userId): ?int
+    {
+        $row = $this->queryOne(
+            "SELECT f.building_id FROM residence_bed_allocations a
+             JOIN residence_beds bd ON bd.id = a.bed_id
+             JOIN residence_rooms r ON r.id = bd.room_id
+             JOIN residence_floors f ON f.id = r.floor_id
+             WHERE a.user_id = ? AND a.status = 'active' AND CURDATE() BETWEEN a.start_date AND a.end_date
+             ORDER BY a.start_date DESC LIMIT 1",
+            [$userId]
+        );
+        return $row === null ? null : (int)$row['building_id'];
     }
 
     /** @return array{data:string, mime:string}|null */
