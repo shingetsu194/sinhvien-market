@@ -15,13 +15,15 @@ import {
   ShieldCheck,
   Star,
 } from "lucide-react";
-import { MainShell } from "@/components/layout/MainShell";
+import { MainShell, useMainShell } from "@/components/layout/MainShell";
 import { getPublicProfile, type PublicProfile } from "@/lib/api/profile";
 
 function PublicProfilePageContent() {
   const params = useParams<{ id: string }>();
   const userId = Number(params.id);
   const validUserId = Number.isSafeInteger(userId) && userId > 0;
+  const { user } = useMainShell();
+  const isOwnProfile = user?.id === userId;
   const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -100,12 +102,14 @@ function PublicProfilePageContent() {
                       <BadgeCheck className="h-3.5 w-3.5" />
                       Sinh viên đã xác thực
                     </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">
+                  ) : isOwnProfile ? (
+                    // Only the owner sees how to earn the badge; other visitors
+                    // see nothing, so a Gmail account is not flagged as suspicious.
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
                       <ShieldCheck className="h-3.5 w-3.5" />
-                      Chưa xác thực sinh viên
+                      Đăng nhập bằng email trường để nhận tích xanh sinh viên
                     </span>
-                  )}
+                  ) : null}
                   <span className="text-xs text-muted">
                     Thành viên từ {formatDate(profile.createdAt)}
                   </span>
