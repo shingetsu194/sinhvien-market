@@ -127,6 +127,25 @@ final class LegacyPageRedirects
         return $baseUrl === null ? $path : $baseUrl . $path;
     }
 
+    /**
+     * True when a relative Location points back at the PHP route that was just
+     * requested. If PHP received that request, redirecting to the same path on
+     * the same host can only loop (ERR_TOO_MANY_REDIRECTS): NEXT_APP_URL is
+     * missing/invalid, or the reverse proxy does not route this path to Next.js.
+     */
+    public static function isSelfRedirect(string $location, string $legacyRoute): bool
+    {
+        if (!str_starts_with($location, '/') || str_starts_with($location, '//')) {
+            return false;
+        }
+        $path = parse_url($location, PHP_URL_PATH);
+        if (!is_string($path)) {
+            return false;
+        }
+
+        return trim($path, '/') === trim($legacyRoute, '/');
+    }
+
     private static function positiveInteger(mixed $value): ?string
     {
         if (!is_scalar($value) || !preg_match('/^[1-9][0-9]*$/', (string) $value)) {

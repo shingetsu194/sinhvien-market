@@ -50,7 +50,17 @@ class Router
                 if (!is_string($nextBaseUrl)) {
                     $nextBaseUrl = null;
                 }
-                header('Location: ' . LegacyPageRedirects::location($targetPath, $_GET, $nextBaseUrl), true, 302);
+                $location = LegacyPageRedirects::location($targetPath, $_GET, $nextBaseUrl);
+                if (LegacyPageRedirects::isSelfRedirect($location, $url)) {
+                    error_log('Legacy page redirect would loop for /' . $url . '; set NEXT_APP_URL to the Next.js origin.');
+                    http_response_code(503);
+                    header('Content-Type: text/plain; charset=utf-8');
+                    header('Cache-Control: no-store');
+                    echo "Giao diện web chạy trên Next.js. Hãy mở địa chỉ Next.js (ví dụ http://localhost:3000)"
+                        . " hoặc đặt NEXT_APP_URL trong .env của backend PHP.\n";
+                    exit;
+                }
+                header('Location: ' . $location, true, 302);
                 exit;
             }
         }

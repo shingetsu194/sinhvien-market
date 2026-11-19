@@ -71,6 +71,22 @@ class LegacyPageRedirectsTest extends TestCase
         );
     }
 
+    public function test_detects_same_host_redirect_back_to_the_requested_route(): void
+    {
+        // No NEXT_APP_URL: '/login' requested from PHP would bounce to itself forever.
+        self::assertTrue(LegacyPageRedirects::isSelfRedirect('/login', 'login'));
+        self::assertTrue(LegacyPageRedirects::isSelfRedirect('/', ''));
+        self::assertTrue(LegacyPageRedirects::isSelfRedirect('/profile?tab=security', 'profile'));
+    }
+
+    public function test_allows_redirects_that_leave_the_requested_route(): void
+    {
+        self::assertFalse(LegacyPageRedirects::isSelfRedirect('/my-listings', 'products/my'));
+        self::assertFalse(LegacyPageRedirects::isSelfRedirect('/products/42', 'products/show'));
+        self::assertFalse(LegacyPageRedirects::isSelfRedirect('http://localhost:3000/login', 'login'));
+        self::assertFalse(LegacyPageRedirects::isSelfRedirect('//evil.example/login', 'login'));
+    }
+
     public function test_unsafe_base_url_falls_back_to_same_host_path(): void
     {
         self::assertSame(
