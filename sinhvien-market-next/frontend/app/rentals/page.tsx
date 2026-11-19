@@ -7,6 +7,34 @@ import {
   submitRentalApplication, type RentalApplication, type RentalContract,
   type RentalSpace,
 } from "@/lib/api/residence-operations";
+import { ApiError } from "@/lib/api/types";
+
+/**
+ * Load the three rental lists independently. A student may browse spaces but
+ * has no rental contracts (rental.contract.read is a tenant permission), so a
+ * 403 on applications/contracts means "nothing to show", not a page failure.
+ */
+async function fetchRentalData(): Promise<{
+  spaces: RentalSpace[]; applications: RentalApplication[]; contracts: RentalContract[]; error: string;
+}> {
+  const [spaces, applications, contracts] = await Promise.allSettled([
+    getRentalSpaces(), getRentalApplications(), getRentalContracts(),
+  ]);
+  const errors: string[] = [];
+  function value<T>(result: PromiseSettledResult<T[]>, fallback: string): T[] {
+    if (result.status === "fulfilled") return result.value;
+    const reason: unknown = result.reason;
+    if (reason instanceof ApiError && reason.status === 403) return [];
+    errors.push(reason instanceof Error ? reason.message : fallback);
+    return [];
+  }
+  return {
+    spaces: value(spaces, "Không tải được mặt bằng."),
+    applications: value(applications, "Không tải được đề nghị thuê."),
+    contracts: value(contracts, "Không tải được hợp đồng thuê."),
+    error: [...new Set(errors)].join(" "),
+  };
+}
 
 function RentalsContent() {
   const { user, loadingUser } = useMainShell();
@@ -18,24 +46,18 @@ function RentalsContent() {
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   async function load() {
-    const [nextSpaces, nextApps, nextContracts] = await Promise.all([
-      getRentalSpaces(), getRentalApplications(), getRentalContracts(),
-    ]);
-    setSpaces(nextSpaces); setApplications(nextApps); setContracts(nextContracts);
+    const data = await fetchRentalData();
+    setSpaces(data.spaces); setApplications(data.applications); setContracts(data.contracts);
+    if (data.error) setError(data.error);
   }
   useEffect(() => {
     if (loadingUser || !user) return;
     let active = true;
     async function initialize() {
-      try {
-        const [nextSpaces, nextApps, nextContracts] = await Promise.all([
-          getRentalSpaces(), getRentalApplications(), getRentalContracts(),
-        ]);
-        if (!active) return;
-        setSpaces(nextSpaces); setApplications(nextApps); setContracts(nextContracts);
-      } catch (cause) {
-        if (active) setError(cause instanceof Error ? cause.message : "Không tải được mặt bằng.");
-      }
+      const data = await fetchRentalData();
+      if (!active) return;
+      setSpaces(data.spaces); setApplications(data.applications); setContracts(data.contracts);
+      if (data.error) setError(data.error);
     }
     void initialize();
     return () => { active = false; };
