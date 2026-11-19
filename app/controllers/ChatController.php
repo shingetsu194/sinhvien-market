@@ -210,8 +210,10 @@ class ChatController extends Controller
                         $prompt .= "\nKhách hàng vừa nhắn tin nhắn đầu tiên: \"$body\"\n";
                         $prompt .= "\nNhiệm vụ của bạn: Đóng vai người bán hàng, hãy trả lời thật ngắn gọn (dưới 40 chữ), thân thiện năng động chuẩn sinh viên, xưng hô 'mình' và 'cậu' hoặc 'bạn'. Có thể dựa vào nội dung khách nhắn để nương theo, nếu khách chỉ chào thì bạn cũng chào lại và giới thiệu tắt về sản phẩm.";
 
-                        $aiResponse = \App\Services\GoogleAiService::askGemini($prompt);
-                        if ($aiResponse) {
+                        // tryAsk() returns null when Gemini is unavailable: post nothing rather
+                        // than an "AI is down" line that looks like it came from the seller.
+                        $aiResponse = \App\Services\GoogleAiService::tryAsk($prompt);
+                        if ($aiResponse !== null && $aiResponse !== '') {
                             $aiText  = "🤖 *[Hệ thống tự động]* " . $aiResponse . "\n_(Chủ shop đang vắng mặt, bạn cứ để lại lời nhắn nha)_";
                             $aiMsgId = $this->msgModel->send($convId, $conv['seller_id'], $aiText);
                             $pusher->trigger('chat.' . $user['id'], 'new_message', [

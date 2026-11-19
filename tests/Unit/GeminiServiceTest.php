@@ -27,4 +27,22 @@ class GeminiServiceTest extends TestCase
             unset($_ENV['GEMINI_API_KEY']);
         }
     }
+
+    public function test_try_ask_returns_null_without_key_so_chat_posts_nothing()
+    {
+        $originalEnv = $_ENV['GEMINI_API_KEY'] ?? null;
+        $originalProcess = getenv('GEMINI_API_KEY');
+        unset($_ENV['GEMINI_API_KEY']);
+        putenv('GEMINI_API_KEY');
+
+        $this->assertNull(GoogleAiService::tryAsk('Test prompt'));
+        $this->assertSame(GoogleAiService::NO_KEY_MESSAGE, GoogleAiService::askGemini('Test prompt'));
+
+        if ($originalEnv !== null) {
+            $_ENV['GEMINI_API_KEY'] = $originalEnv;
+        }
+        if ($originalProcess !== false) {
+            putenv('GEMINI_API_KEY=' . $originalProcess);
+        }
+    }
 }
