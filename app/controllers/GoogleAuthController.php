@@ -90,6 +90,8 @@ class GoogleAuthController extends Controller
         $email     = $googleUser['email']   ?? '';
         $name      = $googleUser['name']    ?? $email;
         $avatarUrl = $googleUser['picture'] ?? '';
+        // Google chỉ chứng minh quyền sở hữu hộp thư khi email_verified === true.
+        $emailVerified = ($googleUser['email_verified'] ?? false) === true;
 
         // 5. Xử lý logic tạo / tìm tài khoản
         $userModel = new User();
@@ -98,6 +100,7 @@ class GoogleAuthController extends Controller
         $user = $userModel->findByGoogleId($googleId);
         if ($user) {
             $userModel->linkGoogle($user['id'], $googleId, $avatarUrl);
+            $user['is_student_verified'] = (int)$userModel->grantStudentBadgeIfEligible($user, $emailVerified);
             $this->loginUser($user);
             return;
         }
@@ -106,6 +109,7 @@ class GoogleAuthController extends Controller
         $user = $userModel->findByEmail($email);
         if ($user) {
             $userModel->linkGoogle($user['id'], $googleId, $avatarUrl);
+            $user['is_student_verified'] = (int)$userModel->grantStudentBadgeIfEligible($user, $emailVerified);
             Flash::set('success', '✅ Tài khoản Google đã được liên kết thành công!');
             $this->loginUser($user);
             return;
@@ -114,6 +118,7 @@ class GoogleAuthController extends Controller
         // Case 3: User mới hoàn toàn → tạo tài khoản
         $userId = $userModel->createFromGoogle($name, $email, $googleId, $avatarUrl);
         $user   = $userModel->findById($userId);
+        $user['is_student_verified'] = (int)$userModel->grantStudentBadgeIfEligible($user, $emailVerified);
 
         Flash::set('success', '🎉 Tài khoản đã được tạo thành công qua Google!');
         $this->loginUser($user);

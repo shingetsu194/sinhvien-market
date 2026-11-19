@@ -293,18 +293,62 @@ class User extends Model
 
     // ─── Feature 1: Huy hiệu Sinh Viên Đã Xác Thực ───────────────────────────
 
+    /** Academic suffixes: a school domain must sit UNDER one of these (e.g. hutech.edu.vn). */
+    private const ACADEMIC_SUFFIXES = ['edu.vn', 'ac.vn', 'edu'];
+
     /**
-     * Kiểm tra email có phải email sinh viên không (@edu.vn, @ac.vn, @student.)
+     * Kiểm tra email có thuộc tên miền trường học không, dựa trên PHẦN ĐUÔI
+     * của tên miền (sau dấu @ cuối cùng), không dò chuỗi con trong cả email.
+     *
+     * - Hợp lệ: tên miền con của edu.vn / ac.vn / edu (hutech.edu.vn,
+     *   student.hcmus.edu.vn, mit.edu) hoặc tên miền trường được khai báo thêm
+     *   trong STUDENT_EMAIL_DOMAINS (vd "udn.vn,ox.ac.uk"), kể cả tên miền con.
+     * - Không hợp lệ: chính "edu.vn"/"edu" (không phải trường), và các tên miền
+     *   chỉ CHỨA chuỗi học thuật như student.com hay edu.vn.attacker.io.
+     *
+     * Lưu ý: email trường cũng có thể là của cán bộ/giảng viên; huy hiệu chỉ
+     * khẳng định người dùng sở hữu một hộp thư thuộc trường.
      */
     public static function isStudentEmail(string $email): bool
     {
-        $studentDomains = ['@edu.vn', '@ac.vn', '@student.', '@students.'];
-        foreach ($studentDomains as $domain) {
-            if (str_contains(strtolower($email), $domain)) {
+        $email = strtolower(trim($email));
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            return false;
+        }
+        $domain = rtrim(substr($email, strrpos($email, '@') + 1), '.');
+        if ($domain === '') {
+            return false;
+        }
+
+        foreach (self::ACADEMIC_SUFFIXES as $suffix) {
+            if (str_ends_with($domain, '.' . $suffix)) {
+                return true;
+            }
+        }
+        foreach (self::configuredSchoolDomains() as $schoolDomain) {
+            if ($domain === $schoolDomain || str_ends_with($domain, '.' . $schoolDomain)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /** @return list<string> extra school domains from STUDENT_EMAIL_DOMAINS */
+    private static function configuredSchoolDomains(): array
+    {
+        $raw = $_ENV['STUDENT_EMAIL_DOMAINS'] ?? getenv('STUDENT_EMAIL_DOMAINS');
+        if (!is_string($raw) || trim($raw) === '') {
+            return [];
+        }
+        $domains = [];
+        foreach (explode(',', strtolower($raw)) as $entry) {
+            $entry = trim(ltrim(trim($entry), '@.'));
+            // Require at least "name.tld" so a bare TLD cannot whitelist everything.
+            if (preg_match('/^[a-z0-9-]+(\.[a-z0-9-]+)+$/', $entry) === 1) {
+                $domains[] = $entry;
+            }
+        }
+        return $domains;
     }
 
     /**
@@ -313,6 +357,23 @@ class User extends Model
     public function verifyStudent(int $userId): void
     {
         $this->execute('UPDATE users SET is_student_verified = 1 WHERE id = ?', [$userId]);
+    }
+
+    /**
+     * Cấp huy hiệu khi hộp thư đã được chứng minh quyền sở hữu (OTP hoặc
+     * Google email_verified) và thuộc tên miền trường. Trả về cờ sau xử lý.
+     */
+    public function grantStudentBadgeIfEligible(array $user, bool $emailOwnershipProven): bool
+    {
+        if ((int)($user['is_student_verified'] ?? 0) === 1) {
+            return true;
+        }
+        if (!$emailOwnershipProven || ($user['role'] ?? '') !== 'student'
+            || !self::isStudentEmail((string)($user['email'] ?? ''))) {
+            return false;
+        }
+        $this->verifyStudent((int)$user['id']);
+        return true;
     }
 
     // ─── Feature 2: Hệ thống Xu & Đẩy Tin ───────────────────────────────────
