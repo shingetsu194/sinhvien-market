@@ -240,6 +240,8 @@ export function AdminShell({ title, children, onResetMock }: AdminShellProps) {
       await logout();
       setFlash({ variant: "success", message: "Đã đăng xuất khỏi trang quản trị." });
       router.push("/admin-login");
+    } catch {
+      showToast("Chưa thể đăng xuất. Vui lòng thử lại.", "error");
     } finally {
       setLoggingOut(false);
     }

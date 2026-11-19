@@ -146,6 +146,8 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
       setUser(null);
       setFlash({ variant: "success", message: "Đã đăng xuất thành công." });
       router.push("/login-role");
+    } catch {
+      setFlash({ variant: "danger", message: "Chưa thể đăng xuất. Vui lòng thử lại." });
     } finally {
       setLoggingOut(false);
     }
@@ -587,14 +589,19 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                               </>
                             )}
 
-                            <Link
-                              href="/login-role"
-                              onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                            {/* /login-role sends signed-in users straight back
+                                (useGuestRedirect), so ask to log out first. */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setUserMenuOpen(false);
+                                void handleQuickAccessClick({ href: "/login-role" });
+                              }}
+                              className="flex w-full cursor-pointer items-center gap-2.5 px-4 py-2 text-left text-sm font-semibold text-fg transition hover:bg-surface-2"
                             >
                               <Sparkles className="h-4 w-4 text-purple-500" />
                               Chuyển cổng đăng nhập
-                            </Link>
+                            </button>
                           </div>
 
                           <div className="border-t border-border pt-1">

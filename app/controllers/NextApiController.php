@@ -230,7 +230,9 @@ class NextApiController extends ApiController
 
     public function logout(): void
     {
-        $this->requireUser();
+        // Any signed-in account (student, admin, dorm staff) must be able to log
+        // out; requireUser() is student-only and made admin logout return 403.
+        // Logging out an already-expired session is a no-op success.
         $this->requireCsrf();
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {
