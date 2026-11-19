@@ -4,6 +4,10 @@
  * Chạy bằng lệnh: php scripts/migrate.php
  */
 
+// Database::loadEnv() needs ROOT when there is no .env file (Docker/CI inject
+// DB_* as process environment variables and .dockerignore excludes .env).
+defined('ROOT') || define('ROOT', dirname(__DIR__));
+
 require_once __DIR__ . '/../config/Database.php';
 
 // Load .env
