@@ -41,6 +41,50 @@ class MarketplaceMatching extends Model
         return $this->query($sql, $params);
     }
 
+    /**
+     * Active listings for smart search, with the seller's CURRENT dormitory
+     * building derived from an active bed allocation (residence context).
+     * Sellers without an allocation get NULL (= ngoài KTX).
+     */
+    public function smartCandidates(?int $excludeUserId = null, int $limit = 500): array
+    {
+        $sql = "SELECT p.id, p.user_id, p.title, p.description, p.image, p.type, p.price, p.`condition`,
+                       p.category_id, c.name AS category_name, u.name AS seller_name,
+                       u.is_student_verified AS seller_verified,
+                       sb.building_id AS seller_building_id, sb.building_name AS seller_building_name,
+                       (pi.product_id IS NOT NULL) AS has_image
+                FROM products p
+                JOIN categories c ON c.id = p.category_id
+                JOIN users u ON u.id = p.user_id
+                LEFT JOIN product_images pi ON pi.product_id = p.id
+                LEFT JOIN (
+                    SELECT a.user_id, MIN(b.id) AS building_id, MIN(b.name) AS building_name
+                    FROM residence_bed_allocations a
+                    JOIN residence_beds bd ON bd.id = a.bed_id
+                    JOIN residence_rooms r ON r.id = bd.room_id
+                    JOIN residence_floors f ON f.id = r.floor_id
+                    JOIN residence_buildings b ON b.id = f.building_id
+                    WHERE a.status = 'active' AND CURDATE() BETWEEN a.start_date AND a.end_date
+                    GROUP BY a.user_id
+                ) sb ON sb.user_id = p.user_id
+                WHERE p.status = 'active'";
+        $params = [];
+        if ($excludeUserId !== null) {
+            $sql .= ' AND p.user_id <> ?';
+            $params[] = $excludeUserId;
+        }
+        $sql .= ' ORDER BY p.created_at DESC, p.id DESC LIMIT ?';
+        $params[] = max(1, min($limit, 1000));
+        return $this->query($sql, $params);
+    }
+
+    /** @return array{data:string, mime:string}|null */
+    public function productImage(int $productId): ?array
+    {
+        $row = $this->queryOne('SELECT data, mime FROM product_images WHERE product_id = ?', [$productId]);
+        return $row === null ? null : ['data' => (string)$row['data'], 'mime' => (string)$row['mime']];
+    }
+
     public function savedEmbedding(int $productId, string $modelKey, string $contentHash): ?array
     {
         $row = $this->queryOne(

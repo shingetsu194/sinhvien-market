@@ -24,12 +24,12 @@ final class BuyerRequestValidator
      *   imageMime:?string, imageData:?string}
      * @throws \InvalidArgumentException with a Vietnamese message for the user
      */
-    public static function validate(array $data): array
+    public static function validate(array $data, int $minDescription = 5): array
     {
         $description = is_scalar($data['description'] ?? null) ? trim((string)$data['description']) : '';
         $length = mb_strlen($description);
-        if ($length < 5 || $length > 1000) {
-            throw new \InvalidArgumentException('Mô tả nhu cầu phải từ 5 đến 1000 ký tự.');
+        if ($length < $minDescription || $length > 1000) {
+            throw new \InvalidArgumentException("Mô tả nhu cầu phải từ {$minDescription} đến 1000 ký tự.");
         }
 
         $categoryId = self::optionalId($data['categoryId'] ?? null, 'Danh mục không hợp lệ.');

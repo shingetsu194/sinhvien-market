@@ -228,6 +228,9 @@ $router->get('api/marketplace/requests', 'BuyerRequestApi', 'mine');
 $router->post('api/marketplace/requests', 'BuyerRequestApi', 'create');
 $router->post('api/marketplace/requests/{id}/close', 'BuyerRequestApi', 'close');
 $router->get('api/marketplace/requests/{id}/image', 'BuyerRequestApi', 'image');
+$router->post('api/marketplace/requests/{id}/matches', 'BuyerRequestApi', 'matches');
+// Smart (semantic) product search — one search box; text for guests, image needs login.
+$router->post('api/marketplace/smart-search', 'SmartSearchApi', 'search');
 $router->get('api/products/search', 'Product', 'apiSearch');
 $router->get('api/auction/price', 'Auction', 'apiPrice');
 

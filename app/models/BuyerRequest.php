@@ -83,6 +83,30 @@ class BuyerRequest extends Model
         return $row === null ? null : ['mime' => (string)$row['image_mime'], 'data' => (string)$row['image_data']];
     }
 
+    /** Owner's open request in BuyerRequestValidator shape (incl. image) for matching. */
+    public function matchingInputForUser(int $id, int $userId): ?array
+    {
+        $row = $this->queryOne(
+            "SELECT * FROM marketplace_buyer_requests
+             WHERE id = ? AND user_id = ? AND status = 'open' AND expires_at >= NOW()",
+            [$id, $userId]
+        );
+        if ($row === null) {
+            return null;
+        }
+        return [
+            'description' => (string)$row['description'],
+            'categoryId' => $row['category_id'] === null ? null : (int)$row['category_id'],
+            'budgetMax' => $row['budget_max'] === null ? null : (int)$row['budget_max'],
+            'minCondition' => $row['min_condition'],
+            'buildingId' => $row['building_id'] === null ? null : (int)$row['building_id'],
+            'allowExchange' => (bool)$row['allow_exchange'],
+            'flags' => json_decode((string)$row['requirement_flags'], true) ?: [],
+            'imageMime' => $row['image_mime'],
+            'imageData' => $row['image_data'],
+        ];
+    }
+
     public function categoryExists(int $id): bool
     {
         return $this->count('SELECT COUNT(*) FROM categories WHERE id = ?', [$id]) === 1;

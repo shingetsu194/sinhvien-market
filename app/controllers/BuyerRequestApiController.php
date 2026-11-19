@@ -4,8 +4,10 @@ namespace App\Controllers;
 
 use App\Models\AccessControl;
 use App\Models\BuyerRequest;
+use App\Models\RateLimiter;
 use App\Models\User;
 use App\Services\BuyerRequestValidator;
+use App\Services\Matching\SmartSearchService;
 use Core\ApiController;
 
 /**
@@ -55,6 +57,22 @@ class BuyerRequestApiController extends ApiController
             $this->error('NOT_FOUND', 'Không tìm thấy nhu cầu đang mở của bạn.', 404);
         }
         $this->success(['id' => $id, 'status' => 'closed'], 'Đã đóng nhu cầu.');
+    }
+
+    /** POST /api/marketplace/requests/{id}/matches — rank current listings for a saved request. */
+    public function matches(): void
+    {
+        $user = $this->requirePermission('marketplace.request.manage_own');
+        $this->requireCsrf();
+        $input = (new BuyerRequest())->matchingInputForUser((int)($_GET['id'] ?? 0), (int)$user['id']);
+        if ($input === null) {
+            $this->error('NOT_FOUND', 'Không tìm thấy nhu cầu đang mở của bạn.', 404);
+        }
+        if (!(new RateLimiter())->hit('smart_search', 'user:' . (int)$user['id'],
+            SmartSearchApiController::USER_LIMIT, SmartSearchApiController::WINDOW_SECONDS)) {
+            $this->error('RATE_LIMITED', 'Bạn tìm kiếm quá nhanh. Vui lòng thử lại sau ít phút.', 429);
+        }
+        $this->success((new SmartSearchService())->search($input, (int)$user['id']));
     }
 
     /** GET /api/marketplace/requests/{id}/image (owner only) */
