@@ -33,6 +33,7 @@ import {
 } from "@/lib/api/profile";
 import { ApiError } from "@/lib/api/types";
 import { mockUpdateCurrentUserName } from "@/lib/api/mock/auth";
+import { USE_MOCK } from "@/lib/config";
 import {
   SECURITY_QUESTIONS,
   type SecurityQuestionId,
@@ -143,7 +144,9 @@ function ProfileContent() {
     setNotice("");
     try {
       const updated = await updateOwnProfile(user, draft);
-      await mockUpdateCurrentUserName(updated.name);
+      // Mock mode keeps the session in localStorage; the real API already
+      // persisted the name and refreshUser() reloads it from the server.
+      if (USE_MOCK) await mockUpdateCurrentUserName(updated.name);
       setProfile(updated);
       setDraft({
         name: updated.name,
