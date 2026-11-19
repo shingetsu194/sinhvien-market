@@ -42,11 +42,14 @@ final class VietnameseBm25
         return strtr($text, self::$table);
     }
 
-    /** @return list<string> unigrams then adjacent bigrams */
-    public static function tokenize(string $text): array
+    /**
+     * @param list<string>|null $stopwords diacritics-free; null = marketplace list
+     * @return list<string> unigrams then adjacent bigrams
+     */
+    public static function tokenize(string $text, ?array $stopwords = null): array
     {
         preg_match_all('/[a-z0-9+]+/', self::stripDiacritics($text), $m);
-        $stop = array_flip(self::STOPWORDS);
+        $stop = array_flip($stopwords ?? self::STOPWORDS);
         $words = array_values(array_filter($m[0], static fn(string $w): bool => strlen($w) > 1 && !isset($stop[$w])));
         $bigrams = [];
         for ($i = 0; $i < count($words) - 1; $i++) {
@@ -57,11 +60,12 @@ final class VietnameseBm25
 
     /**
      * @param array<int|string, string> $documents id => title + description (title counted twice by caller convention)
+     * @param list<string>|null $stopwords another domain's stopword list (e.g. dorm rules); null = marketplace
      * @return array<int|string, float> id => score in [0,1]
      */
-    public static function scores(string $query, array $documents): array
+    public static function scores(string $query, array $documents, ?array $stopwords = null): array
     {
-        $qTokens = self::tokenize($query);
+        $qTokens = self::tokenize($query, $stopwords);
         $out = array_fill_keys(array_keys($documents), 0.0);
         if ($qTokens === [] || $documents === []) {
             return $out;
@@ -70,7 +74,7 @@ final class VietnameseBm25
         $df = [];
         $total = 0;
         foreach ($documents as $id => $text) {
-            $docs[$id] = self::tokenize($text);
+            $docs[$id] = self::tokenize($text, $stopwords);
             $total += count($docs[$id]);
             foreach (array_unique($docs[$id]) as $t) {
                 $df[$t] = ($df[$t] ?? 0) + 1;

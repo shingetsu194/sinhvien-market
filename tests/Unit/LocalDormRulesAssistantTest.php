@@ -39,4 +39,44 @@ class LocalDormRulesAssistantTest extends TestCase
         self::assertSame([], $answer['sources']);
         self::assertStringContainsString('chưa tìm thấy', mb_strtolower($answer['answer']));
     }
+
+    private function rules(): array
+    {
+        return [
+            ['id' => 1, 'title' => 'Giờ mở cổng và giờ giới nghiêm', 'body' => 'Cổng mở từ 5:00 đến 23:00, sau đó phải quẹt thẻ.'],
+            ['id' => 2, 'title' => 'Phòng cháy chữa cháy', 'body' => 'Cấm hút thuốc lá và đốt nến trong toàn bộ khu lưu trú.'],
+            ['id' => 3, 'title' => 'Gửi xe', 'body' => 'Gửi một xe máy hoặc xe đạp tại bãi xe bằng thẻ cư trú.'],
+        ];
+    }
+
+    public function test_question_without_diacritics_finds_the_rule(): void
+    {
+        $notices = $this->createMock(ResidenceNotice::class);
+        $notices->method('activeRulesForAssistant')->willReturn($this->rules());
+
+        $answer = (new LocalDormRulesAssistant($notices))->answer('gio gioi nghiem la may gio', null);
+
+        self::assertSame(1, $answer['sources'][0]['id']);
+    }
+
+    public function test_dorm_words_dropped_by_marketplace_search_still_count(): void
+    {
+        // "thuốc" is a marketplace stopword (kích thước) but decisive for rules.
+        $notices = $this->createMock(ResidenceNotice::class);
+        $notices->method('activeRulesForAssistant')->willReturn($this->rules());
+
+        $answer = (new LocalDormRulesAssistant($notices))->answer('Hút thuốc ở ban công được không?', null);
+
+        self::assertSame([['id' => 2, 'title' => 'Phòng cháy chữa cháy']], $answer['sources']);
+    }
+
+    public function test_filler_words_alone_do_not_match_any_rule(): void
+    {
+        $notices = $this->createMock(ResidenceNotice::class);
+        $notices->method('activeRulesForAssistant')->willReturn($this->rules());
+
+        $answer = (new LocalDormRulesAssistant($notices))->answer('Cho em hỏi là được không ạ?', null);
+
+        self::assertSame([], $answer['sources']);
+    }
 }
