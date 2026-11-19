@@ -373,7 +373,7 @@ class ResidenceApiController extends ApiController
     public function operationsDashboard(): void
     {
         $this->requirePermission('residence.operations.dashboard.read');
-        $this->success((new ResidenceOperations())->operationsDashboard());
+        $this->success($this->camelize((new ResidenceOperations())->operationsDashboard()));
     }
 
     public function updateServiceRequest(): void
