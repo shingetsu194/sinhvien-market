@@ -71,6 +71,12 @@ class AdminApiController extends ApiController
             $this->notFound('Sản phẩm không tồn tại.');
         }
         $products->updateStatus($id, 'active');
+        // Embed now so the listing is found by AI search immediately (best effort).
+        try {
+            (new \App\Services\Matching\SmartSearchService())->indexProduct($id);
+        } catch (\Throwable $e) {
+            error_log('Embedding on approval failed: ' . $e->getMessage());
+        }
         (new AuditLog())->log((int)$admin['id'], 'approve_product', 'product', $id, 'Duyệt: ' . $product['title']);
 
         $seller = (new User())->findById((int)$product['user_id']);

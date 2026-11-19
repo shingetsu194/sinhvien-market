@@ -707,6 +707,8 @@ class NextApiController extends ApiController
         if ($review['status'] === 'safe') {
             $status = 'active';
             $products->updateStatus($productId, 'active');
+            // Auto-approved by AI moderation: embed now so AI search finds it immediately (best effort).
+            try { (new \App\Services\Matching\SmartSearchService())->indexProduct($productId); } catch (\Throwable $e) { error_log('Embedding on approval failed: ' . $e->getMessage()); }
             try { NotificationService::notifyProductApproved((int)$user['id'], $user['email'], $user['name'], $productId, $title); } catch (\Throwable $e) {}
         } elseif ($review['status'] === 'violation') {
             $status = 'cancelled';

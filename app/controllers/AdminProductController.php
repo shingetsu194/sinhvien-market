@@ -69,6 +69,12 @@ class AdminProductController extends Controller
         }
 
         $this->productModel->updateStatus($productId, 'active');
+        // Embed now so the listing is found by AI search immediately (best effort).
+        try {
+            (new \App\Services\Matching\SmartSearchService())->indexProduct($productId);
+        } catch (\Throwable $e) {
+            error_log('Embedding on approval failed: ' . $e->getMessage());
+        }
         $this->auditModel->log($admin['id'], 'approve_product', 'product', $productId, "Duyệt: {$product['title']}");
 
         // Gửi thông báo cho người đăng

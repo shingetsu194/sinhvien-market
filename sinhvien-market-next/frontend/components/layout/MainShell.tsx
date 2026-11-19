@@ -313,18 +313,6 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                   <Grid className="h-4 w-4" />
                   Sản phẩm
                 </Link>
-                <Link
-                  href="/marketplace/matching"
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold transition",
-                    pathname.startsWith("/marketplace/matching")
-                      ? "bg-white/15 text-white"
-                      : "text-white/80 hover:bg-white/10 hover:text-white",
-                  )}
-                >
-                  <Sparkles className="h-4 w-4" />
-                  Ghép nối
-                </Link>
 
                 <Link
                   href="/#giveaway"
@@ -695,14 +683,6 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                   >
                     <Grid className="h-4 w-4" />
                     Sản phẩm
-                  </Link>
-                  <Link
-                    href="/marketplace/matching"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    Ghép nối sản phẩm
                   </Link>
                   <Link
                     href="/#giveaway"

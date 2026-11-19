@@ -113,6 +113,118 @@ class SmartSearchService
             'candidates' => count($candidates), 'indexed' => $indexed, 'missing' => $missing];
     }
 
+    /**
+     * Embed one listing as soon as it becomes active (admin approval or AI
+     * auto-approval), so it is searchable semantically right away. Best effort:
+     * returns false when Gemini is unavailable; search still embeds missing
+     * listings lazily within INDEX_BUDGET_PER_SEARCH.
+     */
+    public function indexProduct(int $productId): bool
+    {
+        if (!$this->gemini->available()) {
+            return false;
+        }
+        $candidates = $this->model->smartCandidates(null, 1, $productId);
+        if ($candidates === []) {
+            return false;
+        }
+        [$candidates] = $this->attachVectors($candidates, 2);
+        return $candidates[0]['textVec'] !== null;
+    }
+
+    /**
+     * Admin-only model comparison on the live catalogue: the same text query
+     * ranked by each retrieval variant, without hard constraints, so the
+     * variants are compared on retrieval alone (as in the W8 ablation).
+     *
+     * @return array{query:string, semanticAvailable:bool, fallbackReason:?string, indexedDuringSearch:int,
+     *               variants:list<array{key:string, label:string, modelKey:string, latencyMs:int, results:list<array{id:int,title:string,score:float}>}>}
+     */
+    public function compare(string $query, int $limit = 10): array
+    {
+        $candidates = $this->model->smartCandidates(null, 1000);
+        $titles = [];
+        foreach ($candidates as $c) {
+            $titles[(int)$c['id']] = (string)$c['title'];
+        }
+        $top = static function (array $scores) use ($titles, $limit): array {
+            arsort($scores);
+            $out = [];
+            foreach (array_slice($scores, 0, $limit, true) as $id => $score) {
+                if ($score > 0) {
+                    $out[] = ['id' => (int)$id, 'title' => $titles[$id] ?? ('#' . $id), 'score' => round((float)$score, 4)];
+                }
+            }
+            return $out;
+        };
+        $variants = [];
+
+        // V0: the original local baseline (feature hashing + cosine) that /marketplace/matching used.
+        $t = microtime(true);
+        $legacy = (new \App\Services\MarketplaceMatchingService())->search($query, [], $limit);
+        $variants[] = [
+            'key' => 'legacy', 'label' => 'Baseline cũ (feature hashing)',
+            'modelKey' => (string)($legacy['modelKey'] ?? 'local-hash'),
+            'latencyMs' => (int)round((microtime(true) - $t) * 1000),
+            'results' => array_values(array_map(static fn(array $r): array => [
+                'id' => (int)$r['id'], 'title' => (string)$r['title'], 'score' => round((float)$r['matchScore'], 4),
+            ], array_filter($legacy['results'], static fn(array $r): bool => (float)$r['matchScore'] > 0))),
+        ];
+
+        // V1: Vietnamese BM25 only (what search falls back to without Gemini).
+        $t = microtime(true);
+        $keyword = self::keywordScores(['description' => $query], $candidates);
+        $variants[] = [
+            'key' => 'bm25', 'label' => 'Từ khóa BM25 tiếng Việt', 'modelKey' => 'keyword-bm25-vi',
+            'latencyMs' => (int)round((microtime(true) - $t) * 1000), 'results' => $top($keyword),
+        ];
+
+        $semanticAvailable = false;
+        $fallbackReason = null;
+        $indexed = 0;
+        $t = microtime(true);
+        $qText = $this->gemini->available() ? $this->gemini->embedText($query, 'RETRIEVAL_QUERY') : null;
+        $queryMs = (int)round((microtime(true) - $t) * 1000);
+        if ($qText === null) {
+            $fallbackReason = $this->gemini->available() ? ($this->gemini->lastError() ?? 'api_error') : 'not_configured';
+        } else {
+            $semanticAvailable = true;
+            [$candidates, $indexed] = $this->attachVectors($candidates);
+
+            // V2: Gemini text embedding alone (ablation: no BM25).
+            $t = microtime(true);
+            $cosine = [];
+            foreach ($candidates as $c) {
+                if ($c['textVec'] !== null) {
+                    $cosine[(int)$c['id']] = GeminiEmbeddingService::cosine($qText, $c['textVec']);
+                }
+            }
+            $variants[] = [
+                'key' => 'gemini_text', 'label' => 'Gemini embedding (không BM25)', 'modelKey' => $this->gemini->modelKey(),
+                'latencyMs' => $queryMs + (int)round((microtime(true) - $t) * 1000), 'results' => $top($cosine),
+            ];
+
+            // V3: production score (hybrid text channel + cross-modal channels).
+            $t = microtime(true);
+            $hybrid = [];
+            foreach (self::semanticScores($candidates, $qText, null, $keyword) as $c) {
+                $hybrid[(int)$c['id']] = (float)$c['semantic'];
+            }
+            $variants[] = [
+                'key' => 'hybrid', 'label' => 'Gemini + BM25 (đang dùng)', 'modelKey' => $this->gemini->modelKey() . '+bm25-vi',
+                'latencyMs' => $queryMs + (int)round((microtime(true) - $t) * 1000), 'results' => $top($hybrid),
+            ];
+        }
+
+        return [
+            'query' => $query,
+            'semanticAvailable' => $semanticAvailable,
+            'fallbackReason' => $fallbackReason,
+            'indexedDuringSearch' => $indexed,
+            'variants' => $variants,
+        ];
+    }
+
     /** Embed listings missing a vector for this model (bounded), using cached ones otherwise. */
     private function attachVectors(array $candidates, int $budget = self::INDEX_BUDGET_PER_SEARCH): array
     {

@@ -223,6 +223,7 @@ $router->get('api/marketplace/matching/search', 'MarketplaceMatchingApi', 'searc
 $router->post('api/admin/marketplace/matching/index', 'MarketplaceMatchingApi', 'indexProducts');
 $router->get('api/admin/marketplace/matching/evaluations', 'MarketplaceMatchingApi', 'evaluations');
 $router->post('api/admin/marketplace/matching/evaluations', 'MarketplaceMatchingApi', 'createEvaluation');
+$router->post('api/admin/marketplace/matching/compare', 'MarketplaceMatchingApi', 'compare');
 // Buyer REQUESTs (nhu cầu tìm mua): signed-in owner only.
 $router->get('api/marketplace/requests', 'BuyerRequestApi', 'mine');
 $router->post('api/marketplace/requests', 'BuyerRequestApi', 'create');

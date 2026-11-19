@@ -46,7 +46,7 @@ class MarketplaceMatching extends Model
      * building derived from an active bed allocation (residence context).
      * Sellers without an allocation get NULL (= ngoài KTX).
      */
-    public function smartCandidates(?int $excludeUserId = null, int $limit = 500): array
+    public function smartCandidates(?int $excludeUserId = null, int $limit = 500, ?int $onlyProductId = null): array
     {
         $sql = "SELECT p.id, p.user_id, p.title, p.description, p.image, p.type, p.price, p.`condition`, p.created_at,
                        p.category_id, c.name AS category_name, u.name AS seller_name,
@@ -72,6 +72,10 @@ class MarketplaceMatching extends Model
         if ($excludeUserId !== null) {
             $sql .= ' AND p.user_id <> ?';
             $params[] = $excludeUserId;
+        }
+        if ($onlyProductId !== null) {
+            $sql .= ' AND p.id = ?';
+            $params[] = $onlyProductId;
         }
         $sql .= ' ORDER BY p.created_at DESC, p.id DESC LIMIT ?';
         $params[] = max(1, min($limit, 1000));

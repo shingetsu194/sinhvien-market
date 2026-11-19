@@ -1,26 +1,7 @@
 import { apiRequest } from "./client";
 
-export interface MatchingProduct {
-  id: number;
-  title: string;
-  description: string;
-  image: string | null;
-  type: "sale" | "exchange" | "auction";
-  price: number | null;
-  condition: string;
-  categoryId: number;
-  categoryName: string;
-  sellerName: string;
-  sellerVerified: boolean;
-  matchScore: number;
-  matchReason: string;
-}
-export interface MatchingResult {
-  modelKey: string;
-  method: string;
-  limit: number;
-  results: MatchingProduct[];
-}
+/** Admin-only tools for comparing the marketplace retrieval models. */
+
 export interface MatchingEvaluation {
   id: number;
   query_text: string;
@@ -35,27 +16,43 @@ export interface MatchingEvaluation {
   created_at: string;
 }
 
-export function searchMarketplaceMatching(query: string, filters: {
-  categoryId?: number; priceMin?: number; priceMax?: number;
-  condition?: string; type?: string;
-} = {}) {
-  const params = new URLSearchParams({ q: query });
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== "") params.set(key, String(value));
-  });
-  return apiRequest<MatchingResult>(`/marketplace/matching/search?${params.toString()}`);
+export interface RankingMetrics {
+  precisionAt5: number;
+  recallAt5: number;
+  mrrAt5: number;
+  ndcgAt5: number;
 }
+
+export interface ComparisonVariant {
+  key: "legacy" | "bm25" | "gemini_text" | "hybrid";
+  label: string;
+  modelKey: string;
+  latencyMs: number;
+  results: { id: number; title: string; score: number }[];
+  metrics?: RankingMetrics;
+}
+
+export interface ModelComparison {
+  query: string;
+  semanticAvailable: boolean;
+  fallbackReason: string | null;
+  indexedDuringSearch: number;
+  relevantProductIds: number[];
+  variants: ComparisonVariant[];
+}
+
 export const indexMarketplaceProducts = () =>
-  apiRequest<{ indexedCandidates: number; modelKey: string }>(
-    "/admin/marketplace/matching/index", { method: "POST" },
-  );
+  apiRequest<{
+    indexedCandidates: number;
+    modelKey: string;
+    gemini: { mode: string; modelKey: string; candidates: number; indexed: number; missing: number };
+  }>("/admin/marketplace/matching/index", { method: "POST" });
+
 export const getMatchingEvaluations = () =>
   apiRequest<MatchingEvaluation[]>("/admin/marketplace/matching/evaluations");
-export const saveMatchingEvaluation = (queryText: string, relevantProductIds: number[]) =>
-  apiRequest<{
-    id: number; metrics: {
-      precisionAt5: number; recallAt5: number; mrrAt5: number; ndcgAt5: number;
-    }; resultProductIds: number[];
-  }>("/admin/marketplace/matching/evaluations", {
-    method: "POST", body: { queryText, relevantProductIds },
+
+export const compareMatchingModels = (queryText: string, relevantProductIds: number[]) =>
+  apiRequest<ModelComparison>("/admin/marketplace/matching/compare", {
+    method: "POST",
+    body: { queryText, relevantProductIds },
   });

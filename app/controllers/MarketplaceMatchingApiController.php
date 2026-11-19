@@ -7,6 +7,7 @@ use App\Models\MarketplaceMatching;
 use App\Models\User;
 use App\Services\LocalMarketplaceEmbeddingService;
 use App\Services\MarketplaceMatchingService;
+use App\Services\Matching\SmartSearchService;
 use Core\ApiController;
 
 class MarketplaceMatchingApiController extends ApiController
@@ -66,10 +67,65 @@ class MarketplaceMatchingApiController extends ApiController
         foreach ($rows as $product) {
             $service->indexProduct($product);
         }
+        // Gemini vectors used by the real search (only listings missing or changed are embedded).
+        $gemini = (new SmartSearchService())->indexAll();
         $this->success([
             'indexedCandidates' => count($rows),
             'modelKey' => LocalMarketplaceEmbeddingService::MODEL_KEY,
-        ], 'Đã tạo hoặc cập nhật embedding cục bộ cho các sản phẩm hiện hoạt.');
+            'gemini' => $gemini,
+        ], 'Đã cập nhật embedding cho các sản phẩm hiện hoạt.');
+    }
+
+    /**
+     * Admin model comparison: one query ranked by every retrieval variant.
+     * With relevantProductIds, P@5/Recall@5/MRR@5/NDCG@5 are computed per
+     * variant and each run is stored in the evaluation history.
+     */
+    public function compare(): void
+    {
+        $actor = $this->requirePermission('marketplace.matching.manage');
+        $this->requireCsrf();
+        $data = $this->requestData();
+        $query = is_scalar($data['queryText'] ?? null) ? trim((string)$data['queryText']) : '';
+        if (mb_strlen($query) < 2 || mb_strlen($query) > 500) {
+            $this->validationError('Nhập truy vấn từ 2 đến 500 ký tự.');
+        }
+        $relevantIds = [];
+        $relevant = $data['relevantProductIds'] ?? [];
+        if (!is_array($relevant) || count($relevant) > 100) {
+            $this->validationError('Danh sách ID liên quan không hợp lệ (tối đa 100).');
+        }
+        foreach ($relevant as $id) {
+            $parsedId = filter_var($id, FILTER_VALIDATE_INT);
+            if ($parsedId === false || $parsedId < 1) {
+                $this->validationError('ID sản phẩm liên quan không hợp lệ.');
+            }
+            $relevantIds[] = $parsedId;
+        }
+        $relevantIds = array_values(array_unique($relevantIds));
+        $matching = new MarketplaceMatching();
+        if ($relevantIds !== [] && !$matching->productIdsExist($relevantIds)) {
+            $this->validationError('Một hoặc nhiều ID liên quan không tồn tại trong danh mục sản phẩm.');
+        }
+
+        $result = (new SmartSearchService())->compare($query, 10);
+        if ($relevantIds !== []) {
+            $metricsService = new LocalMarketplaceEmbeddingService();
+            foreach ($result['variants'] as &$variant) {
+                $rankedIds = array_map(static fn(array $r): int => $r['id'], $variant['results']);
+                $variant['metrics'] = $metricsService->evaluate($rankedIds, $relevantIds);
+                $matching->saveEvaluation([
+                    'queryText' => $query,
+                    'relevantProductIds' => $relevantIds,
+                    'resultProductIds' => $rankedIds,
+                    'metrics' => $variant['metrics'],
+                    'modelKey' => $variant['modelKey'],
+                ], (int)$actor['id']);
+            }
+            unset($variant);
+        }
+        $result['relevantProductIds'] = $relevantIds;
+        $this->success($result);
     }
 
     public function createEvaluation(): void
