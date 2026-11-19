@@ -30,8 +30,10 @@ class GoogleAiService
     /**
      * Same request, but returns null on any failure so callers can decide not
      * to show anything (e.g. never post a fake "AI is down" chat message).
+     * Background callers can afford a longer per-model timeout than the
+     * 10 s used for requests a user is waiting on.
      */
-    public static function tryAsk(string $prompt): ?string
+    public static function tryAsk(string $prompt, int $timeoutSeconds = 10): ?string
     {
         $apiKey = self::apiKey();
         if ($apiKey === '') {
@@ -39,7 +41,7 @@ class GoogleAiService
         }
 
         foreach (self::models() as $model) {
-            $answer = self::request($model, $prompt, $apiKey);
+            $answer = self::request($model, $prompt, $apiKey, $timeoutSeconds);
             if ($answer !== null) {
                 return $answer;
             }
@@ -47,7 +49,7 @@ class GoogleAiService
         return null;
     }
 
-    private static function request(string $model, string $prompt, string $apiKey): ?string
+    private static function request(string $model, string $prompt, string $apiKey, int $timeoutSeconds): ?string
     {
         $generation = [
             // Thêm các tham số cẩn thận để AI nói chuyện giống một người thật
@@ -77,8 +79,7 @@ class GoogleAiService
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'x-goog-api-key: ' . $apiKey]);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-        // Để tránh delay đồ án quá lâu và timeout, set tối đa 10 giây
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeoutSeconds);
         // SSL verify: tắt chỉ ở môi trường local (Laragon), BẮT BUỘC bật khi production
         $env = $_ENV['APP_ENV'] ?? (getenv('APP_ENV') ?: 'production');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, !in_array($env, ['local', 'development'], true));

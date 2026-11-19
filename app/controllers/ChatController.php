@@ -212,7 +212,7 @@ class ChatController extends Controller
 
                         // tryAsk() returns null when Gemini is unavailable: post nothing rather
                         // than an "AI is down" line that looks like it came from the seller.
-                        $aiResponse = \App\Services\GoogleAiService::tryAsk($prompt);
+                        $aiResponse = \App\Services\GoogleAiService::tryAsk($prompt, 20); // runs after the sender's response
                         if ($aiResponse !== null && $aiResponse !== '') {
                             $aiText  = "🤖 *[Hệ thống tự động]* " . $aiResponse . "\n_(Chủ shop đang vắng mặt, bạn cứ để lại lời nhắn nha)_";
                             $aiMsgId = $this->msgModel->send($convId, $conv['seller_id'], $aiText);
