@@ -27,6 +27,15 @@ const nextConfig: NextConfig = {
         destination: `${phpBackendUrl}/transactions/proof`,
       },
       {
+        // Google OAuth: start + callback handled by PHP GoogleAuthController.
+        source: "/auth/google",
+        destination: `${phpBackendUrl}/auth/google`,
+      },
+      {
+        source: "/auth/google/callback",
+        destination: `${phpBackendUrl}/auth/google/callback`,
+      },
+      {
         source: "/api/:path*",
         destination: `${phpBackendUrl}/api/:path*`,
       },

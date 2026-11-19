@@ -101,10 +101,24 @@ export async function logout(): Promise<void> {
   await apiRequest<MessageResult>("/auth/logout", { method: "POST" });
 }
 
+/**
+ * Bắt đầu đăng nhập Google: chuyển cả trang sang route OAuth của backend PHP.
+ * `/auth/google` cùng origin với Next.js (được rewrite sang PHP trong
+ * next.config.ts) để cookie phiên và state chống CSRF dùng chung một host.
+ * Chế độ mock không có Google nên vẫn báo chưa hỗ trợ.
+ */
 export async function startGoogleLogin(): Promise<never> {
-  throw new ApiError(
-    "NOT_IMPLEMENTED",
-    "Đăng nhập bằng Google sẽ sớm được hỗ trợ.",
-    { status: 501 },
-  );
+  if (USE_MOCK) {
+    throw new ApiError(
+      "NOT_IMPLEMENTED",
+      "Đăng nhập bằng Google cần backend thật (tắt NEXT_PUBLIC_USE_MOCK).",
+      { status: 501 },
+    );
+  }
+  // Not a Next.js page: a rewrite to PHP that must be a full document request
+  // (cookie + 302 to Google), so router.push() would not work here.
+  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+  window.location.assign("/auth/google");
+  // Trang đang rời đi; không bao giờ resolve để nút giữ trạng thái chờ.
+  return new Promise<never>(() => {});
 }
