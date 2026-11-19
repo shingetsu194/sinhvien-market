@@ -27,7 +27,11 @@ $required = [
     'user_roles',
 ];
 foreach ($required as $table) {
-    $stmt = $pdo->prepare('SHOW TABLES LIKE ?');
+    // SHOW statements cannot take placeholders when PDO uses native prepares
+    // (Database sets ATTR_EMULATE_PREPARES=false), so query information_schema.
+    $stmt = $pdo->prepare(
+        'SELECT 1 FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?'
+    );
     $stmt->execute([$table]);
     if (!$stmt->fetchColumn()) {
         fwrite(STDERR, "Missing $table. Create a fresh demo schema and apply migrations first.\n");
