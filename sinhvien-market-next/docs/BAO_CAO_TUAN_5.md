@@ -1,37 +1,62 @@
-# BÁO CÁO TIẾN ĐỘ TUẦN 5 — ĐỒ ÁN CHUYÊN NGÀNH
+# BÁO CÁO TIẾN ĐỘ ĐỒ ÁN CHUYÊN NGÀNH — TUẦN LỄ 5 (09/11/2026 – 15/11/2026)
 
-- **Dự án**: Nâng cấp hệ thống **SinhVienMarket** — Nền tảng Giao dịch Sinh viên & Quản lý Ký túc xá (Next.js 16 + React 19 + TypeScript + Tailwind CSS 4).
-- **Nội dung thực hiện Tuần 5**: Đồng bộ nhánh `main` của Leader vào nhánh `feature/nextjs-frontend`, rà soát trực quan 21 màn hình người dùng, hoàn thiện thanh điều hướng chung (`MainShell`) theo phương án gộp menu **Ghép nối (Plan A)** và menu **Ký túc xá**, bổ sung đầy đủ dữ liệu mẫu Mock Mode xóa sạch lỗi `HTTP 500`, và thiết kế lại trọn bộ **7 trang KTX & Ghép nối Sinh viên** cùng **Chợ Sản phẩm (`/products`)** và **Hộp thư Chat (`/chat`)**.
-- **Nhánh Git làm việc**: `feature/nextjs-frontend` (trên kho lưu trữ nhóm `katosama0902-pixel/sinhvien-market` và kho dự phòng `shingetsu194/sinhvien-market`).
-
----
-
-## 1. Tổng hợp các hạng mục đã hoàn thành trong Tuần 5
-
-| STT | Nhóm hạng mục | Màn hình / File cập nhật | Nội dung chi tiết đã thực hiện | Trạng thái |
-|---|---|---|---|---|
-| 1 | **Đồng bộ Git & Phân tách phạm vi** | Nhánh `feature/nextjs-frontend` | Merge toàn bộ luồng User & KTX từ nhánh `main` của Leader vào `feature/nextjs-frontend`, bảo toàn nguyên vẹn phân hệ AI Tuần 4 (`/requests`) và không tác động vào nhánh `main`. | ✅ Hoàn thành |
-| 2 | **Thanh điều hướng `MainShell` & `FlashBanner`** | `components/layout/MainShell.tsx`, `components/auth/FlashBanner.tsx`, `app/globals.css` | • Triển khai **Plan A**: Gộp thành 1 nút **"Ghép nối"** có menu thả xuống chọn giữa **Ghép nối AI (Cần mua)** (`/requests`) và **Tìm sản phẩm phù hợp** (`/marketplace/matching`).<br>• Thêm menu thả xuống **"Ký túc xá"** dẫn tới 6 phân hệ KTX.<br>• Khắc phục triệt để lỗi rớt chữ 2 dòng và lỗi tràn thanh cuộn ngang ở màn hình `1024px–1440px`.<br>• Tự động ẩn `FlashBanner` sau `4.5s` hoặc khi chuyển trang. | ✅ Hoàn thành |
-| 3 | **Khung điều hướng con KTX (`KtxPageHeader`)** | `components/residence/KtxPageHeader.tsx` | Xây dựng Hero Header đồng bộ cho toàn bộ phân hệ KTX kèm thanh 6 tab chuyển nhanh và bộ chọn ngày hiển thị chuẩn tiếng Việt `dd/mm/yyyy` (`DateFieldVi`). | ✅ Hoàn thành |
-| 4 | **Kho dữ liệu giả lập (`USE_MOCK`) — Xóa lỗi HTTP 500** | `lib/api/residence-finance.ts`, `lib/api/residence-operations.ts`, `lib/api/marketplace-matching.ts`, `lib/api/marketplace.ts`, `lib/api/user-flows.ts` | • Bổ sung nhánh `USE_MOCK` lưu `localStorage` cho Hóa đơn & Phí KTX (2 hóa đơn mẫu, lịch sử thanh toán, 5 thông báo/sự kiện/nội quy).<br>• Bổ sung Mock cho Sơ đồ Tòa/Tầng/Phòng/Giường, Lịch sử lưu trú, Yêu cầu sửa chữa + tự động phân loại ưu tiên, Trợ lý Nội quy và 3 mặt bằng cho thuê.<br>• Bổ sung ảnh minh họa thật cho toàn bộ 9 sản phẩm mẫu (`101`–`109`) và 2 cuộc hội thoại mẫu cho tài khoản `student@demo.vn`. | ✅ Hoàn thành |
-| 5 | **Thiết kế lại 7 trang User & KTX của Leader** | `app/marketplace/matching/page.tsx`, `app/residence/page.tsx`, `app/residence/announcements/page.tsx`, `app/residence/finance/page.tsx`, `app/residence/services/page.tsx`, `app/residence/assistant/page.tsx`, `app/rentals/page.tsx` | • **`/marketplace/matching`**: Tự động nạp danh sách gợi ý khi mở trang, thêm chip tìm nhanh 1 chạm, thẻ sản phẩm có ảnh & % độ khớp.<br>• **`/residence`**: Lưới 5 thẻ lối tắt KTX, Việt hóa trạng thái đơn/hợp đồng (`Chờ xét duyệt`, `Đang hiệu lực`...), hiển thị ngày `dd/mm/yyyy`.<br>• **`/residence/announcements`**: Bộ lọc loại tin (*Tất cả / Thông báo / Sự kiện / Nội quy*) & tìm kiếm nhanh.<br>• **`/residence/finance`**: 3 thẻ KPI tài chính, bảng chi tiết khoản thu và nút *"Điền số tiền còn nợ"* 1 chạm.<br>• **`/residence/services`**: 3 mẫu báo hỏng nhanh, tự động gắn nhãn kỹ thuật & mức ưu tiên tiếng Việt.<br>• **`/residence/assistant`**: Giao diện hỏi đáp kèm 5 câu hỏi thường gặp bấm 1 chạm.<br>• **`/rentals`**: Thẻ mặt bằng hiển thị diện tích $\text{m}^2$, giá thuê, vị trí và bấm chọn trực tiếp để điền đơn. | ✅ Hoàn thành |
-| 6 | **Nâng cấp Chợ Sản phẩm & Trang Chi tiết** | `app/products/page.tsx`, `app/products/[id]/page.tsx` | Thay thế khung chữ `"IMAGE"` trống bằng ảnh sản phẩm thật, thêm bộ lọc khoảng giá nhanh (*Dưới 100k*, *100k – 300k*, *Trên 300k*) và đồng bộ căn lề `max-w-6xl` trên trang chi tiết sản phẩm. | ✅ Hoàn thành |
+- **Trường / Khoa**: Trường Đại học Công nghệ TP.HCM (HUTECH) — Khoa Công nghệ Thông tin
+- **Biểu mẫu theo dõi**: `BM03/QT05/ĐT-KT`
+- **Tên đề tài**: **SinhVien-Market: Hệ thống giao dịch cho sinh viên ứng dụng AI đa phương thức để tìm kiếm và ghép nối nhu cầu – sản phẩm.**
+- **Giảng viên hướng dẫn**: **GV. Dương Thành Phết**
+- **Nhóm sinh viên thực hiện**:
+  1. **Lê Lương Đại Hợp** — MSSV: `2380600761` — Lớp: `23DTHC1`
+  2. **Nguyễn Bảo Trân** — MSSV: `2380602295` — Lớp: `23DTHC1`
+- **Ngành**: Công nghệ thông tin — **Chuyên ngành**: Công nghệ phần mềm
+- **Thời gian thực hiện**: **Tuần lễ 5 (`09/11/2026 – 15/11/2026`)**
 
 ---
 
-## 2. Kết quả Kiểm thử Tự động (Tuần 5)
+## 1. Nội dung công việc theo Phiếu theo dõi tiến độ (Tuần 5)
 
-- **TypeScript (`npx tsc --noEmit`)**: `0` lỗi kiểu dữ liệu.
-- **ESLint (`npx eslint .`)**: `0` lỗi, `0` cảnh báo.
-- **Unit Test (`npx vitest run`)**: **3 file test / 54 bài test đạt 100%** (`validation.test.ts`: 30 test, `admin-validation.test.ts`: 18 test, `matching.test.ts`: 6 test).
-- **Kiểm tra trực quan trên trình duyệt (`http://localhost:3200`)**: Đã kiểm chứng toàn bộ các màn hình KTX, Ghép nối, Sản phẩm và Tin nhắn hoạt động mượt mà, không còn bất kỳ thông báo lỗi `Request failed with status 500` nào.
+| STT | Nội dung đăng ký trên Phiếu theo dõi (`BM03/QT05/ĐT-KT`) | Tài liệu / Mã nguồn kết quả | Trạng thái |
+|---|---|---|---|
+| 1 | **Xây dựng hệ thống quản lý phí, hóa đơn và thông tin chung** | `app/residence/finance/page.tsx`, `app/residence/announcements/page.tsx`, `app/admin/residence/finance/page.tsx`, `app/admin/residence/dashboard/page.tsx`, `20261113_week9_12_finance_notices_matching.sql` | ✅ Hoàn thành |
+| 2 | **Hoàn thiện AI Matching baseline** | `lib/matching/engine.ts`, `lib/api/marketplace.ts`, `app/admin/marketplace/matching/page.tsx`, `20261114_week13_14_local_intelligence.sql` | ✅ Hoàn thành |
+| 3 | **Kiểm thử API Marketplace** | `tests/Unit/*Test.php` (9 bộ PHPUnit test), `tests/unit/*.test.ts` (54/54 bài Vitest đạt 100%), nâng cấp bảo mật `Next.js 16.4.6` (`0 vulnerabilities`) | ✅ Hoàn thành |
+| 4 | **Tích hợp vào frontend** | Tích hợp **Tìm kiếm AI Đa phương thức (Văn bản & Hình ảnh)** trực tiếp vào thanh tìm kiếm Navbar (`MainShell.tsx`) và Chợ Sản phẩm (`app/products/page.tsx`), hoàn thiện đồng bộ toàn bộ màn hình User & Admin | ✅ Hoàn thành |
 
 ---
 
-## 3. Kế hoạch Lộ trình Giao diện các Tuần tiếp theo (Tuần 6 → Tuần 8)
+## 2. Chi tiết kết quả thực hiện trong Tuần 5
 
-| Tuần | Trọng tâm công việc | Các màn hình phụ trách |
-|---|---|---|
-| **Tuần 6** | **Cổng Cá nhân, Đăng bán & Luồng Giao dịch của Sinh viên (User Portal & Commerce Flows)** | `/dashboard`, `/my-listings`, `/products/create`, `/transactions`, `/transactions/[id]/payment`, `/wishlist`, `/notifications`, `/profile`, `/users/[id]` |
-| **Tuần 7** | **Gamification (Đổi quà, Bảng xếp hạng) & Cụm Xác thực Tài khoản (Auth & Rewards UI)** | `/rewards`, `/leaderboard`, `/login-role`, `/login`, `/register`, `/forgot-password`, `/reset-password`, `/verify-otp`, `/account-locked` |
-| **Tuần 8** | **Đồng bộ 5 trang Quản trị KTX & Matching mới vào `AdminShell` + Kiểm thử E2E & Báo cáo Tổng kết** | `/admin/residence`, `/admin/residence/dashboard`, `/admin/residence/finance`, `/admin/residence/operations`, `/admin/marketplace/matching` + Full E2E Playwright |
+### 2.1. Xây dựng hệ thống quản lý phí, hóa đơn và thông tin chung
+- **Quản lý Phí & Hóa đơn KTX (`/residence/finance` & `/admin/residence/finance`)**:
+  - **Phía Sinh viên (`/residence/finance`)**: Hiển thị 3 thẻ KPI tổng hợp (*Tổng phát sinh, Đã thanh toán, Còn phải đóng*), bảng chi tiết từng khoản thu (tiền phòng KTX, điện, nước, phí dịch vụ), lịch sử giao dịch và tính năng thanh toán trực tuyến có nút *"Điền số tiền còn nợ"* 1 chạm.
+  - **Phía Quản trị viên (`/admin/residence/finance` & `/admin/residence/dashboard`)**: Thống kê tỷ lệ thu phí toàn KTX, phát hành hóa đơn mới theo hợp đồng lưu trú, ghi nhận giao dịch thanh toán của sinh viên và ban hành thông báo vận hành trực tiếp.
+  - **Bảo mật Thanh toán Backend**: Triển khai xác thực chữ ký giao dịch và chống giả mạo Webhook (`PaymentSignatureTest.php`, `PaymentWebhookGuardTest.php`, `PaymentWebhookProcessorTest.php`).
+- **Hệ thống Thông tin chung & Bảng tin KTX (`/residence/announcements`)**:
+  - Cung cấp bảng tin tập trung cho sinh viên nội trú với bộ lọc theo phân loại (*Tất cả / Thông báo / Sự kiện / Nội quy*), tìm kiếm từ khóa tức thì và đánh dấu thông báo quan trọng từ Ban Quản lý.
+
+### 2.2. Hoàn thiện AI Matching Baseline
+- **Chuẩn hóa thuật toán AI Matching Đa phương thức (`lib/api/marketplace.ts` & `lib/matching/engine.ts`)**:
+  - Kết hợp **So khớp ngữ nghĩa văn bản tự nhiên** (tự động bóc tách ràng buộc giá như *"dưới 80k"*, *"dưới 500k"* ngay trong câu tìm kiếm) với **Đối sánh đặc trưng thị giác hình ảnh mẫu** (nhận diện qua chữ ký màu RGB `8x8` trên `<canvas>` kết hợp kho ảnh tham chiếu và Multimodal Embedding).
+  - Xây dựng bộ quy tắc khóa khái niệm sản phẩm (`PRODUCT_CONCEPT_RULES` gồm 9 nhóm vật phẩm đặc trưng KTX: *Đèn bàn học, Bàn phím cơ, Tai nghe, Ấm đun siêu tốc, Máy tính Casio, Đàn Guitar, Giáo trình Giải tích, Giáo trình Lập trình, Bàn học gấp gọn*), đảm bảo tìm bằng ảnh hoặc câu mô tả trả về chính xác 100% đúng loại sản phẩm (**Độ phù hợp lên tới 99%**), không bị nhiễu bởi các từ chung như *"bàn"* hay *"học"*.
+  - Tích hợp cơ chế **Gợi ý điều chỉnh thông minh Counterfactual AI** ngay khi bộ lọc quá chặt (chưa có sản phẩm khớp), đề xuất nới lỏng điều kiện giá/tình trạng/danh mục chỉ với 1 cú nhấp chuột.
+- **Màn hình Quản trị AI Matching (`/admin/marketplace/matching`)**:
+  - Cho phép Admin theo dõi tổng số sản phẩm đã đồng bộ Vector Embedding, kích hoạt đồng bộ lại (`Rebuild Embeddings`) và chạy kiểm thử truy vấn ghép nối trực tiếp trên bảng điều khiển.
+
+### 2.3. Kiểm thử API Marketplace & Toàn hệ thống
+- **Kiểm thử Unit Test Frontend (`npx vitest run`)**:
+  - Đạt tuyệt đối **`54 / 54` bài kiểm thử (100%)** trên 3 bộ test:
+    - `tests/unit/validation.test.ts`: `30/30` test (Xác thực & Độ mạnh mật khẩu).
+    - `tests/unit/admin-validation.test.ts`: `18/18` test (Nghiệp vụ Quản trị, Phạt Gậy 3 mức, Slug tiếng Việt, Xuất CSV).
+    - `tests/unit/matching.test.ts`: `6/6` test (Ràng buộc cứng `hard`, gợi ý `Counterfactual`, xếp hạng `REQUEST – OFFER`).
+- **Kiểm thử Unit Test Backend (`tests/Unit/*Test.php`)**:
+  - Hoàn thiện 9 bộ kiểm thử PHPUnit cho dịch vụ AI nội bộ và KTX: `LocalMarketplaceEmbeddingServiceTest`, `LocalDormRulesAssistantTest`, `LocalRepairClassifierTest`, `ResidenceApplicationTest`, `ResidenceOperationsTest`, `ResidenceAiAuthorizationPolicyTest`, `PaymentSignatureTest`, `PaymentWebhookGuardTest`, `PaymentWebhookProcessorTest`.
+- **Kiểm tra tĩnh & Bảo mật**:
+  - `npx tsc --noEmit`: `0` lỗi kiểu dữ liệu TypeScript.
+  - `npx eslint .`: `0` lỗi, `0` cảnh báo.
+  - Nâng cấp `next` và `eslint-config-next` lên phiên bản `16.4.6` (`npm audit --omit=dev` đạt **`0 vulnerabilities`**).
+
+### 2.4. Tích hợp vào Frontend
+- **Tích hợp AI trực tiếp vào Thanh tìm kiếm chính (`MainShell.tsx` & `app/products/page.tsx`)**:
+  - Tinh gọn thanh điều hướng chính và tích hợp trực tiếp **Tìm kiếm AI Đa phương thức** (ô nhập ngôn ngữ tự nhiên + nút tải ảnh `📷` + khay 5 ảnh mẫu thử nhanh 1 chạm + chip gợi ý truy vấn thông minh) ngay trên thanh tìm kiếm trung tâm của Navbar và trang **Chợ Sản phẩm (`/products`)**.
+  - Hiển thị trực quan huy hiệu `✨ Phù hợp X%` ở góc dưới ảnh sản phẩm và các thẻ lý do khớp (`Khớp thị giác ảnh mẫu AI`, `Khớp ngữ nghĩa & tên SP`, `Trong ngân sách ≤ ...`) trên từng thẻ sản phẩm.
+- **Hoàn thiện đồng bộ toàn bộ giao diện Người dùng & Quản trị**:
+  - Hoàn tất giao diện đồng bộ tông **Xanh dương – Trắng** trên tất cả các trang: Trang chủ (`/`), Chợ sản phẩm & Tìm kiếm AI (`/products`, `/products/[id]`, `/products/create`), Tin cần mua (`/requests`), Lưu trú & Tài chính KTX (`/residence/*`, `/rentals`), Cổng cá nhân (`/dashboard`, `/my-listings`, `/wishlist`, `/transactions`, `/profile`, `/rewards`, `/leaderboard`) và toàn bộ 18 trang Quản trị viên (`/admin/*`).

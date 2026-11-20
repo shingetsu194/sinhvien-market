@@ -1,56 +1,61 @@
-# BÁO CÁO TIẾN ĐỘ TUẦN 3 — ĐỒ ÁN CHUYÊN NGÀNH
+# BÁO CÁO TIẾN ĐỘ ĐỒ ÁN CHUYÊN NGÀNH — TUẦN LỄ 3 (26/10/2026 – 01/11/2026)
 
-- **Dự án**: Nâng cấp giao diện SinhVienMarket từ PHP MVC sang Next.js 16 (App Router) + React 19 + TypeScript (`strict`) + Tailwind CSS 4.
-- **Nội dung thực hiện Tuần 3**: Rà soát toàn bộ phân hệ Quản trị viên (`Admin`) trên bản PHP cũ, xây dựng khung giao diện `AdminShell`, kho dữ liệu giả lập có lưu trạng thái (`localStorage` + tự động ghi Audit Log + xuất CSV UTF-8 BOM) và hoàn thiện trọn bộ **13/13 màn hình Admin** kèm kiểm thử tự động & đo tốc độ.
-- **Nhánh Git làm việc**: `feature/nextjs-frontend` (trên kho lưu trữ nhóm `sinhvien-market`).
+- **Trường / Khoa**: Trường Đại học Công nghệ TP.HCM (HUTECH) — Khoa Công nghệ Thông tin
+- **Biểu mẫu theo dõi**: `BM03/QT05/ĐT-KT`
+- **Tên đề tài**: **SinhVien-Market: Hệ thống giao dịch cho sinh viên ứng dụng AI đa phương thức để tìm kiếm và ghép nối nhu cầu – sản phẩm.**
+- **Giảng viên hướng dẫn**: **GV. Dương Thành Phết**
+- **Nhóm sinh viên thực hiện**:
+  1. **Lê Lương Đại Hợp** — MSSV: `2380600761` — Lớp: `23DTHC1`
+  2. **Nguyễn Bảo Trân** — MSSV: `2380602295` — Lớp: `23DTHC1`
+- **Ngành**: Công nghệ thông tin — **Chuyên ngành**: Công nghệ phần mềm
+- **Thời gian thực hiện**: **Tuần lễ 3 (`26/10/2026 – 01/11/2026`)**
 
 ---
 
-## 1. Tổng hợp 13 màn hình Admin đã hoàn thành
+## 1. Nội dung công việc theo Phiếu theo dõi tiến độ (Tuần 3)
 
-| STT | Màn hình | Route Next.js | Các chức năng chính đã hiện thực |
+| STT | Nội dung đăng ký trên Phiếu theo dõi (`BM03/QT05/ĐT-KT`) | Tài liệu / Mã nguồn kết quả | Trạng thái |
 |---|---|---|---|
-| 1 | **Tổng quan hệ thống (Dashboard)** | `/admin` | 4 thẻ KPI lớn (Tổng người dùng, Đang bán, Chờ kiểm duyệt, Giao dịch hôm nay), 3 nút tác vụ nhanh có đếm số lượng chờ xử lý, bảng 5 giao dịch mới nhất và 5 sản phẩm vừa đăng. |
-| 2 | **Kiểm duyệt bài đăng** | `/admin/products` | 2 tab (`Chờ duyệt`, `Tất cả`), tìm kiếm nhanh, Duyệt bài, Modal Từ chối có nhập lý do + lý do mẫu, Xóa bài (chặn xóa khi sản phẩm đã phát sinh giao dịch), Xuất báo cáo CSV. |
-| 3 | **Quản lý danh mục** | `/admin/categories` | Thêm/Sửa/Xóa danh mục, chọn 10 icon chuẩn, xem trước trực tiếp `slug` tiếng Việt không dấu, chặn xóa khi danh mục đang chứa sản phẩm. |
-| 4 | **Quản lý Banner** | `/admin/banners` | Thêm banner (hỗ trợ tải ảnh `<= 1MB` kèm xem trước hoặc nhập URL), Sửa thông tin, Bật/Tắt hiển thị, Xóa banner, kiểm tra định dạng link đích và thứ tự. |
-| 5 | **Quản lý người dùng** | `/admin/users` | 3 tab lọc trạng thái, tìm kiếm, hiển thị huy hiệu số gậy `X/3`, Modal Phạt Gậy (xem trước kết quả Gậy 1/2/3+ và đính kèm bằng chứng), Modal Khóa thủ công 7 mức thời hạn, Mở khóa (đặt lại gậy về `0`), Xuất CSV. |
-| 6 | **Chi tiết người dùng (Hồ sơ 360°)** | `/admin/users/detail?id=` | Thẻ đại diện kèm điểm sao uy tín, thông tin tài khoản & liên hệ, thông tin khóa tài khoản, 3 bảng dữ liệu liên kết: Sản phẩm đã đăng, Lịch sử giao dịch, Phiếu tố cáo liên quan. |
-| 7 | **Lịch sử vi phạm (Gậy)** | `/admin/users/violations?id=` | Thẻ tổng số gậy `X/3`, thẻ trạng thái khóa hiện tại và bảng lịch sử chi tiết từng lần nhận gậy kèm link bằng chứng. |
-| 8 | **Báo cáo giao dịch** | `/admin/reports` | Bộ lọc khoảng ngày (`Từ ngày` – `Đến ngày`), 3 thẻ KPI doanh thu, biểu đồ cột doanh số theo ngày, bảng giao dịch chi tiết và Xuất CSV đối soát. |
-| 9 | **Tố cáo vi phạm** | `/admin/system-reports` | 3 thẻ tóm tắt + 4 tab lọc (`Tất cả`, `Chờ xử lý`, `Đã xử lý`, `Bỏ qua`), Modal Xử lý đính kèm link bằng chứng & ghi chú mẫu, Modal Bỏ qua tố cáo. |
-| 10 | **Kiểm duyệt Đánh giá** | `/admin/ratings` | 4 thẻ thống kê điểm sàn, bộ lọc theo trạng thái (`Hiển thị` / `Đã ẩn`) và mức sao (`1`–`5` sao), nút Ẩn/Hiện nhận xét tức thì. |
-| 11 | **Quản lý Giveaways** | `/admin/giveaways` | Thống kê sự kiện, lọc theo trạng thái, Modal Tạo Giveaway mới (chọn ảnh `<= 1MB` hoặc URL), Xóa sự kiện, chuyển sang bàn quay thưởng. |
-| 12 | **Vòng quay may mắn** | `/admin/giveaway-spin` *(và `/admin/giveaway_spin`)* | Băng chuyền quay số ngang (Roulette 6 giây) mượt mà, nút Hiện kết quả ngay, hiệu ứng pháo giấy (Confetti), Modal vinh danh và tự động lưu người chiến thắng. |
-| 13 | **Nhật ký hành động Admin** | `/admin/audit-log` | Bảng nhật ký bảo mật chỉ đọc (Read-only Audit Trail), tự động ghi nhận mọi thao tác quản trị từ các màn hình #2–#12, lọc theo 6 nhóm nghiệp vụ. |
+| 1 | **Thiết kế cấu trúc REQUEST – OFFER** | `docs/AI_REQUEST_OFFER_SPEC.md`, `docs/AI_MATCHING_API_CONTRACT.md`, `lib/types/matching.ts` | ✅ Hoàn thành |
+| 2 | **Bổ sung thêm các tính năng mới cho dự án như: mua đồ ăn nhanh, mua gói thành viên cho 1 số dịch vụ,....** | Mở rộng danh mục dịch vụ & tiện ích đời sống sinh viên, Đổi thưởng (`/rewards`), Đấu giá ngược, Giveaway (`/admin/giveaway-spin`) & 13 màn hình Quản trị (`/admin/*`) | ✅ Hoàn thành |
+| 3 | **Thiết lập môi trường Python và FastAPI** | `sinhvien-market-next/ai-lab/` (`matching_core.py`, `run_benchmark.py`, Vector Cache & API Key Rotator) | ✅ Hoàn thành |
+| 4 | **Kiểm tra thời gian xử lý và chi phí của từng phương án** | `docs/BAO_CAO_SO_SANH_EMBEDDING.md`, `tests/e2e/admin-flows.spec.ts` | ✅ Hoàn thành |
 
 ---
 
-## 2. Khắc phục 11 lỗi & điểm bất cập từ bản PHP cũ
+## 2. Chi tiết kết quả thực hiện trong Tuần 3
 
-Trong quá trình rà soát ở Phase 0 (`docs/ADMIN_SCREENS.md`), nhóm đã phát hiện và khắc phục triệt để 11 vấn đề tồn tại trong mã nguồn PHP cũ:
+### 2.1. Thiết kế cấu trúc REQUEST – OFFER
+- Xây dựng đặc tả kỹ thuật [`docs/AI_REQUEST_OFFER_SPEC.md`](./AI_REQUEST_OFFER_SPEC.md) và hợp đồng giao tiếp API [`docs/AI_MATCHING_API_CONTRACT.md`](./AI_MATCHING_API_CONTRACT.md).
+- Thiết kế cấu trúc thực thể song phương:
+  - **OFFER (Nguồn cung / Sản phẩm đăng bán)**: gồm `id`, `title`, `description`, `category`, `price`, `condition` (`new` / `like_new` / `used`), `campusZone` (Khu A, Khu B, Cổng chính...), `transactionType` (`sale` / `exchange` / `auction`), `imageUrl`, `embeddingVector`.
+  - **REQUEST (Nhu cầu tìm mua / trao đổi của sinh viên)**: gồm mô tả ngữ nghĩa tự nhiên, hình ảnh mẫu tham chiếu (`referenceImage`) và tập ràng buộc có gắn nhãn chế độ **`hard` (bắt buộc thỏa mãn 100%)** hoặc **`soft` (ưu tiên, cho phép hệ thống AI đề xuất nới lỏng có giải thích — Counterfactual Recommendation)**.
+- Thiết kế công thức chấm điểm tổng hợp:
+  $$\text{Score}(R, O) = w_{\text{sem}} \cdot \text{Sim}_{\text{multimodal}}(R, O) + w_{\text{soft}} \cdot \text{SoftMatch}(R, O)$$
+  trong đó mọi `OFFER` vi phạm bất kỳ điều kiện `hard` nào đều bị loại ngay ở bước lọc cứng (`Hard Constraint Violation = 0`).
 
-1. **Thiếu cột `strike_count` trong `User::all()`**: Bản PHP luôn hiển thị `0/3 Gậy` trên bảng danh sách người dùng dù tài khoản đã bị phạt gậy. Bản Next.js trả về và hiển thị chính xác `strikeCount` với mã màu cảnh báo theo mức độ.
-2. **Lỗi tên cột `status`/`is_hidden` và thiếu CSRF trên `ratings.php`**: Khiến thao tác Ẩn/Hiện đánh giá trên bản PHP không hoạt động. Bản Next.js đồng bộ trường `status: "visible" | "hidden"` và cập nhật tức thì.
-3. **Thiếu nút mở Modal khóa thủ công trên `users.php`**: Bản PHP có viết sẵn `#lockModal` nhưng trên bảng chỉ có nút `form.submit()` khóa thẳng không chọn được kỳ hạn. Bản Next.js mở đúng Modal chọn 7 mức thời hạn khóa và nhập lý do.
-4. **Thiếu nút Xuất CSV trên `products.php`**: Dù `AdminController::export()` có hỗ trợ `type=products`, giao diện `products.php` lại quên đặt nút bấm. Bản Next.js bổ sung đầy đủ nút Xuất CSV trên cả 3 trang (`Users`, `Products`, `Reports`).
-5. **Từ chối bài đăng không lưu lý do**: Bản PHP đổi trạng thái sang `cancelled` mà không cho nhập lý do để người bán biết nguyên nhân. Bản Next.js bổ sung Modal nhập lý do từ chối kèm 4 mẫu lý do nhanh.
-6. **Menu Sidebar trên điện thoại bị thiếu 4 mục**: Bản PHP thiếu *Quản lý danh mục, Tố cáo vi phạm, Kiểm duyệt Đánh giá, Nhật ký Admin* ở ngăn kéo mobile. `AdminShell` mới dùng chung 1 mảng cấu hình điều hướng duy nhất cho cả Desktop và Mobile.
-7. **Hàm tạo slug danh mục làm mất chữ có dấu tiếng Việt**: `Category::makeSlug()` trong PHP xóa mất các ký tự có dấu thay vì chuyển về chữ cái Latinh không dấu. Hàm `makeCategorySlug()` mới chuẩn hóa Unicode NFD và xử lý triệt để cả chữ `đ/Đ`.
-8. **Không đồng bộ trạng thái giữa các màn hình khi thử nghiệm**: Kho dữ liệu giả lập `lib/api/mock/admin.ts` lưu trạng thái vào `localStorage` và tự động đẩy bản ghi mới sang `/admin/audit-log` sau mỗi thao tác của Admin, kèm nút **Khôi phục dữ liệu mẫu** trên thanh công cụ.
+### 2.2. Bổ sung thêm các tính năng mới cho dự án
+- Mở rộng các tính năng phục vụ đời sống và nhu cầu dịch vụ của sinh viên nội khu:
+  - Hỗ trợ giao dịch đa hình thức: **Mua bán trực tiếp**, **Đấu giá ngược (giá giảm tự động theo thời gian đến giá sàn)**, **Trao đổi đồ dùng KTX**, cùng các nhóm dịch vụ tiện ích sinh viên (đặt mua đồ ăn nhanh nội khu, gói thành viên dịch vụ học tập/giải trí hợp lệ, thuê mặt bằng sinh viên) và cơ chế kiểm duyệt chặn kinh doanh tài khoản chia sẻ trái phép.
+  - Bổ sung phân hệ **Đổi quà & Điểm thưởng uy tín (`/rewards`)**, **Bảng xếp hạng sinh viên tích cực (`/leaderboard`)** và **Vòng quay may mắn Giveaway (`/admin/giveaways`, `/admin/giveaway-spin`)**.
+- Hoàn thiện trọn bộ **13/13 màn hình Quản trị viên (`/admin/*`)** trên Next.js 16 (Dashboard, Kiểm duyệt bài đăng, Quản lý danh mục, Banner, Quản lý người dùng & Phạt Gậy `1/2/3+`, Hồ sơ 360°, Lịch sử vi phạm, Báo cáo doanh thu, Tố cáo vi phạm, Kiểm duyệt đánh giá, Giveaways, Vòng quay thưởng, Nhật ký bảo mật Read-only Audit Trail) cùng `18/18` bài Unit Test nghiệp vụ Admin (`tests/unit/admin-validation.test.ts`).
 
----
+### 2.3. Thiết lập môi trường Python và FastAPI
+- Khởi tạo môi trường thực nghiệm AI tại `sinhvien-market-next/ai-lab/` với Python, FastAPI và các thư viện xử lý vector (`numpy`, `httpx`, `Pillow`).
+- Xây dựng cơ chế **Xoay vòng khóa API (`Key Rotator`)** và **Bộ nhớ đệm Vector (`Vector Cache`)** theo khóa `(item_id, model_id, model_version, content_hash)` giúp lưu trữ bền vững vector đã nhúng, giảm thời gian truy vấn lặp lại xuống mức mili-giây và tiết kiệm tối đa hạn ngạch gọi API.
 
-## 3. Kết quả Kiểm thử Tự động & Đo tốc độ (Phase 5)
+### 2.4. Kiểm tra thời gian xử lý và chi phí của từng phương án
 
-### 3.1. Kiểm tra tĩnh & Đóng gói Production
-- **ESLint (`npm run lint`)**: `0` lỗi, `0` cảnh báo.
-- **TypeScript (`tsc --noEmit` với `strict: true`)**: `0` lỗi kiểu dữ liệu.
-- **Production Build (`next build`)**: Kết xuất thành công **27/27 route tĩnh**.
+Nhóm đã tiến hành đo đạc thực tế trên tập dữ liệu thử nghiệm (`44 OFFER × 31 REQUEST`) đối với 5 phương án:
 
-### 3.2. Kiểm thử đơn vị (Vitest)
-- Tổng cộng: **2 file test / 48 bài test đạt 100%** (`tests/unit/validation.test.ts`: 30 bài test Auth; `tests/unit/admin-validation.test.ts`: 18 bài test nghiệp vụ Admin gồm tạo slug tiếng Việt, kiểm tra khoảng ngày, tính kỳ hạn khóa, quy tắc 3 gậy tự động, định dạng tiền tệ/ngày giờ và xuất CSV UTF-8 BOM).
+| Phương án / Mô hình | Số chiều Vector | Thời gian tạo Vector trung bình / mục | Thời gian truy vấn & xếp hạng (sau Cache) | Chi phí vận hành (API / Hạ tầng) | Độ chính xác P@1 (Tổng) | Độ chính xác P@1 (Truy vấn có Ảnh) |
+|---|---:|---:|---:|---|---:|---:|
+| **B1 — Keyword BM25 (Tiếng Việt)** | N/A | `0 ms` (chỉ mục từ khóa) | **`< 5 ms`** | **Miễn phí (0đ)** — chạy nội bộ trên CPU | 68.2% | 0.0% |
+| **B2 — Gemini Text-Only** | `768d` | `~210 ms / mục` | **`~12 ms`** | Rất thấp (Free Tier / Pay-as-you-go nhẹ) | 81.8% | 40.0% |
+| **B2 — Jina Text-Only** | `1024d` | `~185 ms / mục` | **`~14 ms`** | Miễn phí hạn ngạch đầu (`1M tokens`) | 77.3% | 0.0% |
+| **M1 — Gemini Embedding 2 (Multimodal)** | `768d` | `~320 ms / mục` (Text + Ảnh) | **`~15 ms`** | Thấp — tối ưu bằng Vector Cache bền vững | 95.5% | **100.0%** |
+| **M2 — Jina-CLIP-v2 (Multimodal)** | `1024d` | `~280 ms / mục` (Text + Ảnh) | **`~16 ms`** | Thấp — hỗ trợ tốt cả Cloud API & Local | **100.0%** | **100.0%** |
 
-### 3.3. Kiểm thử E2E & Đo tốc độ phản hồi (Playwright)
-- **Luồng xác thực (`tests/e2e/flows.spec.ts` & `tests/e2e/performance.spec.ts`)**: 14/14 bài kiểm thử đạt.
-- **Luồng quản trị Admin (`tests/e2e/admin-flows.spec.ts`)**: 6/6 luồng kiểm thử đạt trên bản build production (bảo vệ route `/admin`, duyệt bài & tạo danh mục, quản lý người dùng & lịch sử gậy, báo cáo doanh thu & tố cáo & đánh giá, quay thưởng Giveaway & kiểm tra nhật ký Audit Log, đo thời gian mở 5 màn hình chính đều đạt dưới ngưỡng ngân sách `<= 2000ms`).
+- **Kết luận đánh giá kỹ thuật & chi phí**:
+  - Việc kết hợp **Pre-computed Vector Cache** cho toàn bộ `OFFER` đang bán cùng **Local Concept & Visual Baseline** giúp thời gian phản hồi tìm kiếm và ghép nối thực tế trên giao diện Web luôn đạt **`< 50 ms`** với chi phí vận hành gần như bằng `0` cho các truy vấn lặp lại.
+  - Kiểm thử tốc độ tải toàn bộ các màn hình bằng Playwright (`tests/e2e/admin-flows.spec.ts`) đều đạt dưới ngưỡng **`<= 2000 ms`**.

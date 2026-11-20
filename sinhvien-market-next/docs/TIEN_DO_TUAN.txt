@@ -1,148 +1,82 @@
-TIẾN ĐỘ ĐỒ ÁN CHUYÊN NGÀNH — SinhVienMarket (frontend Next.js)
-Tổng thời gian: 10 tuần. Hiện tại: TUẦN 3 (cập nhật lần cuối: 28/10/2026).
-Ký hiệu: [x] xong   [~] đang làm   [ ] chưa làm   [!] cần quyết định
+PHIẾU THEO DÕI TIẾN ĐỘ THỰC HIỆN ĐỒ ÁN CHUYÊN NGÀNH (BM03/QT05/ĐT-KT)
+Trường Đại học Công nghệ TP.HCM (HUTECH) — Khoa Công nghệ Thông tin
+---------------------------------------------------------------------
+1. Tên đề tài: SinhVien-Market: Hệ thống giao dịch cho sinh viên ứng dụng AI đa phương thức để tìm kiếm và ghép nối nhu cầu – sản phẩm.
+2. Giảng viên hướng dẫn: GV. Dương Thành Phết
+3. Sinh viên / nhóm sinh viên thực hiện đề tài:
+   (1) Lê Lương Đại Hợp    — MSSV: 2380600761 — Lớp: 23DTHC1
+   (2) Nguyễn Bảo Trân     — MSSV: 2380602295 — Lớp: 23DTHC1
+   Ngành: Công nghệ thông tin — Chuyên ngành: Công nghệ phần mềm
+
+Ký hiệu: [x] Hoàn thành   [~] Đang thực hiện   [ ] Kế hoạch tiếp theo
 
 =====================================================================
-TUẦN 1 — (bỏ lỡ: giảng viên không báo trước, làm bù trong tuần 2)
+TUẦN LỄ 1 (11/10/2026 – 18/10/2026) — Báo cáo: docs/BAO_CAO_TUAN_1.md
 =====================================================================
-Công việc gộp chung vào tuần 2 (xem bên dưới).
-Ghi chú: báo cáo tuần 1 và tuần 2 đã được tổng hợp chung trong file `docs/BAO_CAO_TUAN_1_2.md`.
-
-=====================================================================
-TUẦN 2 — (tuần hiện tại, làm bù cả tuần 1 — ĐÃ HOÀN THÀNH TOÀN BỘ PHASE 0 -> 5)
-=====================================================================
-Mục tiêu: rà soát + dựng nền tảng + hoàn thiện toàn bộ 8 màn hình xác thực + kiểm thử tự động & đo tốc độ.
-
-Phase 0 — Rà soát (không viết code) (xong & đã duyệt 20/10/2026)
-  [x] Đọc 8 view auth, AuthController, OtpController, PasswordResetController, Middleware
-  [x] Lập docs/AUTH_SCREENS.md (màn hình, route, trường, validate, thông báo, chuyển trang)
-  [x] Liệt kê 12 điểm không nhất quán trong bản PHP
-  [x] Leader/nhóm duyệt Phase 0 (20/10/2026)
-  [x] Đã chốt 3 câu hỏi cuối AUTH_SCREENS.md (20/10/2026):
-        1. Quy tắc mật khẩu chặt (>=8, hoa, số) cho cả đăng ký và đặt lại
-        2. Quên mật khẩu: GIỮ NHƯ PHP ("Email không tồn tại"), tạm thời;
-           vẫn ghi vào contract để backend cân nhắc sửa sau
-        3. Trang đích /products và /admin làm stub
-
-Phase 1 — Nền tảng tối thiểu (xong & đã duyệt 20/10/2026)
-  [x] Khởi tạo sinhvien-market-next/frontend/ (Next.js 16 App Router + TypeScript strict + Tailwind 4)
-  [x] Chuyển design tokens cũ (#6366f1, Plus Jakarta Sans, bo góc 14px, dark/light)
-  [x] Component: Button, Input, PasswordInput, Select, Alert, Card, Spinner, Logo (+ ThemeToggle)
-  [x] lib/api/auth.ts + mock + 4 tài khoản demo (bật/tắt bằng NEXT_PUBLIC_USE_MOCK)
-  [x] Zod schema + thanh độ mạnh mật khẩu (lib/validation)
-  [x] docs/AUTH_API_CONTRACT.md (bản nháp)
-  [x] Lint + tsc + build đều qua; commit riêng Phase 1 (`6b2b30e`)
-  Kết quả test logic mock (script tạm, 24 tình huống): 24/24 qua
-    - Phát hiện và sửa 1 lỗi: form đăng ký không hiện lỗi "xác nhận mật khẩu" và
-      "email đã tồn tại" khi trường khác đang lỗi (PHP hiện đủ lỗi cùng lúc).
-  Cài thêm công cụ trên máy: Node.js LTS 24, Git (winget).
-
-Phase 2 — Màn hình người dùng (xong & đã duyệt 20/10/2026)
-  [x] Khung giao diện xác thực (AuthShell: nền gradient + khối cầu ánh sáng động + thẻ kính mờ + đổi sáng/tối)
-  [x] /login (cổng sinh viên, giới hạn 5 lần/15 phút, tài khoản gần đây trong localStorage chỉ lưu tên + email, nút Google placeholder, chuyển hướng theo trạng thái)
-  [x] /register (validate đầy đủ họ tên/email/SĐT/câu hỏi bảo mật/mật khẩu chặt/xác nhận, thanh độ mạnh mật khẩu 4 mức, giới hạn 3 lần/10 phút)
-  [x] /forgot-password (2 bước: nhập email -> hiện câu hỏi bảo mật của tài khoản -> trả lời đúng chuyển về /login kèm thông báo và liên kết mock)
-  [x] Trang đích tạm (stub) /products, /admin và trang giữ chỗ cho các route Phase 4 để test không bị 404
-  [x] Lint + tsc + build đều qua; đã commit Phase 2 (`e66d659`)
-
-Phase 3 — Màn hình quản trị (xong & đã duyệt 20/10/2026)
-  [x] /admin-login (giao diện tối riêng với nền lưới + điểm nhấn hồng–cam, huy hiệu "Yêu cầu xác thực", ghi chú bảo mật 5 lần/15 phút, kiểm tra đúng vai trò admin)
-  [x] Lint + tsc + build đều qua; đã commit Phase 3 (`82dea51`)
-
-Phase 4 — Các màn hình đi kèm (xong & đã duyệt 20/10/2026)
-  [x] /login-role (2 thẻ kính mờ Sinh Viên & Ban Quản Trị trên nền vũ trụ 3 khối cầu ánh sáng)
-  [x] /verify-otp (ô nhập 6 chữ số tự lọc ký tự, giới hạn sai 5 lần tự hủy phiên, gửi lại tối đa 3 lần/10 phút)
-  [x] /reset-password (đọc token + email từ URL bọc trong Suspense, áp dụng quy tắc mật khẩu chặt + thanh đo độ mạnh)
-  [x] /account-locked (hiển thị tên người dùng, thời điểm khóa, lý do khóa, thời hạn mở khóa, nút Liên hệ Admin & Đăng xuất)
-  [x] Đổi trang gốc `/` chuyển hướng về `/login-role` và xoá `PhasePlaceholder.tsx`
-  [x] Lint + tsc + build đều qua; đã commit Phase 4 (`6d77089`)
-
-Phase 5 — Kiểm thử tự động, Đo tốc độ & Hoàn thiện tài liệu (xong 23/10/2026)
-  [x] Xoá trang thử nghiệm tạm `/dev/components`
-  [x] Unit test (Vitest): `tests/unit/validation.test.ts` — 30/30 bài test đạt (18ms) cho toàn bộ Zod schema và thanh đo độ mạnh mật khẩu
-  [x] E2E test (Playwright): `tests/e2e/flows.spec.ts` — 8/8 luồng đạt (đăng nhập thành công, sai mật khẩu, tài khoản bị khóa, đăng ký -> OTP -> /products, validate rỗng, quên mật khẩu -> đặt lại, thiếu token trên /reset-password, kiểm tra phân quyền cổng /admin-login)
-  [x] Đo tốc độ phản hồi (Playwright — yêu cầu của leader): `tests/e2e/performance.spec.ts` — 6/6 bài đo đạt trên bản build production:
-        - Mở /login: 160ms (ngân sách <= 2000ms) -> ĐẠT
-        - Mở /register: 78ms (ngân sách <= 2000ms) -> ĐẠT
-        - Phản hồi lỗi validate tại /login (đo trong trình duyệt): 11ms (ngân sách <= 150ms) -> ĐẠT
-        - Phản hồi lỗi validate tại /register (đo trong trình duyệt): 18ms (ngân sách <= 150ms) -> ĐẠT
-        - Đăng nhập -> chuyển trang /products (gồm 300–800ms độ trễ giả lập mạng): 1099ms (ngân sách <= 1500ms) -> ĐẠT
-        - Đăng ký -> chuyển trang /verify-otp (gồm 300–800ms độ trễ giả lập mạng): 1111ms (ngân sách <= 1500ms) -> ĐẠT
-        - Chống bấm đúp (disable nút ngay khi đang gửi): ĐẠT
-  [x] Hoàn thiện chính thức `docs/AUTH_API_CONTRACT.md`, `sinhvien-market-next/frontend/README.md` và báo cáo gộp `docs/BAO_CAO_TUAN_1_2.md`
+[x] Xác định đề tài:
+    - Chốt đề tài "SinhVien-Market: Hệ thống giao dịch cho sinh viên ứng dụng AI đa phương thức để tìm kiếm và ghép nối nhu cầu – sản phẩm".
+    - Rà soát hiện trạng bản Đồ án Cơ sở, lập docs/AUTH_SCREENS.md, ghi nhận 12 điểm chưa đồng nhất.
+[x] Thống kê những thay đổi về công nghệ:
+    - Chuyển từ PHP View SSR thuần + SQL LIKE sang Next.js 16 (App Router) + React 19 + TypeScript (strict) + Tailwind CSS 4 + RESTful JSON API + Multimodal AI Embedding.
+[x] Chỉnh sửa FrontEnd, BackEnd theo công nghệ mới:
+    - Khởi tạo sinhvien-market-next/frontend/, bộ UI Component cốt lõi, AuthShell, Zod Schema, thanh đo độ mạnh mật khẩu 4 mức, Dual-mode API Client và đợt 1 màn hình xác thực (/login, /register, /forgot-password).
+    - Chuẩn hóa tầng JSON response phía Backend (ApiController.php, PostResponseJson.php, docs/AUTH_API_CONTRACT.md).
+[x] Lên kế hoạch chỉnh sửa lâu dài:
+    - Thiết lập lộ trình 12 tuần Đồ án Chuyên ngành từ tái cấu trúc Frontend/Backend, Database KTX tới thực nghiệm và tích hợp AI Đa phương thức.
 
 =====================================================================
-TUẦN 3 — (tuần hiện tại — Nhóm màn hình Quản trị Admin: 1 layout + 13 màn hình)
+TUẦN LỄ 2 (19/10/2026 – 25/10/2026) — Báo cáo: docs/BAO_CAO_TUAN_2.md
 =====================================================================
-Mục tiêu: rà soát toàn bộ phân hệ Admin trên PHP + dựng AdminShell & kho dữ liệu mock + hoàn thiện 13 màn hình quản trị + kiểm thử tự động & đo tốc độ.
-
-Phase 0 — Rà soát phân hệ Admin (không viết code) (xong & đã duyệt 28/10/2026)
-  [x] Đọc layouts/admin.php, 13 view trong app/views/admin/*, 5 Admin Controller và 9 Model liên quan
-  [x] Lập docs/ADMIN_SCREENS.md (tổng hợp 13 màn hình, route, dữ liệu, thao tác, phân quyền)
-  [x] Phát hiện và ghi nhận 11 lỗi / điểm không nhất quán trong bản PHP (thiếu cột strike_count ở User::all(), sai tên cột status/is_hidden và thiếu CSRF ở ratings.php, thiếu nút mở modal khóa thủ công ở users.php, thiếu nút xuất CSV ở products.php, thiếu ô nhập lý do từ chối bài đăng, thiếu 4 mục menu trên mobile sidebar, lỗi mất chữ có dấu ở Category::makeSlug()...)
-  [x] Đã chốt phương án khắc phục toàn bộ 11 điểm trên và chia lộ trình 5 Phase
-
-Phase 1 — Nền tảng Admin & Màn hình Dashboard (xong 28/10/2026)
-  [x] Định nghĩa kiểu dữ liệu (lib/types/admin.ts), hằng số (lib/constants/admin.ts), hàm nghiệp vụ & validate (lib/validation/admin.ts)
-  [x] Lớp API (lib/api/admin.ts) + kho dữ liệu mock có lưu trạng thái trong localStorage (lib/api/mock/admin.ts), tự động ghi Audit Log và hỗ trợ xuất CSV UTF-8 BOM
-  [x] Xây dựng AdminShell (Sidebar 10 mục Desktop/Mobile, Topbar, Dark/Light mode, Toast, nút khôi phục dữ liệu mẫu, bảo vệ route Admin) + ExportModal + CategoryIcon
-  [x] Hoàn thiện màn hình #1 Dashboard (/admin) thay thế trang stub cũ
-  [x] Lint + tsc + unit test + build đều qua
-
-Phase 2 — Quản lý Sản phẩm, Danh mục & Banner (xong 30/10/2026)
-  [x] Component dùng chung Modal / ModalActions (components/admin/Modal.tsx)
-  [x] #2 Kiểm duyệt bài đăng (/admin/products): 2 tab, tìm kiếm nhanh, Duyệt, Từ chối (modal nhập lý do + lý do mẫu), Xóa (chặn khi đã có giao dịch), Xuất CSV
-  [x] #3 Quản lý danh mục (/admin/categories): thêm/sửa/xóa, 10 icon chuẩn, xem trước slug tiếng Việt không dấu, chặn xóa khi còn sản phẩm
-  [x] #4 Quản lý Banner (/admin/banners): thêm (chọn ảnh, xem trước, tối đa 1MB), sửa, bật/tắt hiển thị, xóa, kiểm tra link đích và thứ tự
-  [x] Lint + tsc + build đều qua
-
-Phase 3 — Quản lý Người dùng, Hồ sơ chi tiết & Hệ thống Gậy (xong 30/10/2026)
-  [x] #5 Danh sách người dùng (/admin/users): 3 tab lọc trạng thái, tìm kiếm, Phạt Gậy 1/2/3+ kèm bằng chứng, Khóa thủ công có thời hạn / Mở khóa, Xuất CSV
-  [x] #6 Chi tiết người dùng (/admin/users/detail): Hồ sơ, xếp hạng sao, thông tin khóa, 3 bảng Sản phẩm / Giao dịch / Tố cáo
-  [x] #7 Lịch sử vi phạm (/admin/users/violations): Thẻ tổng số gậy X/3, trạng thái tài khoản và bảng lịch sử nhận gậy kèm liên kết bằng chứng
-  [x] Lint + tsc + build đều qua
-
-Phase 4 — Báo cáo Giao dịch, Tố cáo, Đánh giá, Giveaway & Nhật ký Admin (xong 30/10/2026)
-  [x] #8 Báo cáo giao dịch (/admin/reports): Bộ lọc ngày, 3 thẻ thống kê, biểu đồ cột doanh số theo ngày, bảng giao dịch, Xuất CSV
-  [x] #9 Tố cáo vi phạm (/admin/system-reports): 4 tab lọc, Bỏ qua / Modal Xử lý đính kèm bằng chứng & ghi chú mẫu
-  [x] #10 Kiểm duyệt Đánh giá (/admin/ratings): Thống kê điểm sàn, lọc theo sao & trạng thái, Ẩn/Hiện bình luận
-  [x] #11 Quản lý Giveaways (/admin/giveaways) & #12 Vòng quay may mắn (/admin/giveaway-spin + /admin/giveaway_spin): Tạo/xóa sự kiện, băng chuyền quay số 6 giây + pháo giấy + lưu người trúng giải
-  [x] #13 Nhật ký hành động Admin (/admin/audit-log): Bảng lịch sử thao tác quản trị tự động (chỉ đọc)
-  [x] Lint + tsc + build đều qua
-
-Phase 5 — Kiểm thử tự động, Đo tốc độ & Hoàn thiện tài liệu (xong 30/10/2026)
-  [x] Unit test (Vitest): `tests/unit/admin-validation.test.ts` — 18/18 bài test đạt (tổng 48/48 bài test đạt) cho toàn bộ hàm nghiệp vụ & validate của Admin
-  [x] E2E test & đo tốc độ phản hồi (Playwright): `tests/e2e/admin-flows.spec.ts` — 6/6 luồng đạt (tổng 20/20 bài E2E đạt, tốc độ mở các màn hình Admin đều <= 2000ms)
-  [x] Hoàn thiện docs/ADMIN_API_CONTRACT.md và báo cáo tuần 3 (docs/BAO_CAO_TUAN_3.md)
+[x] Tiếp tục chỉnh sửa FrontEnd, BackEnd:
+    - Hoàn thiện trọn bộ 8/8 màn hình Xác thực (/login-role, /login, /admin-login, /register, /verify-otp, /forgot-password, /reset-password, /account-locked).
+    - Khảo sát và dựng khung Quản trị AdminShell (docs/ADMIN_SCREENS.md, docs/ADMIN_API_CONTRACT.md).
+    - Viết Unit Test (30/30 Vitest) và E2E + Performance Test (14/14 Playwright, mở trang 78ms–160ms <= 2000ms).
+[x] Cập nhật bổ sung dữ liệu cho Database:
+    - Bổ sung chỉ mục truy vấn (20260507_add_indexes.sql), kịch bản seed-demo.php và chuẩn hóa 6 danh mục mặt hàng nội khu KTX, 4 tài khoản demo, lịch sử gậy vi phạm (strike_count) và nhật ký kiểm duyệt (audit_log).
+[x] Phân chia công việc cho từng thành viên trong nhóm:
+    - Lê Lương Đại Hợp (2380600761): Backend API, Database Migrations, dịch vụ KTX & Tài chính/Thanh toán, Docker & PHPUnit Tests.
+    - Nguyễn Bảo Trân (2380602295): Frontend Next.js 16 (User, KTX, Admin), thuật toán & thực nghiệm AI Đa phương thức (REQUEST – OFFER & AI Search), Vitest & Playwright Tests.
+[x] Tìm hiểu thêm về mô hình embedding cho đề tài:
+    - Khảo sát Google Gemini Embedding 2 (768d), Jina-CLIP-v2 (1024d) cùng 2 phương pháp đối chứng B1 Keyword BM25 tiếng Việt và B2 Text-Only Embedding.
 
 =====================================================================
-TUẦN 4 — Ghép nối AI REQUEST – OFFER & Thực nghiệm So sánh Embedding (xong 04/11/2026)
+TUẦN LỄ 3 (26/10/2026 – 01/11/2026) — Báo cáo: docs/BAO_CAO_TUAN_3.md
 =====================================================================
-Mục tiêu (theo chỉ đạo của Leader): xây dựng chức năng ghép nối AI hai chiều REQUEST – OFFER kèm gợi ý thay đổi điều kiện (Counterfactual Recommendation) đúng báo cáo khóa luận, đồng thời chạy thực nghiệm đối đầu giữa Gemini Embedding 2 và Jina-CLIP-v2.
-
-  [x] Xây dựng bộ dữ liệu đánh giá chuẩn 44 OFFER + 31 REQUEST + 6 ảnh sản phẩm ký túc xá thực tế + nhãn ngữ nghĩa chuẩn (`sinhvien-market-next/ai-lab/data/`)
-  [x] Hoàn thiện đặc tả kỹ thuật (`docs/AI_REQUEST_OFFER_SPEC.md`) và hợp đồng API (`docs/AI_MATCHING_API_CONTRACT.md`)
-  [x] Triển khai bộ lõi ghép nối, giải thích kết quả và gợi ý nới điều kiện mềm (Counterfactual Recommendation — tuyệt đối không tự ý vi phạm điều kiện bắt buộc `hard`) trên cả Python (`ai-lab/matching_core.py`) và Next.js TypeScript (`frontend/lib/matching/engine.ts`)
-  [x] Tích hợp xoay vòng nhiều API key, lưu cache vector có gắn nhãn `model_id` + `model_version` và chạy thực nghiệm thật trên 5 phương pháp:
-        - B1 Keyword BM25: P@1 = 72.7%, Multimodal P@1 = 20.0%, MRR = 0.788, Vi phạm Hard = 0
-        - B2 Gemini Text-Only: P@1 = 86.4%, MRR = 0.909, Vi phạm Hard = 0
-        - B2 Jina Text-Only: P@1 = 86.4%, Multimodal P@1 = 60.0%, MRR = 0.886, Vi phạm Hard = 0
-        - M1 Gemini Embedding 2 (Multimodal 768d): P@1 = 86.4%, Multimodal P@1 = 100.0%, MRR = 0.909, CF Recovery = 83.3%, Vi phạm Hard = 0
-        - M2 Jina-CLIP-v2 (Multimodal 1024d): P@1 = 90.9%, Recall@5 = 96.1%, Multimodal P@1 = 100.0%, MRR = 0.933, CF Recovery = 100.0%, Vi phạm Hard = 0
-  [x] Xây dựng giao diện web `/requests` tích hợp vào thanh điều hướng chính (`MainShell`), cho phép đăng REQUEST mới kèm ảnh mẫu, bật/tắt `Bắt buộc` / `Có thể nới` cho từng điều kiện, chuyển đổi trực tiếp giữa 5 mô hình, xem giải thích và bấm áp dụng gợi ý Counterfactual
-  [x] Unit test (`tests/unit/matching.test.ts`) + Báo cáo phân tích lựa chọn mô hình gửi Leader (`docs/BAO_CAO_SO_SANH_EMBEDDING.md`)
+[x] Thiết kế cấu trúc REQUEST – OFFER:
+    - Hoàn thiện docs/AI_REQUEST_OFFER_SPEC.md và docs/AI_MATCHING_API_CONTRACT.md.
+    - Phân tách ràng buộc Hard Constraint (bắt buộc 100%) và Soft Constraint (ưu tiên, cho phép gợi ý nới lỏng Counterfactual Recommendation).
+[x] Bổ sung thêm các tính năng mới cho dự án như: mua đồ ăn nhanh, mua gói thành viên cho 1 số dịch vụ,....:
+    - Mở rộng các nhóm tiện ích & dịch vụ đời sống sinh viên, Đổi quà điểm thưởng (/rewards), Bảng xếp hạng uy tín (/leaderboard), Đấu giá ngược, Sự kiện vòng quay Giveaway (/admin/giveaway-spin) và hoàn thiện trọn bộ 13/13 màn hình Quản trị (/admin/*) kèm 18/18 Unit Test Admin.
+[x] Thiết lập môi trường Python và FastAPI:
+    - Dựng phòng thí nghiệm sinhvien-market-next/ai-lab/ (matching_core.py, run_benchmark.py) tích hợp Key Rotator và Vector Cache bền vững theo model_id + model_version.
+[x] Kiểm tra thời gian xử lý và chi phí của từng phương án:
+    - Đo thực nghiệm 5 phương án trên tập 44 OFFER x 31 REQUEST (docs/BAO_CAO_SO_SANH_EMBEDDING.md): thời gian truy vấn sau cache < 20ms, P@1 truy vấn có ảnh của Gemini Embedding 2 và Jina-CLIP-v2 đạt 100%, tốc độ mở trang Web <= 2000ms.
 
 =====================================================================
-TUẦN 5 — 10 (dự kiến các phân hệ tiếp theo)
+TUẦN LỄ 4 (02/11/2026 – 08/11/2026) — Báo cáo: docs/BAO_CAO_TUAN_4.md
 =====================================================================
-  - Phân hệ Chi tiết Sản phẩm / Đấu giá ngược / Giao dịch / Hồ sơ sinh viên / Chat / Thông báo theo phân công của Leader.
+[x] Xây dựng giao diện và kiểm thử lần 1 cho REQUEST – OFFER:
+    - Xây dựng giao diện /requests và /marketplace/matching có tải ảnh mẫu, chọn tiêu chí cố định/linh hoạt, giải thích % độ khớp và gợi ý Counterfactual.
+    - Kiểm thử lần 1 với tests/unit/matching.test.ts (6/6 đạt) và tests/e2e/matching-flows.spec.ts (0 vi phạm điều kiện cứng).
+[x] Bổ sung database cho dự án:
+    - Triển khai migrations 20261104_ktx_foundation.sql và 20261104_ktx_operations.sql (Tòa, Phòng, Giường, Đơn & Hợp đồng lưu trú, Bảo trì, Mặt bằng dịch vụ) và chuẩn hóa dữ liệu offers.json / requests.json thuần đồ dùng KTX.
+[x] Xây dựng 1 vài tính năng mới cho phép quản lý toàn bộ KTX thay vì là web bán hàng đơn thuần:
+    - Phía Sinh viên: Đăng ký & Hợp đồng lưu trú (/residence), Dịch vụ & Báo hỏng kỹ thuật (/residence/services), Trợ lý Nội quy (/residence/assistant), Thuê mặt bằng (/rentals).
+    - Phía Ban Quản lý: Duyệt đơn lưu trú (/admin/residence) và Vận hành sơ đồ Tòa – Tầng – Phòng – Giường & Bảo trì (/admin/residence/operations).
+[x] Tối ưu hóa giao diện:
+    - Đồng bộ bảng màu Xanh dương – Trắng (#2563eb / #1d4ed8 / #0284c7), hoàn thiện MainShell, KtxPageHeader, AdminKtxHeader, định dạng ngày tiếng Việt dd/mm/yyyy và giao diện Responsive.
 
 =====================================================================
-NHẬT KÝ THAY ĐỔI YÊU CẦU
+TUẦN LỄ 5 (09/11/2026 – 15/11/2026) — Báo cáo: docs/BAO_CAO_TUAN_5.md
 =====================================================================
-  - 18/10: phạm vi thu hẹp còn nhóm màn hình xác thực (thay vì cả ứng dụng).
-  - 18/10: leader thêm yêu cầu kiểm tra tốc độ xử lý khi đăng nhập/đăng ký.
-  - 20/10: bỏ việc so sánh giao diện với bản cũ; chỉnh sửa trực tiếp, xong
-           từng phần thì chạy test rồi sang phần tiếp theo.
-  - 20/10: cuối kỳ làm báo cáo tuần; tuần 1 và 2 viết chung (`docs/BAO_CAO_TUAN_1_2.md`).
-  - 28/10: bắt đầu Tuần 3, tập trung làm toàn bộ giao diện phân hệ Admin theo cùng quy trình và yêu cầu chất lượng như Tuần 1-2.
+[x] Xây dựng hệ thống quản lý phí, hóa đơn và thông tin chung:
+    - Phân hệ Tài chính & Hóa đơn KTX cho sinh viên (/residence/finance) và Quản trị viên (/admin/residence/finance, /admin/residence/dashboard) kèm xác thực chữ ký thanh toán & chống giả mạo Webhook.
+    - Phân hệ Bảng tin & Thông báo chung KTX (/residence/announcements).
+[x] Hoàn thiện AI Matching baseline:
+    - Hoàn thiện thuật toán AI Matching Đa phương thức kết hợp ngữ nghĩa văn bản (tự bóc tách ngân sách "dưới 80k"), đối sánh chữ ký màu hình ảnh mẫu RGB 8x8 Canvas + Multimodal Embedding, khóa khái niệm sản phẩm (PRODUCT_CONCEPT_RULES) và gợi ý Counterfactual AI.
+    - Hoàn thiện trang quản trị đối soát AI Matching (/admin/marketplace/matching).
+[x] Kiểm thử API Marketplace:
+    - Đạt 54/54 bài Unit Test Frontend (Vitest 100%), 9 bộ Unit Test Backend (PHPUnit), 0 lỗi TypeScript/ESLint và nâng cấp Next.js 16.4.6 (0 lỗ hổng bảo mật).
+[x] Tích hợp vào frontend:
+    - Tích hợp trực tiếp Tìm kiếm AI Đa phương thức (Văn bản + Tải ảnh 📷 + 5 ảnh mẫu thử nhanh + Huy hiệu % Phù hợp + Gợi ý Counterfactual) ngay trên thanh tìm kiếm chính của Navbar (MainShell.tsx) và trang Chợ Sản phẩm (/products).
+    - Đồng bộ hoàn chỉnh toàn bộ các màn hình User Portal, KTX Portal và Admin Portal.
