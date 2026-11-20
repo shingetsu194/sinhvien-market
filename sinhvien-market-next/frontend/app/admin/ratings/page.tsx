@@ -183,7 +183,7 @@ function RatingsContent() {
                 className={cn(
                   "rounded-xl px-3.5 py-2 text-xs font-bold transition",
                   visibilityFilter === tab.key
-                    ? "bg-indigo-600 text-white shadow-xs"
+                    ? "bg-blue-600 text-white shadow-xs"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700",
                 )}
               >
@@ -275,7 +275,7 @@ function RatingsContent() {
                       <td className="px-4 py-4">
                         <Link
                           href={`/admin/users/detail?id=${rt.raterId}`}
-                          className="inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-400"
+                          className="inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                         >
                           {rt.raterName}
                           <ExternalLink className="h-3 w-3 opacity-60" />
@@ -288,7 +288,7 @@ function RatingsContent() {
                       <td className="px-4 py-4">
                         <Link
                           href={`/admin/users/detail?id=${rt.rateeId}`}
-                          className="inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-400"
+                          className="inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                         >
                           {rt.rateeName}
                           <ExternalLink className="h-3 w-3 opacity-60" />

@@ -12,7 +12,6 @@ export const CATEGORY_ICONS: {
 }[] = [
   { value: "bi-book", label: "📖 Sách / Giáo trình" },
   { value: "bi-laptop", label: "💻 Điện tử" },
-  { value: "bi-bicycle", label: "🚲 Phương tiện" },
   { value: "bi-backpack", label: "🎒 Đồ dùng học tập" },
   { value: "bi-house", label: "🏠 Đồ gia dụng" },
   { value: "bi-music-note", label: "🎵 Nhạc cụ" },
@@ -100,7 +99,7 @@ export const PRODUCT_TYPE_MAP: Record<
 > = {
   sale: {
     label: "💰 Bán",
-    badgeClass: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300",
+    badgeClass: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
   },
   exchange: {
     label: "🔄 Trao đổi",
@@ -142,7 +141,7 @@ export const AUDIT_ACTION_LABELS: Record<
   },
   create_category: {
     label: "➕ Tạo danh mục",
-    badgeClass: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300",
+    badgeClass: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
   },
   update_category: {
     label: "✏️ Sửa danh mục",
@@ -166,7 +165,7 @@ export const AUDIT_ACTION_LABELS: Record<
   },
   create_banner: {
     label: "🖼️ Thêm banner",
-    badgeClass: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300",
+    badgeClass: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
   },
   update_banner: {
     label: "✏️ Sửa banner",
@@ -174,7 +173,7 @@ export const AUDIT_ACTION_LABELS: Record<
   },
   toggle_banner: {
     label: "👁️ Ẩn/Hiện banner",
-    badgeClass: "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300",
+    badgeClass: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300",
   },
   delete_banner: {
     label: "🗑️ Xóa banner",
@@ -182,7 +181,7 @@ export const AUDIT_ACTION_LABELS: Record<
   },
   create_giveaway: {
     label: "🎁 Tạo Giveaway",
-    badgeClass: "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300",
+    badgeClass: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300",
   },
   spin_giveaway: {
     label: "🎰 Quay số Giveaway",

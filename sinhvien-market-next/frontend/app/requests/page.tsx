@@ -8,7 +8,6 @@ import {
   Backpack,
   Bell,
   BellRing,
-  Bike,
   BookOpen,
   Calculator,
   Camera,
@@ -18,7 +17,6 @@ import {
   Cpu,
   Eye,
   Fan,
-  FlaskConical,
   GraduationCap,
   Guitar,
   Headphones,
@@ -55,7 +53,6 @@ import { MainShell } from "@/components/layout/MainShell";
 import {
   clearCustomBuyerRequests,
   getAllBuyerRequests,
-  getBenchmarkRuns,
   getMarketplaceOffers,
   matchBuyerRequest,
   saveCustomBuyerRequest,
@@ -66,7 +63,6 @@ import {
   formatMatchingVnd,
   getConstraintFlag,
   LOCATION_LABELS,
-  MODEL_META,
   stripViDiacritics,
 } from "@/lib/matching/engine";
 import type {
@@ -87,14 +83,6 @@ import { cn } from "@/lib/cn";
 
 type FeedQuickTab = "all" | "mine" | "with_image" | "exchange";
 
-const MODEL_ORDER: EmbeddingModelId[] = [
-  "jina-clip-v2-multimodal",
-  "gemini-embedding-2-multimodal",
-  "gemini-embedding-2-text-only",
-  "jina-clip-v2-text-only",
-  "keyword-bm25-vi",
-];
-
 const CATEGORY_CHIPS: Array<{
   slug: "all" | MatchingCategorySlug;
   label: string;
@@ -106,7 +94,6 @@ const CATEGORY_CHIPS: Array<{
   { slug: "gia_dung", label: "Đồ gia dụng KTX", icon: LampDesk },
   { slug: "hoc_tap", label: "Dụng cụ học tập", icon: Calculator },
   { slug: "thoi_trang", label: "Thời trang", icon: Shirt },
-  { slug: "phuong_tien", label: "Xe cộ", icon: Bike },
   { slug: "nhac_cu", label: "Nhạc cụ", icon: Music },
 ];
 
@@ -122,7 +109,7 @@ const OFFER_TYPE_BADGE: Record<
   exchange: {
     label: "Nhận đổi đồ",
     className:
-      "bg-purple-500/12 text-purple-700 dark:text-purple-300 border-purple-500/25",
+      "bg-sky-500/12 text-sky-700 dark:text-sky-300 border-sky-500/25",
   },
   auction: {
     label: "Đấu giá ngược",
@@ -132,9 +119,9 @@ const OFFER_TYPE_BADGE: Record<
 };
 
 const AVATAR_GRADIENTS = [
-  "from-indigo-500 to-violet-600",
+  "from-blue-500 to-blue-600",
   "from-emerald-500 to-teal-600",
-  "from-rose-500 to-pink-600",
+  "from-rose-500 to-sky-600",
   "from-amber-500 to-orange-600",
   "from-sky-500 to-blue-600",
 ];
@@ -164,15 +151,15 @@ function resolveOfferVisual(offer: MarketplaceOffer): {
   if (t.includes("bàn phím")) {
     return {
       icon: Keyboard,
-      gradient: "from-violet-500/20 via-indigo-500/15 to-fuchsia-500/20",
-      accentText: "text-indigo-600 dark:text-indigo-300",
+      gradient: "from-blue-500/20 via-blue-500/15 to-sky-500/20",
+      accentText: "text-blue-600 dark:text-blue-300",
       shortTag: "Phụ kiện PC",
     };
   }
   if (t.includes("tai nghe") || t.includes("loa")) {
     return {
       icon: Headphones,
-      gradient: "from-sky-500/20 via-blue-500/15 to-indigo-500/20",
+      gradient: "from-sky-500/20 via-blue-500/15 to-blue-500/20",
       accentText: "text-sky-600 dark:text-sky-300",
       shortTag: "Âm thanh",
     };
@@ -188,15 +175,15 @@ function resolveOfferVisual(offer: MarketplaceOffer): {
   if (t.includes("laptop")) {
     return {
       icon: Laptop,
-      gradient: "from-slate-500/20 via-indigo-500/15 to-blue-500/20",
-      accentText: "text-indigo-600 dark:text-indigo-300",
+      gradient: "from-slate-500/20 via-blue-500/15 to-blue-500/20",
+      accentText: "text-blue-600 dark:text-blue-300",
       shortTag: "Laptop SV",
     };
   }
   if (t.includes("màn hình")) {
     return {
       icon: Monitor,
-      gradient: "from-blue-500/20 via-indigo-500/15 to-violet-500/20",
+      gradient: "from-blue-500/20 via-blue-500/15 to-blue-500/20",
       accentText: "text-blue-600 dark:text-blue-300",
       shortTag: "Màn hình",
     };
@@ -236,41 +223,33 @@ function resolveOfferVisual(offer: MarketplaceOffer): {
   if (t.includes("balo")) {
     return {
       icon: Backpack,
-      gradient: "from-indigo-500/20 via-blue-500/15 to-teal-500/20",
-      accentText: "text-indigo-600 dark:text-indigo-300",
+      gradient: "from-blue-500/20 via-blue-500/15 to-teal-500/20",
+      accentText: "text-blue-600 dark:text-blue-300",
       shortTag: "Balo đi học",
     };
   }
   if (t.includes("bút") || t.includes("thước") || t.includes("wacom") || t.includes("vẽ")) {
     return {
       icon: PenTool,
-      gradient: "from-fuchsia-500/20 via-purple-500/15 to-indigo-500/20",
-      accentText: "text-fuchsia-600 dark:text-fuchsia-300",
+      gradient: "from-sky-500/20 via-sky-500/15 to-blue-500/20",
+      accentText: "text-sky-600 dark:text-sky-300",
       shortTag: "Dụng cụ vẽ",
     };
   }
   if (offer.category === "sach") {
     return {
       icon: BookOpen,
-      gradient: "from-blue-500/20 via-indigo-500/15 to-purple-500/20",
-      accentText: "text-indigo-600 dark:text-indigo-300",
+      gradient: "from-blue-500/20 via-blue-500/15 to-sky-500/20",
+      accentText: "text-blue-600 dark:text-blue-300",
       shortTag: "Giáo trình",
     };
   }
   if (offer.category === "thoi_trang") {
     return {
       icon: Shirt,
-      gradient: "from-pink-500/20 via-rose-500/15 to-purple-500/20",
+      gradient: "from-sky-500/20 via-rose-500/15 to-sky-500/20",
       accentText: "text-rose-600 dark:text-rose-300",
       shortTag: "Thời trang SV",
-    };
-  }
-  if (offer.category === "phuong_tien") {
-    return {
-      icon: Bike,
-      gradient: "from-emerald-500/20 via-green-500/15 to-teal-500/20",
-      accentText: "text-emerald-600 dark:text-emerald-300",
-      shortTag: "Phương tiện",
     };
   }
   if (offer.category === "nhac_cu") {
@@ -284,8 +263,8 @@ function resolveOfferVisual(offer: MarketplaceOffer): {
   if (offer.category === "dien_tu") {
     return {
       icon: Cpu,
-      gradient: "from-indigo-500/20 via-sky-500/15 to-violet-500/20",
-      accentText: "text-indigo-600 dark:text-indigo-300",
+      gradient: "from-blue-500/20 via-sky-500/15 to-blue-500/20",
+      accentText: "text-blue-600 dark:text-blue-300",
       shortTag: "Thiết bị số",
     };
   }
@@ -319,15 +298,12 @@ function matchesRequestKeyword(req: BuyerRequest, rawKeyword: string): boolean {
 
 export default function AIRequestOfferPage() {
   const offers = useMemo(() => getMarketplaceOffers(), []);
-  const benchmarkRuns = useMemo(() => getBenchmarkRuns(), []);
 
   const [requests, setRequests] = useState<BuyerRequest[]>(() =>
     getAllBuyerRequests(),
   );
   const [selectedReqId, setSelectedReqId] = useState<string>("R01");
-  const [modelId, setModelId] = useState<EmbeddingModelId>(
-    "jina-clip-v2-multimodal",
-  );
+  const modelId: EmbeddingModelId = "jina-clip-v2-multimodal";
 
   // Bộ lọc thân thiện cho sinh viên (bấm lại để bỏ chọn + nhấn Enter/nút Tìm kiếm)
   const [searchInput, setSearchInput] = useState("");
@@ -338,7 +314,6 @@ export default function AIRequestOfferPage() {
   const [quickTab, setQuickTab] = useState<FeedQuickTab>("all");
 
   // Modal trạng thái
-  const [labModalOpen, setLabModalOpen] = useState<boolean>(false);
   const [createOpen, setCreateOpen] = useState<boolean>(false);
   const [activeOfferModal, setActiveOfferModal] = useState<{
     match: RankedOfferMatch;
@@ -653,31 +628,31 @@ export default function AIRequestOfferPage() {
     <MainShell>
       <div className="mx-auto max-w-7xl px-4 py-6 md:py-8">
         {/* Clean Student-First Marketplace Hero */}
-        <section className="relative overflow-hidden rounded-3xl border border-indigo-500/20 bg-linear-to-br from-[#191645] via-[#2b226b] to-[#1e1b4b] p-6 text-white shadow-xl md:p-8">
-          <div className="pointer-events-none absolute -top-24 -right-20 h-72 w-72 rounded-full bg-fuchsia-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 left-1/3 h-64 w-64 rounded-full bg-indigo-400/15 blur-3xl" />
+        <section className="relative overflow-hidden rounded-3xl border border-blue-200/80 bg-linear-to-br from-blue-600 via-blue-700 to-sky-600 p-6 text-white shadow-lg md:p-8 dark:border-blue-500/30">
+          <div className="pointer-events-none absolute -top-24 -right-20 h-72 w-72 rounded-full bg-white/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 left-1/3 h-64 w-64 rounded-full bg-sky-300/20 blur-3xl" />
 
           <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-1 text-xs font-bold text-indigo-100 backdrop-blur-xs">
-                <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3.5 py-1 text-xs font-bold text-blue-50 backdrop-blur-xs">
+                <Sparkles className="h-3.5 w-3.5 text-sky-200" />
                 Trợ lý Tìm Đồ Thông Minh cho Sinh Viên
               </div>
               <h1 className="mt-3 text-2xl font-black tracking-tight md:text-3xl">
                 Góc Cần Mua & Tìm Đồ Sinh Viên
               </h1>
-              <p className="mt-2 text-sm leading-relaxed text-indigo-100/85">
+              <p className="mt-2 text-sm leading-relaxed text-blue-50/90">
                 Đăng món đồ bạn đang cần tìm hoặc tải lên một tấm ảnh mẫu — hệ thống sẽ
                 tự động đối chiếu và chọn ra những tin bán đúng ý, đúng túi tiền nhất quanh KTX.
               </p>
 
-              <div className="mt-4 flex flex-wrap items-center gap-2.5 text-xs font-semibold text-indigo-100/90">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
+              <div className="mt-4 flex flex-wrap items-center gap-2.5 text-xs font-semibold text-blue-50">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-sky-200" />
                   Hiểu cả mô tả tự nhiên & ảnh chụp
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1">
-                  <ShieldCheck className="h-3.5 w-3.5 text-sky-300" />
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1">
+                  <ShieldCheck className="h-3.5 w-3.5 text-sky-200" />
                   Đúng ngân sách & khu vực bạn chọn
                 </span>
               </div>
@@ -686,19 +661,9 @@ export default function AIRequestOfferPage() {
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
-                data-testid="toggle-ai-lab-btn"
-                onClick={() => setLabModalOpen(true)}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-bold text-white/90 backdrop-blur-xs transition hover:bg-white/20"
-              >
-                <FlaskConical className="h-4 w-4 text-amber-300" />
-                Chế độ Đánh giá AI
-              </button>
-
-              <button
-                type="button"
                 onClick={() => setCreateOpen(true)}
                 data-testid="open-create-request-btn"
-                className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-linear-to-r from-amber-400 via-orange-400 to-pink-500 px-5 py-3 text-sm font-black text-slate-950 shadow-lg transition hover:brightness-105"
+                className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-blue-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-blue-50"
               >
                 <Plus className="h-4 w-4 stroke-[2.5]" />
                 Đăng tin cần mua
@@ -712,12 +677,12 @@ export default function AIRequestOfferPage() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <form
               onSubmit={handleSearchSubmit}
-              className="flex flex-1 items-center overflow-hidden rounded-2xl border border-border bg-bg transition focus-within:border-indigo-500 focus-within:ring-3 focus-within:ring-indigo-500/15"
+              className="flex flex-1 items-center overflow-hidden rounded-2xl border border-border bg-bg transition focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-500/15"
             >
               <button
                 type="submit"
                 aria-label="Tìm kiếm nhu cầu"
-                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center text-muted transition hover:text-indigo-600 focus-visible:outline-none"
+                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center text-muted transition hover:text-blue-600 focus-visible:outline-none"
               >
                 <Search className="h-4 w-4" />
               </button>
@@ -751,7 +716,7 @@ export default function AIRequestOfferPage() {
               <button
                 type="submit"
                 data-testid="request-search-submit-btn"
-                className="m-1 inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-extrabold text-white transition hover:bg-indigo-500 focus-visible:outline-none"
+                className="m-1 inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-extrabold text-white transition hover:bg-blue-500 focus-visible:outline-none"
               >
                 Tìm kiếm
               </button>
@@ -786,7 +751,7 @@ export default function AIRequestOfferPage() {
                     className={cn(
                       "inline-flex cursor-pointer items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition",
                       active
-                        ? "bg-indigo-600 text-white shadow-2xs hover:bg-indigo-500"
+                        ? "bg-blue-600 text-white shadow-2xs hover:bg-blue-500"
                         : "bg-bg text-muted hover:text-fg",
                     )}
                   >
@@ -817,8 +782,8 @@ export default function AIRequestOfferPage() {
                     className={cn(
                       "inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-bold transition",
                       active
-                        ? "border-indigo-600 bg-indigo-600/12 text-indigo-700 dark:border-indigo-400 dark:bg-indigo-500/20 dark:text-indigo-200"
-                        : "border-border bg-bg/70 text-muted hover:border-indigo-400/50 hover:text-fg",
+                        ? "border-blue-600 bg-blue-600/12 text-blue-700 dark:border-blue-400 dark:bg-blue-500/20 dark:text-blue-200"
+                        : "border-border bg-bg/70 text-muted hover:border-blue-400/50 hover:text-fg",
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
@@ -886,7 +851,7 @@ export default function AIRequestOfferPage() {
                   <button
                     type="button"
                     onClick={handleResetAllFilters}
-                    className="mt-2 cursor-pointer text-xs font-bold text-indigo-600 hover:underline dark:text-indigo-400"
+                    className="mt-2 cursor-pointer text-xs font-bold text-blue-600 hover:underline dark:text-blue-400"
                   >
                     Đặt lại bộ lọc
                   </button>
@@ -906,8 +871,8 @@ export default function AIRequestOfferPage() {
                         className={cn(
                           "group w-full cursor-pointer rounded-2xl border p-4 text-left transition-all",
                           selected
-                            ? "border-indigo-500 bg-indigo-500/8 shadow-sm ring-1 ring-indigo-500/35"
-                            : "border-border bg-bg/50 hover:border-indigo-400/50 hover:bg-surface",
+                            ? "border-blue-500 bg-blue-500/8 shadow-sm ring-1 ring-blue-500/35"
+                            : "border-border bg-bg/50 hover:border-blue-400/50 hover:bg-surface",
                         )}
                       >
                         {/* Student Author Header */}
@@ -948,7 +913,7 @@ export default function AIRequestOfferPage() {
                           </div>
 
                           {req.category && (
-                            <span className="rounded-full bg-indigo-500/10 px-2.5 py-0.5 text-[11px] font-bold text-indigo-600 dark:text-indigo-300">
+                            <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-[11px] font-bold text-blue-600 dark:text-blue-300">
                               {CATEGORY_LABELS[req.category]}
                             </span>
                           )}
@@ -966,7 +931,7 @@ export default function AIRequestOfferPage() {
                                 unoptimized
                                 className="h-15 w-15 rounded-xl border border-border object-cover"
                               />
-                              <span className="absolute -right-1 -bottom-1 flex h-5 w-5 items-center justify-center rounded-full bg-fuchsia-600 text-white shadow-2xs">
+                              <span className="absolute -right-1 -bottom-1 flex h-5 w-5 items-center justify-center rounded-full bg-sky-600 text-white shadow-2xs">
                                 <Camera className="h-2.5 w-2.5" />
                               </span>
                             </div>
@@ -997,7 +962,7 @@ export default function AIRequestOfferPage() {
                             )}
 
                             {req.allow_exchange && (
-                              <span className="inline-flex items-center gap-1 rounded-lg bg-purple-500/12 px-2 py-0.5 font-bold text-purple-700 dark:text-purple-300">
+                              <span className="inline-flex items-center gap-1 rounded-lg bg-sky-500/12 px-2 py-0.5 font-bold text-sky-700 dark:text-sky-300">
                                 <Repeat className="h-3 w-3" />
                                 Nhận đổi đồ
                               </span>
@@ -1008,7 +973,7 @@ export default function AIRequestOfferPage() {
                             className={cn(
                               "inline-flex items-center gap-1 font-bold transition",
                               selected
-                                ? "text-indigo-600 dark:text-indigo-300"
+                                ? "text-blue-600 dark:text-blue-300"
                                 : "text-muted opacity-0 group-hover:opacity-100",
                             )}
                           >
@@ -1044,7 +1009,7 @@ export default function AIRequestOfferPage() {
                         <span className="text-sm font-extrabold text-fg">
                           {effectiveRequest.buyerName ?? "Sinh viên"}
                         </span>
-                        <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/12 px-2.5 py-0.5 text-[11px] font-bold text-indigo-600 dark:text-indigo-300">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/12 px-2.5 py-0.5 text-[11px] font-bold text-blue-600 dark:text-blue-300">
                           <GraduationCap className="h-3 w-3" />
                           Đang tìm mua
                         </span>
@@ -1057,17 +1022,6 @@ export default function AIRequestOfferPage() {
                       </p>
                     </div>
                   </div>
-
-                  {modelId !== "jina-clip-v2-multimodal" && (
-                    <button
-                      type="button"
-                      onClick={() => setLabModalOpen(true)}
-                      className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-[11px] font-bold text-indigo-600 dark:text-indigo-300"
-                    >
-                      <FlaskConical className="h-3 w-3" />
-                      {MODEL_META[modelId].label}
-                    </button>
-                  )}
                 </div>
 
                 <h2 className="mt-3.5 text-lg leading-snug font-black text-fg md:text-xl">
@@ -1075,7 +1029,7 @@ export default function AIRequestOfferPage() {
                 </h2>
 
                 {effectiveRequest.image && (
-                  <div className="mt-3.5 flex items-center gap-3.5 rounded-2xl border border-fuchsia-500/25 bg-fuchsia-500/6 p-3">
+                  <div className="mt-3.5 flex items-center gap-3.5 rounded-2xl border border-sky-500/25 bg-sky-500/6 p-3">
                     <Image
                       src={effectiveRequest.image}
                       alt="Ảnh mẫu người mua đính kèm"
@@ -1085,7 +1039,7 @@ export default function AIRequestOfferPage() {
                       className="h-19 w-19 rounded-xl border border-border object-cover"
                     />
                     <div className="text-xs">
-                      <span className="inline-flex items-center gap-1.5 font-extrabold text-fuchsia-700 dark:text-fuchsia-300">
+                      <span className="inline-flex items-center gap-1.5 font-extrabold text-sky-700 dark:text-sky-300">
                         <Camera className="h-3.5 w-3.5" />
                         Tìm kiếm bằng hình ảnh mẫu
                       </span>
@@ -1124,7 +1078,7 @@ export default function AIRequestOfferPage() {
                     />
                   )}
                   {effectiveRequest.allow_exchange && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/12 px-3 py-1 text-[11px] font-bold text-purple-700 dark:text-purple-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/12 px-3 py-1 text-[11px] font-bold text-sky-700 dark:text-sky-300">
                       <Repeat className="h-3 w-3" />
                       Có nhận trao đổi đồ
                     </span>
@@ -1262,7 +1216,7 @@ export default function AIRequestOfferPage() {
                   <button
                     type="button"
                     onClick={handleResetAllFilters}
-                    className="mt-4 inline-flex cursor-pointer items-center gap-1.5 rounded-2xl bg-indigo-600 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-indigo-500"
+                    className="mt-4 inline-flex cursor-pointer items-center gap-1.5 rounded-2xl bg-blue-600 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-blue-500"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
                     Bỏ lọc để xem lại
@@ -1273,7 +1227,7 @@ export default function AIRequestOfferPage() {
                   data-testid="empty-match-state"
                   className="mx-auto max-w-md py-10 text-center"
                 >
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/12 text-indigo-600 dark:text-indigo-300">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/12 text-blue-600 dark:text-blue-300">
                     <AlertCircle className="h-6 w-6" />
                   </div>
                   <h4 className="mt-3 text-base font-extrabold text-fg">
@@ -1292,7 +1246,7 @@ export default function AIRequestOfferPage() {
                         "mt-4 inline-flex cursor-pointer items-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-extrabold transition",
                         subscribedReqIds.includes(effectiveRequest.id)
                           ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
-                          : "bg-indigo-600 text-white hover:bg-indigo-500",
+                          : "bg-blue-600 text-white hover:bg-blue-500",
                       )}
                     >
                       {subscribedReqIds.includes(effectiveRequest.id) ? (
@@ -1327,7 +1281,7 @@ export default function AIRequestOfferPage() {
                         className={cn(
                           "group rounded-2xl border p-4 transition-all hover:shadow-md",
                           item.satisfiesAllInitial
-                            ? "border-border bg-bg/40 hover:border-indigo-400/60"
+                            ? "border-border bg-bg/40 hover:border-blue-400/60"
                             : "border-amber-500/35 bg-amber-500/4 hover:border-amber-500/60",
                         )}
                       >
@@ -1370,7 +1324,7 @@ export default function AIRequestOfferPage() {
                               </div>
 
                               <div className="text-right">
-                                <span className="text-lg font-black text-indigo-600 dark:text-indigo-300">
+                                <span className="text-lg font-black text-blue-600 dark:text-blue-300">
                                   {formatMatchingVnd(offer.price)}
                                 </span>
                               </div>
@@ -1382,7 +1336,7 @@ export default function AIRequestOfferPage() {
                               onClick={() => openOfferInteraction(item, "details")}
                               className="mt-1.5 cursor-pointer text-left"
                             >
-                              <h4 className="text-base font-extrabold text-fg transition group-hover:text-indigo-600 dark:group-hover:text-indigo-300">
+                              <h4 className="text-base font-extrabold text-fg transition group-hover:text-blue-600 dark:group-hover:text-blue-300">
                                 {offer.title}
                               </h4>
                             </button>
@@ -1455,7 +1409,7 @@ export default function AIRequestOfferPage() {
                                 <button
                                   type="button"
                                   onClick={() => openOfferInteraction(item, "details")}
-                                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-bold text-fg transition hover:border-indigo-400"
+                                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-bold text-fg transition hover:border-blue-400"
                                 >
                                   <Eye className="h-3.5 w-3.5" />
                                   Chi tiết
@@ -1464,7 +1418,7 @@ export default function AIRequestOfferPage() {
                                 <button
                                   type="button"
                                   onClick={() => openOfferInteraction(item, "chat")}
-                                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-1.5 text-xs font-extrabold text-white transition hover:bg-indigo-500"
+                                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-1.5 text-xs font-extrabold text-white transition hover:bg-blue-500"
                                 >
                                   <MessageCircle className="h-3.5 w-3.5" />
                                   Nhắn người bán
@@ -1489,7 +1443,7 @@ export default function AIRequestOfferPage() {
           <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-border bg-surface p-6 text-fg shadow-2xl">
             <div className="flex items-start justify-between gap-3 border-b border-border pb-3.5">
               <div>
-                <span className="rounded-full bg-indigo-500/12 px-2.5 py-0.5 text-[11px] font-bold text-indigo-600 dark:text-indigo-300">
+                <span className="rounded-full bg-blue-500/12 px-2.5 py-0.5 text-[11px] font-bold text-blue-600 dark:text-blue-300">
                   {CATEGORY_LABELS[activeOfferModal.match.offer.category]}
                 </span>
                 <h3 className="mt-1.5 text-lg font-black">
@@ -1512,7 +1466,7 @@ export default function AIRequestOfferPage() {
                 isTopMatch={false}
               />
               <div className="flex-1 space-y-2 text-xs">
-                <div className="text-xl font-black text-indigo-600 dark:text-indigo-300">
+                <div className="text-xl font-black text-blue-600 dark:text-blue-300">
                   {formatMatchingVnd(activeOfferModal.match.offer.price)}
                 </div>
                 <p className="leading-relaxed text-muted">
@@ -1554,7 +1508,7 @@ export default function AIRequestOfferPage() {
                     onClick={() =>
                       handleSendQuickMessage(activeOfferModal.match.offer, preset)
                     }
-                    className="cursor-pointer rounded-full border border-indigo-500/25 bg-indigo-500/8 px-3 py-1 text-[11px] font-semibold text-indigo-600 transition hover:bg-indigo-500/15 dark:text-indigo-300"
+                    className="cursor-pointer rounded-full border border-blue-500/25 bg-blue-500/8 px-3 py-1 text-[11px] font-semibold text-blue-600 transition hover:bg-blue-500/15 dark:text-blue-300"
                   >
                     {preset}
                   </button>
@@ -1571,7 +1525,7 @@ export default function AIRequestOfferPage() {
                         className={cn(
                           "max-w-[85%] rounded-2xl px-3 py-2",
                           msg.sender === "me"
-                            ? "ml-auto bg-indigo-600 text-white"
+                            ? "ml-auto bg-blue-600 text-white"
                             : "bg-muted/15 text-fg",
                         )}
                       >
@@ -1594,14 +1548,14 @@ export default function AIRequestOfferPage() {
                     }
                   }}
                   placeholder="Nhập tin nhắn gửi người bán..."
-                  className="flex-1 rounded-xl border border-border bg-surface px-3.5 py-2 text-xs focus:border-indigo-500 focus:outline-none"
+                  className="flex-1 rounded-xl border border-border bg-surface px-3.5 py-2 text-xs focus:border-blue-500 focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() =>
                     handleSendQuickMessage(activeOfferModal.match.offer)
                   }
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-extrabold text-white hover:bg-indigo-500"
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-extrabold text-white hover:bg-blue-500"
                 >
                   <Send className="h-3.5 w-3.5" />
                   Gửi
@@ -1612,147 +1566,7 @@ export default function AIRequestOfferPage() {
         </div>
       )}
 
-      {/* Modal 2: Chế độ Đánh giá AI (Dành cho Báo cáo & So sánh Mô hình — ẩn gọn khỏi giao diện người dùng chính) */}
-      {labModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-border bg-surface p-6 text-fg shadow-2xl">
-            <div className="flex items-start justify-between gap-4 border-b border-border pb-4">
-              <div>
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/12 px-3 py-0.5 text-xs font-bold text-indigo-600 dark:text-indigo-300">
-                  <FlaskConical className="h-3.5 w-3.5" />
-                  Phòng Thí nghiệm Đánh giá Mô hình (Dành cho Demo Đồ án)
-                </div>
-                <h2 className="mt-1.5 text-lg font-black">
-                  So sánh trực tiếp Gemini Embedding 2, Jina-CLIP-v2 & Đối chứng
-                </h2>
-                <p className="text-xs text-muted">
-                  Chọn mô hình bên dưới để kiểm chứng sự thay đổi kết quả ghép nối trên cùng một tin cần mua.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setLabModalOpen(false)}
-                aria-label="Đóng bảng đánh giá"
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-muted hover:bg-muted/20 hover:text-fg"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* 5 Model Switcher Buttons */}
-            <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
-              {MODEL_ORDER.map((mid) => {
-                const meta = MODEL_META[mid];
-                const active = modelId === mid;
-                return (
-                  <button
-                    key={mid}
-                    type="button"
-                    data-testid={`model-switch-${mid}`}
-                    onClick={() => setModelId(mid)}
-                    className={cn(
-                      "flex cursor-pointer flex-col items-start rounded-2xl border p-3 text-left transition",
-                      active
-                        ? "border-indigo-600 bg-indigo-600 text-white shadow-sm"
-                        : "border-border bg-bg hover:border-indigo-400/60",
-                    )}
-                  >
-                    <span className="text-xs font-extrabold leading-snug">
-                      {meta.label}
-                    </span>
-                    <span
-                      className={cn(
-                        "mt-1 text-[11px] font-medium",
-                        active ? "text-indigo-100" : "text-muted",
-                      )}
-                    >
-                      {meta.badge}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Quantitative Benchmark Table */}
-            {benchmarkRuns.length > 0 && (
-              <div className="mt-5 overflow-x-auto rounded-2xl border border-border p-3">
-                <table className="w-full min-w-[680px] text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-border text-muted">
-                      <th className="py-2 pr-3 font-bold">Phương pháp</th>
-                      <th className="px-3 py-2 text-right font-bold">P@1</th>
-                      <th className="px-3 py-2 text-right font-bold">Recall@5</th>
-                      <th className="px-3 py-2 text-right font-bold">MRR</th>
-                      <th className="px-3 py-2 text-right font-bold">
-                        Multimodal P@1
-                      </th>
-                      <th className="px-3 py-2 text-right font-bold">
-                        Counterfactual
-                      </th>
-                      <th className="px-3 py-2 text-right font-bold">
-                        Vi phạm Hard
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {benchmarkRuns.map((run) => {
-                      const isSelected = run.model_id === modelId;
-                      const m = run.metrics;
-                      return (
-                        <tr
-                          key={run.model_id}
-                          onClick={() => setModelId(run.model_id)}
-                          className={cn(
-                            "cursor-pointer transition",
-                            isSelected
-                              ? "bg-indigo-500/10 font-semibold"
-                              : "hover:bg-muted/10",
-                          )}
-                        >
-                          <td className="py-2.5 pr-3 font-bold text-fg">
-                            {run.label}
-                          </td>
-                          <td className="px-3 py-2.5 text-right font-bold">
-                            {(m.precision_at_1 * 100).toFixed(1)}%
-                          </td>
-                          <td className="px-3 py-2.5 text-right">
-                            {(m.recall_at_5 * 100).toFixed(1)}%
-                          </td>
-                          <td className="px-3 py-2.5 text-right font-mono">
-                            {m.mrr.toFixed(3)}
-                          </td>
-                          <td className="px-3 py-2.5 text-right font-bold text-emerald-600 dark:text-emerald-400">
-                            {(m.multimodal_precision_at_1 * 100).toFixed(0)}%
-                          </td>
-                          <td className="px-3 py-2.5 text-right font-bold text-indigo-600 dark:text-indigo-300">
-                            {(m.cf_recovery_rate * 100).toFixed(0)}% (
-                            {m.cf_recovered_count}/{m.cf_query_count})
-                          </td>
-                          <td className="px-3 py-2.5 text-right font-bold text-emerald-600 dark:text-emerald-400">
-                            {m.hard_constraint_violations}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            <div className="mt-4 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setLabModalOpen(false)}
-                className="cursor-pointer rounded-xl bg-indigo-600 px-5 py-2 text-xs font-extrabold text-white hover:bg-indigo-500"
-              >
-                Áp dụng mô hình & Đóng
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal 3: Đăng tin cần mua mới */}
+      {/* Modal: Đăng tin cần mua mới */}
       {createOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
           <div className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-border bg-surface p-6 text-fg shadow-2xl">
@@ -1791,7 +1605,7 @@ export default function AIRequestOfferPage() {
                   value={newText}
                   onChange={(e) => setNewText(e.target.value)}
                   placeholder="Ví dụ: Cần tìm ấm đun nước siêu tốc nấu mì trong phòng trọ, hoặc giáo trình Giải tích 1..."
-                  className="mt-1.5 w-full rounded-2xl border border-border bg-bg px-3.5 py-2.5 text-sm focus:border-indigo-500 focus:outline-none"
+                  className="mt-1.5 w-full rounded-2xl border border-border bg-bg px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -1801,7 +1615,7 @@ export default function AIRequestOfferPage() {
                   Đính kèm ảnh mẫu (Tùy chọn)
                 </span>
                 <div className="mt-1.5 flex items-center gap-3">
-                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-indigo-400/60 bg-indigo-500/8 px-4 py-2 text-xs font-bold text-indigo-600 transition hover:bg-indigo-500/15 dark:text-indigo-300">
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-blue-400/60 bg-blue-500/8 px-4 py-2 text-xs font-bold text-blue-600 transition hover:bg-blue-500/15 dark:text-blue-300">
                     <ImagePlus className="h-4 w-4" />
                     <Upload className="h-3.5 w-3.5" />
                     Tải ảnh món đồ mẫu
@@ -1933,7 +1747,7 @@ export default function AIRequestOfferPage() {
                   type="checkbox"
                   checked={newAllowExchange}
                   onChange={(e) => setNewAllowExchange(e.target.checked)}
-                  className="h-4 w-4 rounded border-border accent-indigo-600"
+                  className="h-4 w-4 rounded border-border accent-blue-600"
                 />
                 Mình sẵn sàng trao đổi đồ trực tiếp với sinh viên khác
               </label>
@@ -1949,7 +1763,7 @@ export default function AIRequestOfferPage() {
                 <button
                   type="submit"
                   data-testid="submit-create-request-btn"
-                  className="cursor-pointer rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-extrabold text-white hover:bg-indigo-500"
+                  className="cursor-pointer rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-extrabold text-white hover:bg-blue-500"
                 >
                   Đăng tin & Tìm sản phẩm ngay
                 </button>
@@ -2035,14 +1849,14 @@ function RequirementChip({
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold",
         isHard
-          ? "border-indigo-500/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300"
+          ? "border-blue-500/25 bg-blue-500/10 text-blue-700 dark:text-blue-300"
           : "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
       )}
     >
       <span
         className={cn(
           "h-1.5 w-1.5 rounded-full",
-          isHard ? "bg-indigo-500" : "bg-amber-500",
+          isHard ? "bg-blue-500" : "bg-amber-500",
         )}
       />
       {label}
@@ -2068,7 +1882,7 @@ function RigiditySwitch({
       className={cn(
         "inline-flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold transition",
         isHard
-          ? "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
+          ? "bg-blue-500/15 text-blue-700 dark:text-blue-300"
           : "bg-amber-500/20 text-amber-700 dark:text-amber-300",
       )}
     >

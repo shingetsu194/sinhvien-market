@@ -78,7 +78,7 @@ function AssistantContent() {
           className="rounded-3xl border border-border bg-surface p-5 shadow-xs sm:p-6"
         >
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-500">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/15 text-blue-500">
               <MessageSquareMore className="h-5 w-5" />
             </div>
             <div>
@@ -140,9 +140,9 @@ function AssistantContent() {
           {answer ? (
             <section
               aria-live="polite"
-              className="rounded-3xl border border-indigo-500/30 bg-surface p-5 shadow-sm sm:p-6"
+              className="rounded-3xl border border-blue-500/30 bg-surface p-5 shadow-sm sm:p-6"
             >
-              <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-300">
+              <div className="flex items-center gap-2 text-blue-600 dark:text-blue-300">
                 <Sparkles className="h-5 w-5" />
                 <h2 className="text-base font-extrabold">
                   Trả lời dựa trên nội quy công bố
@@ -162,7 +162,7 @@ function AssistantContent() {
                     {answer.sources.map((source) => (
                       <li
                         key={source.id}
-                        className="flex items-center gap-2 rounded-xl bg-indigo-500/10 px-3 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-300"
+                        className="flex items-center gap-2 rounded-xl bg-blue-500/10 px-3 py-2 text-xs font-bold text-blue-600 dark:text-blue-300"
                       >
                         <BookOpen className="h-3.5 w-3.5 shrink-0" />
                         <span>{source.title}</span>

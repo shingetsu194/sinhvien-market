@@ -191,7 +191,7 @@ function RentalsContent() {
             >
               <div>
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="rounded-lg bg-indigo-500/10 px-2.5 py-1 font-mono text-xs font-extrabold text-indigo-600 dark:text-indigo-300">
+                  <span className="rounded-lg bg-blue-500/10 px-2.5 py-1 font-mono text-xs font-extrabold text-blue-600 dark:text-blue-300">
                     {space.spaceCode}
                   </span>
                   <span
@@ -210,11 +210,11 @@ function RentalsContent() {
 
                 <div className="mt-2.5 space-y-1 text-xs text-muted">
                   <p className="flex items-center gap-1.5">
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-indigo-500" />
+                    <MapPin className="h-3.5 w-3.5 shrink-0 text-blue-500" />
                     <span>{space.location}</span>
                   </p>
                   <p className="flex items-center gap-1.5">
-                    <Maximize2 className="h-3.5 w-3.5 shrink-0 text-indigo-500" />
+                    <Maximize2 className="h-3.5 w-3.5 shrink-0 text-blue-500" />
                     <span>Diện tích: {space.areaSqm} m²</span>
                   </p>
                 </div>
@@ -268,7 +268,7 @@ function RentalsContent() {
             className="grid gap-4 rounded-3xl border border-border bg-surface p-5 shadow-xs sm:grid-cols-2 sm:p-6"
           >
             <div className="flex items-center gap-2.5 sm:col-span-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-500">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/15 text-blue-500">
                 <Store className="h-5 w-5" />
               </div>
               <div>
@@ -412,11 +412,11 @@ function RentalsContent() {
                 {contracts.map((contract) => (
                   <div
                     key={contract.id}
-                    className="rounded-2xl border border-indigo-500/25 bg-indigo-500/5 p-4 text-xs"
+                    className="rounded-2xl border border-blue-500/25 bg-blue-500/5 p-4 text-xs"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="inline-flex items-center gap-1.5 text-sm font-extrabold text-fg">
-                        <FileCheck2 className="h-4 w-4 text-indigo-500" />
+                        <FileCheck2 className="h-4 w-4 text-blue-500" />
                         {contract.contractNumber}
                       </span>
                       <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 font-bold text-emerald-600 dark:text-emerald-300">

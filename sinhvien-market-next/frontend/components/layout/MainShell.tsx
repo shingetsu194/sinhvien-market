@@ -13,6 +13,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Bell,
+  Camera,
   ChevronDown,
   Coins,
   Gift,
@@ -83,15 +84,14 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [matchingMenuOpen, setMatchingMenuOpen] = useState(false);
   const [ktxMenuOpen, setKtxMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [portalNotice, setPortalNotice] = useState<PortalNotice | null>(null);
 
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const notifMenuRef = useRef<HTMLDivElement | null>(null);
-  const matchingMenuRef = useRef<HTMLDivElement | null>(null);
   const ktxMenuRef = useRef<HTMLDivElement | null>(null);
+  const navImageInputRef = useRef<HTMLInputElement | null>(null);
 
   const loadUser = useCallback(() => {
     getCurrentUser()
@@ -125,12 +125,6 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
         setNotifOpen(false);
       }
       if (
-        matchingMenuRef.current &&
-        !matchingMenuRef.current.contains(e.target as Node)
-      ) {
-        setMatchingMenuOpen(false);
-      }
-      if (
         ktxMenuRef.current &&
         !ktxMenuRef.current.contains(e.target as Node)
       ) {
@@ -150,6 +144,32 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
     } else {
       router.push("/products");
     }
+  };
+
+  const handleNavImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        try {
+          window.sessionStorage.setItem(
+            "svm_ai_search_image",
+            JSON.stringify({
+              dataUrl: reader.result,
+              fileName: file.name,
+            }),
+          );
+          window.dispatchEvent(new Event("svm-ai-image-updated"));
+        } catch {
+          // ignore storage quota
+        }
+        setMobileOpen(false);
+        router.push(`/products?aiImage=${Date.now()}`);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleLogout = async () => {
@@ -264,37 +284,56 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
       value={{ user, loadingUser, refreshUser: loadUser }}
     >
       <div className="flex min-h-screen flex-col overflow-x-clip bg-bg text-fg">
-        <nav className="sticky top-0 z-50 border-b border-white/10 bg-linear-to-r from-[#0f0c29] via-[#302b63] to-[#24243e] text-white shadow-lg">
+        <nav className="sticky top-0 z-50 border-b border-blue-100 bg-white/95 text-slate-800 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 dark:text-white">
           <div className="mx-auto max-w-7xl px-4">
             <div className="flex h-16 items-center justify-between gap-2.5">
               <Link
                 href="/"
-                className="flex shrink-0 items-center gap-2 text-white no-underline"
+                className="flex shrink-0 items-center gap-2 text-slate-900 no-underline dark:text-white"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-[0_4px_12px_rgba(99,102,241,0.5)]">
+                <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-linear-to-br from-blue-600 to-sky-500 text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]">
                   <ShoppingBag className="h-5 w-5" />
                 </div>
                 <span className="text-lg font-black tracking-tight whitespace-nowrap sm:text-xl">
-                  SinhVien<span className="text-indigo-300">Market</span>
+                  SinhVien<span className="text-blue-600 dark:text-sky-400">Market</span>
                 </span>
               </Link>
 
+              <input
+                ref={navImageInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleNavImageChange}
+                className="sr-only"
+                aria-label="Tải ảnh tìm kiếm AI"
+              />
+
               <form
                 onSubmit={handleSearchSubmit}
-                className="hidden w-36 shrink-0 xl:flex 2xl:w-60"
+                className="hidden w-64 shrink-0 xl:flex 2xl:w-80"
               >
-                <div className="flex w-full overflow-hidden rounded-full border border-white/15 bg-white/12 backdrop-blur-md transition focus-within:border-indigo-400 focus-within:bg-white/18">
+                <div className="flex w-full items-center overflow-hidden rounded-full border border-blue-200/90 bg-white transition focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800">
+                  <Sparkles className="ml-3 h-3.5 w-3.5 shrink-0 text-blue-600 dark:text-sky-400" />
                   <input
                     type="text"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
-                    placeholder="Tìm sản phẩm..."
-                    className="min-w-0 flex-1 bg-transparent px-3 py-1.5 text-xs text-white placeholder:text-white/60 focus:outline-none focus-visible:outline-none 2xl:text-sm"
+                    placeholder="Tìm sách, đồ dùng KTX..."
+                    className="min-w-0 flex-1 border-0 bg-transparent px-2.5 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:ring-0 focus:outline-none 2xl:text-sm dark:text-white dark:placeholder:text-slate-400"
                   />
+                  <button
+                    type="button"
+                    onClick={() => navImageInputRef.current?.click()}
+                    title="Tìm sản phẩm bằng hình ảnh mẫu AI"
+                    aria-label="Tìm bằng hình ảnh AI"
+                    className="mr-1 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-blue-600 transition hover:bg-blue-50 dark:text-sky-300 dark:hover:bg-slate-700"
+                  >
+                    <Camera className="h-3.5 w-3.5" />
+                  </button>
                   <button
                     type="submit"
                     aria-label="Tìm kiếm"
-                    className="flex shrink-0 cursor-pointer items-center justify-center bg-white/15 px-2.5 text-white transition hover:bg-white/25"
+                    className="flex h-8 shrink-0 cursor-pointer items-center justify-center bg-blue-600 px-3.5 text-white transition hover:bg-blue-700"
                   >
                     <Search className="h-3.5 w-3.5" />
                   </button>
@@ -307,8 +346,8 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                   className={cn(
                     "inline-flex shrink-0 items-center gap-1 rounded-xl px-2 py-1.5 text-[13px] font-semibold whitespace-nowrap transition 2xl:gap-1.5 2xl:px-2.5 2xl:py-2 2xl:text-sm",
                     pathname === "/"
-                      ? "bg-white/15 text-white"
-                      : "text-white/80 hover:bg-white/10 hover:text-white",
+                      ? "bg-blue-50 font-bold text-blue-600 dark:bg-blue-500/15 dark:text-sky-300"
+                      : "text-slate-600 hover:bg-blue-50/70 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white",
                   )}
                 >
                   <Home className="h-3.5 w-3.5 shrink-0 2xl:h-4 2xl:w-4" />
@@ -321,96 +360,13 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                     "inline-flex shrink-0 items-center gap-1 rounded-xl px-2 py-1.5 text-[13px] font-semibold whitespace-nowrap transition 2xl:gap-1.5 2xl:px-2.5 2xl:py-2 2xl:text-sm",
                     pathname.startsWith("/products") &&
                       pathname !== "/products/create"
-                      ? "bg-white/15 text-white"
-                      : "text-white/80 hover:bg-white/10 hover:text-white",
+                      ? "bg-blue-50 font-bold text-blue-600 dark:bg-blue-500/15 dark:text-sky-300"
+                      : "text-slate-600 hover:bg-blue-50/70 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white",
                   )}
                 >
                   <Grid className="h-3.5 w-3.5 shrink-0 2xl:h-4 2xl:w-4" />
                   Sản phẩm
                 </Link>
-
-                <div ref={matchingMenuRef} className="relative shrink-0">
-                  <button
-                    type="button"
-                    data-testid="nav-matching-trigger"
-                    onClick={() => {
-                      setMatchingMenuOpen((prev) => !prev);
-                      setKtxMenuOpen(false);
-                    }}
-                    className={cn(
-                      "inline-flex cursor-pointer items-center gap-1 rounded-xl px-2 py-1.5 text-[13px] font-semibold whitespace-nowrap transition 2xl:gap-1.5 2xl:px-2.5 2xl:py-2 2xl:text-sm",
-                      pathname.startsWith("/requests") ||
-                        pathname.startsWith("/marketplace/matching")
-                        ? "bg-indigo-500/30 text-white ring-1 ring-indigo-300/40"
-                        : "text-indigo-200 hover:bg-white/10 hover:text-white",
-                    )}
-                  >
-                    <Sparkles className="h-3.5 w-3.5 shrink-0 text-fuchsia-300 2xl:h-4 2xl:w-4" />
-                    Ghép nối
-                    <ChevronDown
-                      className={cn(
-                        "h-3 w-3 shrink-0 opacity-75 transition-transform",
-                        matchingMenuOpen && "rotate-180",
-                      )}
-                    />
-                  </button>
-
-                  {matchingMenuOpen && (
-                    <div className="absolute left-0 mt-2 w-80 overflow-hidden rounded-2xl border border-border bg-surface p-2 text-fg shadow-2xl">
-                      <div className="px-3 py-1.5 text-[11px] font-extrabold tracking-wider text-muted uppercase">
-                        Chọn công cụ ghép nối
-                      </div>
-                      <Link
-                        href="/requests"
-                        onClick={() => setMatchingMenuOpen(false)}
-                        className={cn(
-                          "flex items-start gap-3 rounded-xl p-3 transition hover:bg-surface-2",
-                          pathname.startsWith("/requests") &&
-                            "bg-indigo-500/10 ring-1 ring-indigo-500/30",
-                        )}
-                      >
-                        <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-indigo-500 to-fuchsia-500 text-white shadow-sm">
-                          <Sparkles className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-extrabold text-fg">
-                              Ghép nối AI (Cần mua)
-                            </span>
-                            <span className="rounded-full bg-fuchsia-500/15 px-2 py-0.5 text-[10px] font-bold text-fuchsia-600 dark:text-fuchsia-300">
-                              Đa phương thức
-                            </span>
-                          </div>
-                          <p className="mt-0.5 text-xs leading-relaxed text-muted">
-                            Đăng tin cần mua bằng văn bản & ảnh mẫu, tự động gợi ý sản phẩm khớp tiêu chí.
-                          </p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/marketplace/matching"
-                        onClick={() => setMatchingMenuOpen(false)}
-                        className={cn(
-                          "mt-1 flex items-start gap-3 rounded-xl p-3 transition hover:bg-surface-2",
-                          pathname.startsWith("/marketplace/matching") &&
-                            "bg-indigo-500/10 ring-1 ring-indigo-500/30",
-                        )}
-                      >
-                        <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-300">
-                          <Search className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span className="text-sm font-extrabold text-fg">
-                            Tìm sản phẩm phù hợp
-                          </span>
-                          <p className="mt-0.5 text-xs leading-relaxed text-muted">
-                            Tra cứu nhanh các tin đang bán theo mô tả, danh mục, tình trạng và khoảng giá.
-                          </p>
-                        </div>
-                      </Link>
-                    </div>
-                  )}
-                </div>
 
                 <div ref={ktxMenuRef} className="relative shrink-0">
                   <button
@@ -418,17 +374,16 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                     data-testid="nav-ktx-trigger"
                     onClick={() => {
                       setKtxMenuOpen((prev) => !prev);
-                      setMatchingMenuOpen(false);
                     }}
                     className={cn(
                       "inline-flex cursor-pointer items-center gap-1 rounded-xl px-2 py-1.5 text-[13px] font-semibold whitespace-nowrap transition 2xl:gap-1.5 2xl:px-2.5 2xl:py-2 2xl:text-sm",
                       pathname.startsWith("/residence") ||
                         pathname.startsWith("/rentals")
-                        ? "bg-white/15 text-white"
-                        : "text-white/80 hover:bg-white/10 hover:text-white",
+                        ? "bg-blue-50 font-bold text-blue-600 dark:bg-blue-500/15 dark:text-sky-300"
+                        : "text-slate-600 hover:bg-blue-50/70 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white",
                     )}
                   >
-                    <ClipboardList className="h-3.5 w-3.5 shrink-0 text-cyan-300 2xl:h-4 2xl:w-4" />
+                    <ClipboardList className="h-3.5 w-3.5 shrink-0 text-blue-600 2xl:h-4 2xl:w-4 dark:text-sky-400" />
                     Ký túc xá
                     <ChevronDown
                       className={cn(
@@ -439,7 +394,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                   </button>
 
                   {ktxMenuOpen && (
-                    <div className="absolute left-0 mt-2 w-72 overflow-hidden rounded-2xl border border-border bg-surface p-2 text-fg shadow-2xl">
+                    <div className="absolute left-0 mt-2 w-72 overflow-hidden rounded-2xl border border-blue-100 bg-surface p-2 text-fg shadow-2xl dark:border-border">
                       <div className="px-3 py-1.5 text-[11px] font-extrabold tracking-wider text-muted uppercase">
                         Dịch vụ nội trú KTX
                       </div>
@@ -480,9 +435,9 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           href={item.href}
                           onClick={() => setKtxMenuOpen(false)}
                           className={cn(
-                            "block rounded-xl px-3 py-2 transition hover:bg-surface-2",
+                            "block rounded-xl px-3 py-2 transition hover:bg-blue-50/60 dark:hover:bg-surface-2",
                             pathname === item.href &&
-                              "bg-indigo-500/10 font-bold text-primary",
+                              "bg-blue-50 font-bold text-primary dark:bg-blue-500/10",
                           )}
                         >
                           <div className="text-sm font-bold text-fg">
@@ -497,7 +452,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
 
                 <Link
                   href="/#giveaway"
-                  className="inline-flex shrink-0 items-center gap-1 rounded-xl px-2 py-1.5 text-[13px] font-semibold whitespace-nowrap text-amber-300/90 transition hover:bg-white/10 hover:text-amber-200 2xl:gap-1.5 2xl:px-2.5 2xl:py-2 2xl:text-sm"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-xl px-2 py-1.5 text-[13px] font-semibold whitespace-nowrap text-blue-600 transition hover:bg-blue-50 2xl:gap-1.5 2xl:px-2.5 2xl:py-2 2xl:text-sm dark:text-sky-300 dark:hover:bg-slate-800"
                 >
                   <Gift className="h-3.5 w-3.5 shrink-0 2xl:h-4 2xl:w-4" />
                   Giveaway
@@ -508,18 +463,18 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                     {isAdmin ? (
                       <Link
                         href="/admin"
-                        className="ml-0.5 inline-flex shrink-0 items-center gap-1 rounded-full border border-rose-400/40 bg-rose-500/20 px-2.5 py-1.5 text-xs font-extrabold whitespace-nowrap text-rose-200 shadow-xs transition hover:bg-rose-500/30"
+                        className="ml-0.5 inline-flex shrink-0 items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-extrabold whitespace-nowrap text-blue-700 shadow-xs transition hover:bg-blue-100 dark:border-blue-500/40 dark:bg-blue-500/20 dark:text-sky-200"
                       >
-                        <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-rose-300" />
+                        <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-blue-600 dark:text-sky-300" />
                         Admin Panel
                       </Link>
                     ) : (
                       <Link
                         href="/products/create"
                         aria-label="Đăng sản phẩm"
-                        className="inline-flex shrink-0 items-center gap-1 rounded-xl bg-white/10 px-2.5 py-1.5 text-[13px] font-semibold whitespace-nowrap text-white transition hover:bg-white/18 2xl:gap-1.5 2xl:px-3 2xl:py-2 2xl:text-sm"
+                        className="inline-flex shrink-0 items-center gap-1 rounded-xl bg-blue-600 px-2.5 py-1.5 text-[13px] font-semibold whitespace-nowrap text-white shadow-xs transition hover:bg-blue-700 2xl:gap-1.5 2xl:px-3 2xl:py-2 2xl:text-sm"
                       >
-                        <PlusCircle className="h-3.5 w-3.5 shrink-0 text-indigo-300 2xl:h-4 2xl:w-4" />
+                        <PlusCircle className="h-3.5 w-3.5 shrink-0 2xl:h-4 2xl:w-4" />
                         Đăng bán
                       </Link>
                     )}
@@ -529,10 +484,10 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                         type="button"
                         onClick={() => setNotifOpen((prev) => !prev)}
                         aria-label="Thông báo"
-                        className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-white/80 transition hover:bg-white/10 hover:text-white"
+                        className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-600 transition hover:bg-blue-50 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                       >
                         <Bell className="h-4 w-4" />
-                        <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500" />
+                        <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-600" />
                       </button>
 
                       {notifOpen && (
@@ -575,9 +530,9 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                       <button
                         type="button"
                         onClick={() => setUserMenuOpen((prev) => !prev)}
-                        className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-white/10 px-2 py-1.5 text-xs font-semibold whitespace-nowrap text-white transition hover:bg-white/18 2xl:gap-2 2xl:px-2.5 2xl:text-sm"
+                        className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-blue-100 bg-blue-50/70 px-2 py-1.5 text-xs font-semibold whitespace-nowrap text-slate-800 transition hover:bg-blue-100/70 2xl:gap-2 2xl:px-2.5 2xl:text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
                       >
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-pink-500 text-xs font-extrabold text-white 2xl:h-7 2xl:w-7">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-blue-600 to-sky-500 text-xs font-extrabold text-white 2xl:h-7 2xl:w-7">
                           {avatarLetter}
                         </span>
                         <span className="max-w-[110px] truncate 2xl:max-w-[160px]">
@@ -587,7 +542,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                       </button>
 
                       {userMenuOpen && (
-                        <div className="absolute right-0 mt-2 max-h-[calc(100vh-5rem)] w-60 overflow-y-auto rounded-2xl border border-border bg-surface py-2 text-fg shadow-2xl">
+                        <div className="absolute right-0 mt-2 max-h-[calc(100vh-5rem)] w-60 overflow-y-auto rounded-2xl border border-blue-100 bg-surface py-2 text-fg shadow-2xl dark:border-border">
                           <div className="border-b border-border px-4 py-2.5">
                             <p className="truncate text-sm font-extrabold text-fg">
                               {user.name}
@@ -599,8 +554,8 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                               className={cn(
                                 "mt-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold",
                                 isAdmin
-                                  ? "bg-rose-500/15 text-rose-500"
-                                  : "bg-indigo-500/15 text-indigo-500",
+                                  ? "bg-blue-500/15 text-blue-700 dark:text-sky-300"
+                                  : "bg-blue-500/15 text-blue-600 dark:text-sky-300",
                               )}
                             >
                               {isAdmin ? (
@@ -623,7 +578,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                                 <Link
                                   href="/admin"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-indigo-600 transition hover:bg-surface-2 dark:text-indigo-400"
+                                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-blue-600 transition hover:bg-blue-50/60 dark:text-sky-400 dark:hover:bg-surface-2"
                                 >
                                   <ShieldCheck className="h-4 w-4" />
                                   Vào trang Quản trị (/admin)
@@ -631,9 +586,9 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                                 <Link
                                   href="/admin/residence"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <ClipboardList className="h-4 w-4 text-indigo-500" />
+                                  <ClipboardList className="h-4 w-4 text-blue-600" />
                                   Xét duyệt KTX
                                 </Link>
                               </>
@@ -642,18 +597,18 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                                 <Link
                                   href="/residence"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <Home className="h-4 w-4 text-indigo-500" />
+                                  <Home className="h-4 w-4 text-blue-600" />
                                   Hồ sơ lưu trú
                                 </Link>
                                 {user.roles?.includes("dorm_manager") && (
                                   <Link
                                     href="/admin/residence"
                                     onClick={() => setUserMenuOpen(false)}
-                                    className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                    className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                   >
-                                    <ClipboardList className="h-4 w-4 text-indigo-500" />
+                                    <ClipboardList className="h-4 w-4 text-blue-600" />
                                     Xét duyệt KTX
                                   </Link>
                                 )}
@@ -661,96 +616,96 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                                   <Link
                                     href="/residence/services"
                                     onClick={() => setUserMenuOpen(false)}
-                                    className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                    className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                   >
-                                    <ClipboardList className="h-4 w-4 text-indigo-500" />
+                                    <ClipboardList className="h-4 w-4 text-blue-600" />
                                     Xử lý yêu cầu KTX
                                   </Link>
                                 )}
                                 <Link
                                   href="/dashboard"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <Grid className="h-4 w-4 text-indigo-500" />
+                                  <Grid className="h-4 w-4 text-blue-600" />
                                   Bảng điều khiển
                                 </Link>
                                 <Link
                                   href="/profile"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <UserCheck className="h-4 w-4 text-indigo-500" />
+                                  <UserCheck className="h-4 w-4 text-blue-600" />
                                   Hồ sơ cá nhân
                                 </Link>
                                 <Link
                                   href="/my-listings"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <PlusCircle className="h-4 w-4 text-indigo-500" />
+                                  <PlusCircle className="h-4 w-4 text-blue-600" />
                                   Tin đăng của tôi
                                 </Link>
                                 <Link
                                   href="/transactions"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <ClipboardList className="h-4 w-4 text-indigo-500" />
+                                  <ClipboardList className="h-4 w-4 text-blue-600" />
                                   Giao dịch
                                 </Link>
                                 <Link
                                   href="/wishlist"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <Heart className="h-4 w-4 text-rose-500" />
+                                  <Heart className="h-4 w-4 text-blue-600" />
                                   Yêu thích
                                 </Link>
                                 <Link
                                   href="/chat"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <MessageCircle className="h-4 w-4 text-indigo-500" />
+                                  <MessageCircle className="h-4 w-4 text-blue-600" />
                                   Tin nhắn
                                 </Link>
                                 <Link
                                   href="/notifications"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <Bell className="h-4 w-4 text-amber-500" />
+                                  <Bell className="h-4 w-4 text-blue-600" />
                                   Thông báo
                                 </Link>
                                 <Link
                                   href="/rewards"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <Coins className="h-4 w-4 text-amber-500" />
+                                  <Coins className="h-4 w-4 text-blue-600" />
                                   Xu & điểm thưởng
                                 </Link>
                                 <Link
                                   href="/products/create"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <PlusCircle className="h-4 w-4 text-indigo-500" />
+                                  <PlusCircle className="h-4 w-4 text-blue-600" />
                                   Đăng bán
                                 </Link>
                                 <Link
                                   href="/products"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                                 >
-                                  <ShoppingBag className="h-4 w-4 text-indigo-500" />
+                                  <ShoppingBag className="h-4 w-4 text-blue-600" />
                                   Khám phá sản phẩm
                                 </Link>
                                 <Link
                                   href="/#giveaway"
                                   onClick={() => setUserMenuOpen(false)}
-                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-amber-600 transition hover:bg-surface-2 dark:text-amber-400"
+                                  className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-50/60 dark:text-sky-400 dark:hover:bg-surface-2"
                                 >
                                   <Gift className="h-4 w-4" />
                                   Sự kiện Giveaway
@@ -761,9 +716,9 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                             <Link
                               href="/login-role"
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-surface-2"
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-fg transition hover:bg-blue-50/60 dark:hover:bg-surface-2"
                             >
-                              <Sparkles className="h-4 w-4 text-purple-500" />
+                              <Sparkles className="h-4 w-4 text-blue-600" />
                               Chuyển cổng đăng nhập
                             </Link>
                           </div>
@@ -789,7 +744,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
 
                     <Link
                       href="/login-role"
-                      className="inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold whitespace-nowrap text-white/90 transition hover:bg-white/10 hover:text-white"
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold whitespace-nowrap text-slate-700 transition hover:bg-blue-50 hover:text-blue-600 dark:text-slate-200 dark:hover:bg-slate-800"
                     >
                       <LogIn className="h-4 w-4 shrink-0" />
                       Đăng nhập
@@ -797,7 +752,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
 
                     <Link
                       href="/register"
-                      className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-linear-to-r from-indigo-500 to-purple-500 px-3.5 py-2 text-sm font-bold whitespace-nowrap text-white shadow-[0_4px_14px_rgba(99,102,241,0.45)] transition hover:-translate-y-0.5 hover:brightness-110"
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-linear-to-r from-blue-600 to-sky-600 px-3.5 py-2 text-sm font-bold whitespace-nowrap text-white shadow-[0_4px_14px_rgba(37,99,235,0.3)] transition hover:-translate-y-0.5 hover:brightness-105"
                     >
                       <UserPlus className="h-4 w-4 shrink-0" />
                       Đăng ký
@@ -812,7 +767,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                   type="button"
                   onClick={() => setMobileOpen((prev) => !prev)}
                   aria-label="Mở menu"
-                  className="rounded-xl p-2 text-white hover:bg-white/10"
+                  className="rounded-xl p-2 text-slate-700 hover:bg-blue-50 dark:text-white dark:hover:bg-slate-800"
                 >
                   {mobileOpen ? (
                     <X className="h-6 w-6" />
@@ -824,19 +779,28 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
             </div>
 
             {mobileOpen && (
-              <div className="space-y-3 border-t border-white/10 pt-3 pb-4 xl:hidden">
+              <div className="space-y-3 border-t border-blue-100 pt-3 pb-4 xl:hidden dark:border-slate-800">
                 <form onSubmit={handleSearchSubmit}>
-                  <div className="flex overflow-hidden rounded-full border border-white/15 bg-white/12">
+                  <div className="flex items-center overflow-hidden rounded-full border border-blue-200 bg-blue-50/50 dark:border-slate-700 dark:bg-slate-800">
+                    <Sparkles className="ml-3.5 h-4 w-4 shrink-0 text-blue-600" />
                     <input
                       type="text"
                       value={searchText}
                       onChange={(e) => setSearchText(e.target.value)}
-                      placeholder="Tìm sản phẩm..."
-                      className="flex-1 bg-transparent px-4 py-2 text-sm text-white placeholder:text-white/60 focus:outline-none"
+                      placeholder="Tìm bằng AI: sách, đồ KTX, ảnh mẫu..."
+                      className="flex-1 bg-transparent px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none dark:text-white"
                     />
                     <button
+                      type="button"
+                      onClick={() => navImageInputRef.current?.click()}
+                      aria-label="Tìm bằng hình ảnh AI"
+                      className="px-2.5 text-blue-600"
+                    >
+                      <Camera className="h-4 w-4" />
+                    </button>
+                    <button
                       type="submit"
-                      className="bg-white/20 px-4 text-white"
+                      className="bg-blue-600 px-4 py-2 text-white"
                     >
                       <Search className="h-4 w-4" />
                     </button>
@@ -847,7 +811,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                   <Link
                     href="/"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 dark:text-slate-200 dark:hover:bg-slate-800"
                   >
                     <Home className="h-4 w-4" />
                     Trang chủ
@@ -855,31 +819,15 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                   <Link
                     href="/products"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 dark:text-slate-200 dark:hover:bg-slate-800"
                   >
                     <Grid className="h-4 w-4" />
                     Sản phẩm
                   </Link>
                   <Link
-                    href="/marketplace/matching"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    Ghép nối sản phẩm
-                  </Link>
-                  <Link
-                    href="/requests"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-indigo-200 hover:bg-white/10"
-                  >
-                    <Sparkles className="h-4 w-4 text-fuchsia-300" />
-                    Ghép nối AI (Request–Offer)
-                  </Link>
-                  <Link
                     href="/#giveaway"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-amber-300 hover:bg-white/10"
+                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 dark:text-sky-300 dark:hover:bg-slate-800"
                   >
                     <Gift className="h-4 w-4" />
                     Sự kiện Giveaway
@@ -892,7 +840,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/admin"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl bg-rose-500/20 px-3 py-2.5 text-sm font-bold text-rose-200"
+                            className="flex items-center gap-2 rounded-xl bg-blue-50 px-3 py-2.5 text-sm font-bold text-blue-700 dark:bg-blue-500/20 dark:text-sky-200"
                           >
                             <ShieldCheck className="h-4 w-4" />
                             Vào Admin Panel (/admin)
@@ -900,7 +848,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/admin/residence"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
                             <ClipboardList className="h-4 w-4" />
                             Xét duyệt KTX
@@ -912,7 +860,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/residence"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
                             <Home className="h-4 w-4" />
                             Hồ sơ lưu trú
@@ -921,7 +869,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                             <Link
                               href="/admin/residence"
                               onClick={() => setMobileOpen(false)}
-                              className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                              className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                             >
                               <ClipboardList className="h-4 w-4" />
                               Xét duyệt KTX
@@ -931,7 +879,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                             <Link
                               href="/residence/services"
                               onClick={() => setMobileOpen(false)}
-                              className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                              className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                             >
                               <ClipboardList className="h-4 w-4" />
                               Xử lý yêu cầu KTX
@@ -940,7 +888,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/dashboard"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
                             <Grid className="h-4 w-4" />
                             Bảng điều khiển
@@ -948,7 +896,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/profile"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
                             <UserCheck className="h-4 w-4" />
                             Hồ sơ cá nhân
@@ -956,7 +904,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/my-listings"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
                             <PlusCircle className="h-4 w-4" />
                             Tin đăng của tôi
@@ -964,7 +912,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/transactions"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
                             <ClipboardList className="h-4 w-4" />
                             Giao dịch
@@ -972,7 +920,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/wishlist"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
                             <Heart className="h-4 w-4" />
                             Yêu thích
@@ -980,7 +928,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/chat"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
                             <MessageCircle className="h-4 w-4" />
                             Tin nhắn
@@ -988,7 +936,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/notifications"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
                             <Bell className="h-4 w-4" />
                             Thông báo
@@ -996,7 +944,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                           <Link
                             href="/rewards"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                            className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
                             <Coins className="h-4 w-4" />
                             Xu & điểm thưởng
@@ -1006,7 +954,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-rose-300 hover:bg-white/10"
+                        className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-slate-800"
                       >
                         <LogOut className="h-4 w-4" />
                         Đăng xuất ({user.name})
@@ -1017,7 +965,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                       <Link
                         href="/login-role"
                         onClick={() => setMobileOpen(false)}
-                        className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10"
+                        className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 dark:text-slate-200 dark:hover:bg-slate-800"
                       >
                         <LogIn className="h-4 w-4" />
                         Đăng nhập (Sinh viên / Admin)
@@ -1025,7 +973,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                       <Link
                         href="/register"
                         onClick={() => setMobileOpen(false)}
-                        className="flex items-center gap-2 rounded-xl bg-indigo-600 px-3 py-2.5 text-sm font-bold text-white"
+                        className="flex items-center gap-2 rounded-xl bg-blue-600 px-3 py-2.5 text-sm font-bold text-white"
                       >
                         <UserPlus className="h-4 w-4" />
                         Đăng ký tài khoản
@@ -1048,30 +996,32 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
           </div>
         </main>
 
-        <footer className="mt-16 border-t border-white/10 bg-[#0f0c29] py-12 text-white/75">
+        <footer className="mt-16 border-t border-blue-100 bg-white py-12 text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
           <div className="mx-auto max-w-7xl px-4">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
               <div className="md:col-span-5">
-                <div className="flex items-center gap-2 text-lg font-black text-white">
-                  <ShoppingBag className="h-5 w-5 text-indigo-400" />
-                  SinhVien<span className="text-indigo-300">Market</span>
+                <div className="flex items-center gap-2 text-lg font-black text-slate-900 dark:text-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
+                    <ShoppingBag className="h-4 w-4" />
+                  </div>
+                  SinhVien<span className="text-blue-600 dark:text-sky-400">Market</span>
                 </div>
-                <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65">
+                <p className="mt-3 max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                   Nền tảng mua bán, trao đổi & đấu giá ngược dành riêng cho sinh viên{" "}
-                  <strong className="text-white/90">KTX Đại học Quốc gia</strong>.
+                  <strong className="text-slate-800 dark:text-white">KTX Đại học Quốc gia</strong>.
                   Tiết kiệm chi phí, kết nối cộng đồng sinh viên.
                 </p>
               </div>
 
               <div className="md:col-span-3">
-                <h3 className="mb-3 text-xs font-extrabold tracking-wider text-white uppercase">
+                <h3 className="mb-3 text-xs font-extrabold tracking-wider text-slate-900 uppercase dark:text-white">
                   Khám phá
                 </h3>
                 <ul className="space-y-2 text-sm">
                   <li>
                     <Link
                       href="/products"
-                      className="text-white/65 transition hover:text-white"
+                      className="text-slate-600 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-white"
                     >
                       Tất cả sản phẩm
                     </Link>
@@ -1079,7 +1029,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                   <li>
                     <Link
                       href="/products?type=auction"
-                      className="text-white/65 transition hover:text-white"
+                      className="text-slate-600 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-white"
                     >
                       Đấu giá ngược
                     </Link>
@@ -1087,7 +1037,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                   <li>
                     <Link
                       href="/products?type=exchange"
-                      className="text-white/65 transition hover:text-white"
+                      className="text-slate-600 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-white"
                     >
                       Trao đổi đồ dùng
                     </Link>
@@ -1095,7 +1045,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                   <li>
                     <Link
                       href="/leaderboard"
-                      className="text-white/65 transition hover:text-white"
+                      className="text-slate-600 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-white"
                     >
                       Bảng xếp hạng người bán
                     </Link>
@@ -1104,7 +1054,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
               </div>
 
               <div className="md:col-span-4">
-                <h3 className="mb-3 text-xs font-extrabold tracking-wider text-white uppercase">
+                <h3 className="mb-3 text-xs font-extrabold tracking-wider text-slate-900 uppercase dark:text-white">
                   Cổng truy cập nhanh
                 </h3>
                 <ul className="space-y-2 text-sm">
@@ -1115,7 +1065,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                         event.preventDefault();
                         void handleQuickAccessClick({ href: "/login-role" });
                       }}
-                      className="text-white/65 transition hover:text-white"
+                      className="text-slate-600 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-white"
                     >
                       Chọn cổng đăng nhập (Sinh viên / Quản trị)
                     </Link>
@@ -1127,7 +1077,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                         event.preventDefault();
                         void handleQuickAccessClick({ href: "/login" });
                       }}
-                      className="text-white/65 transition hover:text-white"
+                      className="text-slate-600 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-white"
                     >
                       Đăng nhập Sinh viên
                     </Link>
@@ -1139,7 +1089,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
                         event.preventDefault();
                         void handleQuickAccessClick({ href: "/admin-login" });
                       }}
-                      className="text-indigo-300 transition hover:text-indigo-200"
+                      className="font-bold text-blue-600 transition hover:text-blue-700 dark:text-sky-400"
                     >
                       🛡️ Cổng Quản trị viên (Admin Panel)
                     </Link>
@@ -1148,7 +1098,7 @@ export function MainShell({ children, initialSearch = "" }: MainShellProps) {
               </div>
             </div>
 
-            <div className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-white/45">
+            <div className="mt-10 border-t border-blue-100 pt-6 text-center text-xs text-slate-400 dark:border-slate-800">
               © 2026 SinhVienMarket — Hệ thống Thương mại Điện tử Sinh viên (Next.js 16 + React 19 + Tailwind CSS 4)
             </div>
           </div>

@@ -84,8 +84,8 @@ function DashboardContent() {
       label: "Tổng người dùng",
       value: (stats?.totalUsers ?? 0).toLocaleString("vi-VN"),
       icon: Users,
-      bg: "from-indigo-500 to-purple-500",
-      shadow: "shadow-indigo-500/40",
+      bg: "from-blue-500 to-sky-500",
+      shadow: "shadow-blue-500/40",
       badge: "Tài khoản",
       trend: "+12%",
     },
@@ -122,8 +122,8 @@ function DashboardContent() {
     {
       href: "/admin/users",
       icon: Users,
-      bg: "from-indigo-500 to-purple-500",
-      shadow: "shadow-indigo-500/40",
+      bg: "from-blue-500 to-sky-500",
+      shadow: "shadow-blue-500/40",
       title: "Người dùng",
       desc: "Xem & khóa TK",
     },
@@ -154,8 +154,8 @@ function DashboardContent() {
     {
       href: "/admin/giveaways",
       icon: Gift,
-      bg: "from-pink-500 to-orange-500",
-      shadow: "shadow-pink-500/40",
+      bg: "from-sky-500 to-orange-500",
+      shadow: "shadow-sky-500/40",
       title: "Giveaway",
       desc: "Tổ chức & quay số",
     },
@@ -179,12 +179,12 @@ function DashboardContent() {
           {loadError}
         </div>
       )}
-      <div className="relative mb-8 flex flex-col items-center justify-between gap-6 overflow-hidden rounded-[24px] bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#4f46e5] p-8 shadow-[0_20px_60px_rgba(99,102,241,0.3)] md:flex-row md:p-10">
-        <div className="pointer-events-none absolute -top-[100px] right-[50px] h-[350px] w-[350px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.35)_0%,transparent_65%)]" />
-        <div className="pointer-events-none absolute -bottom-[80px] left-[20%] h-[250px] w-[250px] rounded-full bg-[radial-gradient(circle,rgba(236,72,153,0.25)_0%,transparent_65%)]" />
+      <div className="relative mb-8 flex flex-col items-center justify-between gap-6 overflow-hidden rounded-[24px] bg-gradient-to-br from-blue-700 via-blue-600 to-sky-600 p-8 shadow-[0_16px_44px_rgba(37,99,235,0.22)] md:flex-row md:p-10">
+        <div className="pointer-events-none absolute -top-[100px] right-[50px] h-[350px] w-[350px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,transparent_65%)]" />
+        <div className="pointer-events-none absolute -bottom-[80px] left-[20%] h-[250px] w-[250px] rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.25)_0%,transparent_65%)]" />
 
         <div className="relative z-10 flex w-full items-center gap-6 md:w-auto">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] bg-gradient-to-br from-purple-400 to-pink-400 text-2xl font-black text-white shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] bg-gradient-to-br from-sky-400 to-sky-400 text-2xl font-black text-white shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
             {adminInitial}
           </div>
           <div>
@@ -276,7 +276,7 @@ function DashboardContent() {
             </div>
             <Link
               href="/admin/products"
-              className="flex items-center gap-1.5 text-sm font-bold text-indigo-500 no-underline transition-all hover:gap-2.5"
+              className="flex items-center gap-1.5 text-sm font-bold text-blue-500 no-underline transition-all hover:gap-2.5"
             >
               Xem tất cả <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
@@ -295,7 +295,7 @@ function DashboardContent() {
                       ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"
                       : p.type === "exchange"
                         ? "bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300"
-                        : "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300";
+                        : "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300";
                   const typeText =
                     p.type === "auction"
                       ? "⚡ Đấu giá"
@@ -341,7 +341,7 @@ function DashboardContent() {
             </div>
             <Link
               href="/admin/reports"
-              className="flex items-center gap-1.5 text-sm font-bold text-indigo-500 no-underline transition-all hover:gap-2.5"
+              className="flex items-center gap-1.5 text-sm font-bold text-blue-500 no-underline transition-all hover:gap-2.5"
             >
               Báo cáo <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>

@@ -1,10 +1,11 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("AI Request-Offer Matching & Clean Marketplace UX Flows", () => {
-  test("loads clean student request page from navbar, eliminates wrong tail items on R01, and compares models via AI Lab modal", async ({
+  test("loads clean student request page from navbar and eliminates wrong tail items on R01", async ({
     page,
   }) => {
     await page.goto("/");
+    await page.getByTestId("nav-matching-trigger").click();
     const navLink = page.getByRole("link", { name: /Ghép nối AI/i }).first();
     await expect(navLink).toBeVisible();
 
@@ -23,15 +24,9 @@ test.describe("AI Request-Offer Matching & Clean Marketplace UX Flows", () => {
     await expect(page.getByTestId("ranked-offer-O01")).toBeVisible();
     await expect(page.getByTestId("ranked-offer-O04")).toHaveCount(0);
 
-    // Chọn R28 (ảnh bàn phím cơ tìm tin chỉ có chữ O06): Jina-CLIP-v2 tìm đúng O06
+    // Chọn R28 (ảnh bàn phím cơ tìm tin chỉ có chữ O06): tìm đúng O06
     await page.getByTestId("request-item-R28").click();
     await expect(page.getByTestId("ranked-offer-O06")).toBeVisible();
-
-    // Mở chế độ Đánh giá AI -> chuyển sang đối chứng Keyword BM25 -> thất bại trên truy vấn ảnh R28
-    await page.getByTestId("toggle-ai-lab-btn").click();
-    await page.getByTestId("model-switch-keyword-bm25-vi").click();
-    await page.getByRole("button", { name: /Áp dụng mô hình & Đóng/i }).click();
-    await expect(page.getByTestId("ranked-offer-O06")).toHaveCount(0);
   });
 
   test("triggers friendly Counterfactual suggestion on R20 and unlocks O18 upon user consent", async ({
@@ -108,11 +103,11 @@ test.describe("AI Request-Offer Matching & Clean Marketplace UX Flows", () => {
     await page.getByTestId("request-search-submit-btn").click();
     await expect(page.getByTestId("ranked-offer-O01")).toBeVisible();
 
-    // Khi tìm "bàn" rồi bấm sang danh mục không khớp "Xe cộ", cả cột trái lẫn cột sản phẩm bên phải đều về 0 (không giữ kết quả cũ)
+    // Khi tìm "bàn" rồi bấm sang danh mục không khớp "Nhạc cụ", cả cột trái lẫn cột sản phẩm bên phải đều về 0 (không giữ kết quả cũ)
     await searchInput.fill("bàn");
     await searchInput.press("Enter");
     await expect(page.getByTestId("ranked-offer-O13")).toBeVisible();
-    await page.getByTestId("cat-chip-phuong_tien").click();
+    await page.getByTestId("cat-chip-nhac_cu").click();
     await expect(page.getByText(/Sinh viên đang cần tìm \(0\)/i)).toBeVisible();
     await expect(
       page.getByText(/Sản phẩm gợi ý cho nhu cầu này \(0\)/i),

@@ -41,9 +41,9 @@ const PRODUCT_DESCRIPTIONS: Record<number, string> = {
   101: "Giáo trình Giải tích 1 & 2 trọn bộ dành cho sinh viên năm nhất khối Kỹ thuật – CNTT, giấy trắng sạch đẹp.",
   102: "Tai nghe chụp tai Sony WH-CH520 pin 50 giờ, kết nối đa điểm học online không đau tai.",
   103: "Ấm đun siêu tốc Sunhouse 1.8L inox 304 tự ngắt an toàn chuẩn nội quy KTX.",
-  104: "Xe đạp thể thao Martin 107 khung nhôm nhẹ, chạy mượt trong khuôn viên ĐHQG.",
+  104: "Máy tính bỏ túi Casio fx-580VN X chính hãng dùng thi học kỳ kỹ thuật, màn hình rõ nét.",
   105: "Bàn phím cơ không dây Keychron K6 Red Switch gõ êm không ồn phòng KTX ban đêm.",
-  106: "Đàn Guitar Acoustic Rosen G11 gỗ nguyên tấm kèm bao da 3 lớp và capo.",
+  106: "Bàn học gấp gọn gỗ thông đặt giường tầng KTX chắc chắn, mặt gỗ chống thấm nước.",
   107: "Bộ giáo trình Lập trình Hướng đối tượng C++ & Java có ghi chú trọng tâm ôn thi.",
   108: "Đèn bàn học LED chống cận Xiaomi Mi Lite 3 chế độ sáng cảm ứng.",
 };
@@ -176,25 +176,53 @@ export const indexMarketplaceProducts = async () => {
   );
 };
 
+const MOCK_EVAL_KEY = "svm_mock_matching_evals_v1";
+
+const DEFAULT_EVALUATIONS: MatchingEvaluation[] = [
+  {
+    id: 1,
+    query_text: "sách giải tích giáo trình năm nhất",
+    relevant_product_ids: [101, 107],
+    result_product_ids: [101, 107],
+    precision_at_5: "1.0000",
+    recall_at_5: "1.0000",
+    mrr_at_5: "1.0000",
+    ndcg_at_5: "1.0000",
+    model_key: "local-feature-hash-v1-256",
+    evaluator_name: "Quản trị viên KTX",
+    created_at: "2026-11-12 10:00:00",
+  },
+  {
+    id: 2,
+    query_text: "bàn phím cơ học code phòng KTX",
+    relevant_product_ids: [102, 105],
+    result_product_ids: [102, 105],
+    precision_at_5: "1.0000",
+    recall_at_5: "1.0000",
+    mrr_at_5: "1.0000",
+    ndcg_at_5: "1.0000",
+    model_key: "local-feature-hash-v1-256",
+    evaluator_name: "Quản trị viên KTX",
+    created_at: "2026-11-13 14:30:00",
+  },
+];
+
+function readMockEvaluations(): MatchingEvaluation[] {
+  if (typeof window === "undefined") return DEFAULT_EVALUATIONS;
+  try {
+    const raw = window.localStorage.getItem(MOCK_EVAL_KEY);
+    if (!raw) return DEFAULT_EVALUATIONS;
+    return JSON.parse(raw) as MatchingEvaluation[];
+  } catch {
+    return DEFAULT_EVALUATIONS;
+  }
+}
+
 export const getMatchingEvaluations = async (): Promise<
   MatchingEvaluation[]
 > => {
   if (USE_MOCK) {
-    return [
-      {
-        id: 1,
-        query_text: "sách giải tích giáo trình năm nhất",
-        relevant_product_ids: [101, 107],
-        result_product_ids: [101, 107],
-        precision_at_5: "1.0000",
-        recall_at_5: "1.0000",
-        mrr_at_5: "1.0000",
-        ndcg_at_5: "1.0000",
-        model_key: "local-feature-hash-v1-256",
-        evaluator_name: "Quản trị viên KTX",
-        created_at: "2026-11-12 10:00:00",
-      },
-    ];
+    return readMockEvaluations();
   }
   return apiRequest<MatchingEvaluation[]>(
     "/admin/marketplace/matching/evaluations",
@@ -215,12 +243,38 @@ export const saveMatchingEvaluation = async (
       resultProductIds.length > 0 ? hits / Math.min(5, resultProductIds.length) : 0;
     const r5 =
       relevantProductIds.length > 0 ? hits / relevantProductIds.length : 0;
+    const mrr = hits > 0 ? 1 : 0;
+    const nextId = Date.now();
+    const current = readMockEvaluations();
+    const entry: MatchingEvaluation = {
+      id: nextId,
+      query_text: queryText,
+      relevant_product_ids: relevantProductIds,
+      result_product_ids: resultProductIds,
+      precision_at_5: p5.toFixed(4),
+      recall_at_5: r5.toFixed(4),
+      mrr_at_5: mrr.toFixed(4),
+      ndcg_at_5: p5.toFixed(4),
+      model_key: "local-feature-hash-v1-256",
+      evaluator_name: "Quản trị viên KTX",
+      created_at: new Date().toISOString().slice(0, 19).replace("T", " "),
+    };
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(
+          MOCK_EVAL_KEY,
+          JSON.stringify([entry, ...current]),
+        );
+      } catch {
+        // ignore quota errors
+      }
+    }
     return {
-      id: Date.now(),
+      id: nextId,
       metrics: {
         precisionAt5: p5,
         recallAt5: r5,
-        mrrAt5: hits > 0 ? 1 : 0,
+        mrrAt5: mrr,
         ndcgAt5: p5,
       },
       resultProductIds,

@@ -81,13 +81,22 @@ function WishlistContent() {
           {items.map((item) => (
             <article
               key={item.id}
-              className="overflow-hidden rounded-2xl border border-border bg-surface"
+              className="overflow-hidden rounded-2xl border border-border bg-surface shadow-xs transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
             >
               <Link
                 href={`/products/${item.id}`}
-                className="flex h-40 items-center justify-center bg-surface-2 text-primary"
+                className="flex h-40 items-center justify-center overflow-hidden bg-blue-50/60 text-primary dark:bg-surface-2"
               >
-                <PackageOpen className="h-10 w-10" />
+                {item.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <PackageOpen className="h-10 w-10" />
+                )}
               </Link>
               <div className="p-4">
                 <p className="text-xs font-semibold text-muted">

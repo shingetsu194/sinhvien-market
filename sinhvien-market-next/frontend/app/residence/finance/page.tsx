@@ -195,7 +195,7 @@ function ResidenceFinanceContent() {
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-border bg-surface p-5 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-500">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/15 text-blue-500">
               <Receipt className="h-5 w-5" />
             </div>
             <div>
@@ -255,7 +255,7 @@ function ResidenceFinanceContent() {
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-lg bg-indigo-500/10 px-2.5 py-1 font-mono text-xs font-extrabold text-indigo-600 dark:text-indigo-300">
+                    <span className="rounded-lg bg-blue-500/10 px-2.5 py-1 font-mono text-xs font-extrabold text-blue-600 dark:text-blue-300">
                       {invoice.invoiceNumber}
                     </span>
                     <span
@@ -336,8 +336,8 @@ function ResidenceFinanceContent() {
               </div>
 
               {invoice.outstandingAmount > 0 && (
-                <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-4">
-                  <p className="mb-3 text-xs font-extrabold text-indigo-600 uppercase dark:text-indigo-300">
+                <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4">
+                  <p className="mb-3 text-xs font-extrabold text-blue-600 uppercase dark:text-blue-300">
                     Gửi xác nhận thanh toán cho hóa đơn này
                   </p>
                   <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-4">

@@ -108,7 +108,7 @@ function SectionCard({
         )}
       >
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 text-white">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-sky-500 text-white">
             {icon}
           </div>
           {title}
@@ -201,7 +201,7 @@ function DetailContent() {
 
       <div className="flex flex-col items-start gap-6 lg:flex-row">
         <div className="flex w-full shrink-0 flex-col gap-5 lg:w-[320px]">
-          <div className="relative flex flex-col items-center gap-3 overflow-hidden rounded-[20px] bg-gradient-to-br from-indigo-600 to-purple-600 p-6 text-center text-white shadow-[0_12px_32px_rgba(99,102,241,0.25)]">
+          <div className="relative flex flex-col items-center gap-3 overflow-hidden rounded-[20px] bg-gradient-to-br from-blue-600 to-sky-600 p-6 text-center text-white shadow-[0_12px_32px_rgba(99,102,241,0.25)]">
             <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
             <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
             <div className="relative z-10 flex h-20 w-20 items-center justify-center rounded-full border-4 border-white/40 bg-white/20 text-3xl font-black shadow-lg">
@@ -246,7 +246,7 @@ function DetailContent() {
                     Admin
                   </span>
                 ) : (
-                  <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-[11px] font-bold text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
+                  <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
                     Sinh viên
                   </span>
                 )}
@@ -365,7 +365,7 @@ function DetailContent() {
                             {PRODUCT_TYPE_MAP[prod.type].label}
                           </span>
                         </td>
-                        <td className="px-4 py-3 font-black whitespace-nowrap text-indigo-600 dark:text-indigo-300">
+                        <td className="px-4 py-3 font-black whitespace-nowrap text-blue-600 dark:text-blue-300">
                           {formatVnd(prod.price)}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
@@ -420,7 +420,7 @@ function DetailContent() {
                               🛍️ Người mua
                             </span>
                           ) : (
-                            <span className="rounded-full bg-pink-100 px-2.5 py-0.5 text-[11px] font-bold text-pink-700 dark:bg-pink-500/20 dark:text-pink-300">
+                            <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-[11px] font-bold text-sky-700 dark:bg-sky-500/20 dark:text-sky-300">
                               🏷️ Người bán
                             </span>
                           )}

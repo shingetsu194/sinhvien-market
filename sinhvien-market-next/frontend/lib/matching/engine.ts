@@ -30,7 +30,6 @@ export const CATEGORY_LABELS: Record<MatchingCategorySlug, string> = {
   hoc_tap: "Đồ dùng học tập",
   gia_dung: "Đồ gia dụng KTX",
   thoi_trang: "Thời trang sinh viên",
-  phuong_tien: "Phương tiện di chuyển",
   nhac_cu: "Nhạc cụ & Giải trí",
 };
 

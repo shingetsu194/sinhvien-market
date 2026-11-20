@@ -22,7 +22,7 @@ const themeInitScript = `
 (function () {
   try {
     var saved = localStorage.getItem('svmarket_theme');
-    var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var dark = saved === 'dark';
     document.documentElement.classList.toggle('dark', dark);
   } catch (e) {}
 })();

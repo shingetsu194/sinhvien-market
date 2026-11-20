@@ -271,7 +271,7 @@ function BannersContent() {
                         {b.title || "Không tên"}
                       </div>
                       {b.link ? (
-                        <span className="flex items-center gap-1 text-xs font-medium text-indigo-500">
+                        <span className="flex items-center gap-1 text-xs font-medium text-blue-500">
                           <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
                           {b.link}
                         </span>
@@ -309,7 +309,7 @@ function BannersContent() {
                           onClick={() => openEdit(b)}
                           title="Sửa"
                           aria-label={`Sửa banner ${b.title}`}
-                          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-indigo-300 bg-transparent text-indigo-500 transition-all hover:border-indigo-500 hover:bg-indigo-500 hover:text-white dark:border-indigo-800"
+                          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-blue-300 bg-transparent text-blue-500 transition-all hover:border-blue-500 hover:bg-blue-500 hover:text-white dark:border-blue-800"
                         >
                           <Pencil className="h-4 w-4" aria-hidden="true" />
                         </button>
@@ -360,7 +360,7 @@ function BannersContent() {
                   type="file"
                   accept="image/jpeg,image/png,image/gif,image/webp"
                   onChange={handleFile}
-                  className="w-full cursor-pointer text-sm text-muted file:mr-4 file:cursor-pointer file:rounded-xl file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-xs file:font-bold file:text-indigo-700 hover:file:bg-indigo-100"
+                  className="w-full cursor-pointer text-sm text-muted file:mr-4 file:cursor-pointer file:rounded-xl file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-xs file:font-bold file:text-blue-700 hover:file:bg-blue-100"
                 />
                 {errors.image && (
                   <p role="alert" className="mt-1.5 text-xs font-semibold text-red-500">

@@ -4,7 +4,6 @@ export type MatchingCategorySlug =
   | "hoc_tap"
   | "gia_dung"
   | "thoi_trang"
-  | "phuong_tien"
   | "nhac_cu";
 
 export type OfferType = "sale" | "exchange" | "auction";

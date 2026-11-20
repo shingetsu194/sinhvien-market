@@ -259,7 +259,7 @@ function ResidenceContent() {
           <div className="mb-6 grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-500">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/15 text-blue-500">
                   <UserCheck className="h-5 w-5" />
                 </div>
                 <div>
@@ -448,7 +448,7 @@ function ResidenceContent() {
             <div className="space-y-6">
               <section className="rounded-3xl border border-border bg-surface p-5 shadow-xs sm:p-7">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-500">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/15 text-blue-500">
                     <Building2 className="h-5 w-5" />
                   </div>
                   <div>
@@ -603,11 +603,11 @@ function ResidenceContent() {
                       return (
                         <li
                           key={contract.id}
-                          className="rounded-2xl border border-indigo-500/25 bg-indigo-500/5 p-4"
+                          className="rounded-2xl border border-blue-500/25 bg-blue-500/5 p-4"
                         >
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <span className="inline-flex items-center gap-1.5 text-sm font-extrabold text-fg">
-                              <ShieldCheck className="h-4 w-4 text-indigo-500" />
+                              <ShieldCheck className="h-4 w-4 text-blue-500" />
                               {contract.contractNumber}
                             </span>
                             <span

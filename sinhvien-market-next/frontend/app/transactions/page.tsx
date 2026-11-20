@@ -43,11 +43,11 @@ const STATUS: Record<
   },
   delivered: {
     label: "Đã giao",
-    className: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
+    className: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
   },
   received: {
     label: "Đã nhận",
-    className: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
+    className: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
   },
   completed: {
     label: "Hoàn tất",
@@ -171,7 +171,7 @@ function TransactionsContent() {
                     <span
                       className={`mt-0.5 rounded-xl p-2 ${
                         seller
-                          ? "bg-indigo-500/10 text-indigo-600"
+                          ? "bg-blue-500/10 text-blue-600"
                           : "bg-emerald-500/10 text-emerald-600"
                       }`}
                     >

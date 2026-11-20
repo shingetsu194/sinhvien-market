@@ -168,7 +168,7 @@ function CategoriesContent() {
                       {i + 1}
                     </td>
                     <td className="px-5 py-4">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-300">
                         <CategoryIcon icon={cat.icon} />
                       </div>
                     </td>
@@ -176,7 +176,7 @@ function CategoriesContent() {
                       {cat.name}
                     </td>
                     <td className="px-5 py-4">
-                      <code className="rounded-lg bg-surface-2 px-2.5 py-1 font-mono text-xs font-bold text-indigo-600 dark:text-indigo-300">
+                      <code className="rounded-lg bg-surface-2 px-2.5 py-1 font-mono text-xs font-bold text-blue-600 dark:text-blue-300">
                         {cat.slug}
                       </code>
                     </td>
@@ -190,7 +190,7 @@ function CategoriesContent() {
                           onClick={() => openEdit(cat)}
                           title="Sửa"
                           aria-label={`Sửa danh mục ${cat.name}`}
-                          className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-indigo-300 bg-transparent text-indigo-500 transition-all hover:border-indigo-500 hover:bg-indigo-500 hover:text-white dark:border-indigo-800"
+                          className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-blue-300 bg-transparent text-blue-500 transition-all hover:border-blue-500 hover:bg-blue-500 hover:text-white dark:border-blue-800"
                         >
                           <Pencil className="h-4 w-4" aria-hidden="true" />
                         </button>

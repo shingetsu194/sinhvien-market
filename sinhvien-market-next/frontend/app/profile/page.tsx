@@ -359,7 +359,7 @@ function ProfileContent() {
             />
             <h2 className="mt-3 font-extrabold text-fg">{profile.name}</h2>
             <p className="mt-0.5 truncate text-xs text-muted">{profile.email}</p>
-            <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-bold text-indigo-600 dark:text-indigo-300">
+            <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-xs font-bold text-blue-600 dark:text-blue-300">
               <ShieldCheck className="h-3.5 w-3.5" />
               {profile.rankName}
             </span>
@@ -786,7 +786,7 @@ function Avatar({
     />
   ) : (
     <span
-      className={`${sizeClass} inline-flex items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-purple-600 font-black text-white shadow-md`}
+      className={`${sizeClass} inline-flex items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-sky-600 font-black text-white shadow-md`}
     >
       {name.trim().charAt(0).toLocaleUpperCase("vi") || "U"}
     </span>

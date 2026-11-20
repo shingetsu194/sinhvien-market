@@ -60,7 +60,7 @@ const STATUS_META: Record<
   },
   assigned: {
     label: "Đã phân công KTV",
-    cls: "bg-indigo-500/15 text-indigo-600 dark:text-indigo-300",
+    cls: "bg-blue-500/15 text-blue-600 dark:text-blue-300",
   },
   in_progress: {
     label: "Đang xử lý",
@@ -247,7 +247,7 @@ function ServicesContent() {
             <section className="rounded-3xl border border-border bg-surface p-5 shadow-xs sm:p-6">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-500">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/15 text-blue-500">
                     <Wrench className="h-5 w-5" />
                   </div>
                   <div>
@@ -261,7 +261,7 @@ function ServicesContent() {
                 </div>
                 <Link
                   href="/residence/assistant"
-                  className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-xl bg-indigo-500/10 px-3 py-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-300"
+                  className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-xl bg-blue-500/10 px-3 py-1.5 text-xs font-bold text-blue-600 dark:text-blue-300"
                 >
                   <MessageSquareMore className="h-3.5 w-3.5" />
                   Hỏi Nội quy
@@ -415,7 +415,7 @@ function ServicesContent() {
                           {pMeta.label}
                         </span>
                         {item.roomNumber && (
-                          <span className="rounded-lg bg-indigo-500/10 px-2 py-0.5 text-[11px] font-bold text-indigo-500">
+                          <span className="rounded-lg bg-blue-500/10 px-2 py-0.5 text-[11px] font-bold text-blue-500">
                             Phòng {item.roomNumber}
                           </span>
                         )}
@@ -439,7 +439,7 @@ function ServicesContent() {
 
                     <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted">
                       <span className="inline-flex items-center gap-1">
-                        <UserCheck className="h-3.5 w-3.5 text-indigo-500" />
+                        <UserCheck className="h-3.5 w-3.5 text-blue-500" />
                         {item.assignedName
                           ? `Phụ trách: ${item.assignedName}`
                           : "Đang chờ phân công KTV"}
@@ -447,8 +447,8 @@ function ServicesContent() {
                     </div>
 
                     {item.aiCategory && (
-                      <div className="mt-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-3 text-xs">
-                        <div className="flex items-center gap-1.5 font-extrabold text-indigo-600 dark:text-indigo-300">
+                      <div className="mt-3 rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 text-xs">
+                        <div className="flex items-center gap-1.5 font-extrabold text-blue-600 dark:text-blue-300">
                           <Sparkles className="h-3.5 w-3.5" />
                           Phân loại tự động: {item.aiCategory} · Gợi ý ưu tiên{" "}
                           {item.aiRecommendedPriority} (

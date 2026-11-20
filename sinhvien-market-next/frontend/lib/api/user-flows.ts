@@ -125,7 +125,7 @@ interface MockFlowStore {
   listingStatuses: Record<number, ProductStatus>;
 }
 
-const STORAGE_KEY = "svm_mock_user_flows_v1";
+const STORAGE_KEY = "svm_mock_user_flows_v2";
 
 function readStore(): MockFlowStore {
   if (typeof localStorage === "undefined") {
@@ -145,10 +145,10 @@ function readStore(): MockFlowStore {
             id: 501,
             ownerId: 1,
             productId: 106,
-            productTitle: "Xe đạp thể thao Giant Escape 3 đi học trong Làng Đại học",
+            productTitle: "Bàn học gấp gọn gỗ thông đặt giường tầng KTX",
             otherUserId: 6,
             otherUserName: "Đỗ Khánh Linh",
-            lastMessage: "Tối nay 19h bạn ghé sảnh Tòa B2 xem xe thử nha!",
+            lastMessage: "Tối nay 19h bạn ghé sảnh Tòa B2 lấy bàn học nha!",
             updatedAt: "2026-11-12T18:30:00+07:00",
             unreadCount: 1,
           },
@@ -172,7 +172,7 @@ function readStore(): MockFlowStore {
             conversationId: 501,
             senderId: 1,
             senderName: "Nguyễn Minh Anh",
-            body: "Chào Linh, xe đạp Giant Escape 3 còn không bạn? Mình ở Tòa B2 muốn xem xe.",
+            body: "Chào Linh, bàn học gấp gọn gỗ thông còn không bạn? Mình ở Tòa B2 muốn lấy luôn.",
             type: "text",
             offerPrice: null,
             offerStatus: null,

@@ -51,7 +51,7 @@ const QUICK_SUGGESTIONS = [
   "Bàn phím cơ Keychron",
   "Tai nghe Sony học online",
   "Đàn Guitar Acoustic",
-  "Xe đạp đi học",
+  "Đèn bàn học chống cận",
 ];
 
 function MarketplaceMatchingContent() {
@@ -79,7 +79,7 @@ function MarketplaceMatchingContent() {
       });
 
     // Tải sẵn danh sách gợi ý mặc định để trang không bị trống khi mới mở
-    searchMarketplaceMatching("giáo trình tai nghe guitar xe đạp")
+    searchMarketplaceMatching("giáo trình tai nghe guitar đèn bàn ấm đun")
       .then((res) => {
         if (active) setResult(res);
       })
@@ -137,23 +137,23 @@ function MarketplaceMatchingContent() {
     };
     setQuery("");
     setFilters(cleared);
-    void runSearch("giáo trình tai nghe guitar xe đạp", cleared);
+    void runSearch("giáo trình tai nghe guitar đèn bàn ấm đun", cleared);
   }
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <div className="relative mb-7 overflow-hidden rounded-3xl border border-indigo-500/20 bg-linear-to-br from-indigo-950 via-slate-900 to-purple-950 p-6 text-white shadow-xl sm:p-8">
-        <div className="pointer-events-none absolute -top-20 -right-20 h-56 w-56 rounded-full bg-indigo-500/20 blur-3xl" />
+      <div className="relative mb-7 overflow-hidden rounded-3xl border border-blue-200/80 bg-linear-to-br from-blue-600 via-blue-700 to-sky-600 p-6 text-white shadow-lg sm:p-8 dark:border-blue-500/30">
+        <div className="pointer-events-none absolute -top-20 -right-20 h-56 w-56 rounded-full bg-white/15 blur-3xl" />
         <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-500/20 px-3 py-1 text-xs font-extrabold tracking-wide text-indigo-200 uppercase">
-              <Search className="h-3.5 w-3.5 text-indigo-300" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-extrabold tracking-wide text-blue-50 uppercase">
+              <Search className="h-3.5 w-3.5 text-sky-200" />
               Tra cứu & Ghép nối nhanh trên sàn
             </div>
             <h1 className="mt-2.5 text-2xl font-black tracking-tight sm:text-3xl">
               Tìm sản phẩm phù hợp theo nhu cầu
             </h1>
-            <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-indigo-100/80">
+            <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-blue-50/90">
               Nhập mô tả món đồ bạn đang tìm kèm ngân sách và tình trạng mong muốn để lọc nhanh các tin đang bán và chấm điểm độ khớp.
             </p>
           </div>
@@ -161,15 +161,15 @@ function MarketplaceMatchingContent() {
           <div className="flex flex-wrap items-center gap-2.5">
             <Link
               href="/requests"
-              className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-indigo-500 to-fuchsia-500 px-4 py-2.5 text-xs font-extrabold text-white shadow-lg transition hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-xs font-extrabold text-blue-700 shadow-md transition hover:-translate-y-0.5 hover:bg-blue-50"
             >
-              <Sparkles className="h-4 w-4" />
+              <Sparkles className="h-4 w-4 text-blue-600" />
               Sang Ghép nối AI Đa phương thức (Có ảnh mẫu)
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
             <Link
               href="/products"
-              className="inline-flex items-center gap-1.5 rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-white/20"
+              className="inline-flex items-center gap-1.5 rounded-2xl border border-white/25 bg-white/15 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-white/25"
             >
               Danh mục sản phẩm
             </Link>
@@ -190,7 +190,7 @@ function MarketplaceMatchingContent() {
               maxLength={500}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Mô tả món đồ bạn cần tìm (VD: giáo trình giải tích, tai nghe học online, xe đạp KTX)..."
+              placeholder="Mô tả món đồ bạn cần tìm (VD: giáo trình giải tích, tai nghe học online, đèn bàn học KTX)..."
               className="w-full rounded-2xl border border-border bg-bg py-3 pr-4 pl-11 text-sm font-medium text-fg transition focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
             />
           </div>
@@ -396,7 +396,7 @@ function MarketplaceMatchingContent() {
                   >
                     <div>
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2.5 py-1 text-xs font-bold text-indigo-600 dark:text-indigo-300">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2.5 py-1 text-xs font-bold text-blue-600 dark:text-blue-300">
                           <Tag className="h-3 w-3" />
                           {product.categoryName}
                         </span>

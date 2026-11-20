@@ -22,18 +22,14 @@ export function AuthShell({
 }: AuthShellProps) {
   return (
     <div
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8 sm:px-6"
-      style={{
-        background:
-          "linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #4f46e5 100%)",
-      }}
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-blue-50 via-white to-sky-100 px-4 py-8 sm:px-6 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950"
     >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-48 -right-48 h-[680px] w-[680px] rounded-full animate-float-orb"
         style={{
           background:
-            "radial-gradient(circle, rgba(139,92,246,0.35) 0%, transparent 62%)",
+            "radial-gradient(circle, rgba(37,99,235,0.16) 0%, transparent 62%)",
         }}
       />
       <div
@@ -41,19 +37,19 @@ export function AuthShell({
         className="pointer-events-none absolute -bottom-36 -left-36 h-[500px] w-[500px] rounded-full animate-float-orb"
         style={{
           background:
-            "radial-gradient(circle, rgba(236,72,153,0.28) 0%, transparent 62%)",
+            "radial-gradient(circle, rgba(14,165,233,0.16) 0%, transparent 62%)",
           animationDirection: "alternate-reverse",
           animationDuration: "10s",
         }}
       />
 
       <div className="fixed top-4 right-4 z-20">
-        <ThemeToggle className="border-white/25 bg-white/15 text-white backdrop-blur-md hover:border-white/50 hover:bg-white/25 hover:text-white" />
+        <ThemeToggle className="border-blue-200 bg-white/85 text-slate-700 shadow-xs backdrop-blur-md hover:border-blue-400 hover:bg-white hover:text-blue-700 dark:border-slate-700 dark:bg-slate-800/80 dark:text-white" />
       </div>
 
       <main
         className={cn(
-          "relative z-10 w-full rounded-xl border border-white/60 bg-surface/95 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl animate-slide-up sm:p-10 dark:border-slate-700/70 dark:bg-surface/92",
+          "relative z-10 w-full rounded-2xl border border-blue-100 bg-white/95 p-6 shadow-[0_20px_60px_rgba(37,99,235,0.12)] backdrop-blur-xl animate-slide-up sm:p-10 dark:border-slate-700/70 dark:bg-surface/92",
           maxWidth === "lg" ? "max-w-[520px]" : "max-w-[480px]",
         )}
       >
@@ -62,10 +58,7 @@ export function AuthShell({
             <div className="mb-3 flex justify-center">
               <div
                 aria-hidden="true"
-                className="flex h-12 w-12 items-center justify-center rounded-lg text-white shadow-md-p"
-                style={{
-                  background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                }}
+                className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-sky-500 text-white shadow-md-p"
               >
                 {headerIcon}
               </div>

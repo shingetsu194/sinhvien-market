@@ -72,13 +72,9 @@ export default function AccountLockedPage() {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center p-5 text-slate-50"
-      style={{
-        background:
-          "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%)",
-      }}
+      className="flex min-h-screen items-center justify-center bg-linear-to-br from-blue-50 via-white to-sky-100 p-5 text-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950"
     >
-      <main className="w-full max-w-[540px] rounded-[24px] border border-white/10 bg-slate-800/70 px-6 py-10 text-center shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-xl animate-slide-up sm:px-10 sm:py-12">
+      <main className="w-full max-w-[540px] rounded-[24px] border border-blue-200 bg-slate-900/95 px-6 py-10 text-center shadow-[0_25px_50px_-12px_rgba(37,99,235,0.2)] backdrop-blur-xl animate-slide-up sm:px-10 sm:py-12 dark:border-white/10">
         {loading || !lockInfo ? (
           <div className="flex flex-col items-center justify-center gap-3 py-12 text-slate-300">
             <Spinner size="md" />

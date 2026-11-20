@@ -51,7 +51,7 @@ export function DateFieldVi({
           {label}
           {required && <span className="ml-0.5 text-rose-500">*</span>}
         </span>
-        <span className="inline-flex items-center gap-1 rounded-md bg-indigo-500/10 px-2 py-0.5 text-[11px] font-bold text-indigo-600 dark:text-indigo-300">
+        <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-2 py-0.5 text-[11px] font-bold text-blue-600 dark:text-blue-300">
           <Calendar className="h-3 w-3" />
           {value ? formatIsoDateVi(value) : "Ngày/Tháng/Năm"}
         </span>
@@ -117,26 +117,26 @@ export function KtxPageHeader({
 
   return (
     <div className="mb-7 space-y-4">
-      <div className="relative overflow-hidden rounded-3xl border border-indigo-500/20 bg-linear-to-br from-indigo-950 via-slate-900 to-purple-950 p-6 text-white shadow-xl sm:p-7">
-        <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-indigo-500/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-16 left-12 h-40 w-40 rounded-full bg-fuchsia-500/15 blur-3xl" />
+      <div className="relative overflow-hidden rounded-3xl border border-blue-200/80 bg-linear-to-br from-blue-600 via-blue-700 to-sky-600 p-6 text-white shadow-lg sm:p-7 dark:border-blue-500/30">
+        <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-16 left-12 h-40 w-40 rounded-full bg-sky-300/20 blur-3xl" />
 
         <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-500/20 px-3 py-1 text-xs font-extrabold tracking-wide text-indigo-200 uppercase">
-              <Building2 className="h-3.5 w-3.5 text-indigo-300" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-extrabold tracking-wide text-blue-50 uppercase">
+              <Building2 className="h-3.5 w-3.5 text-sky-200" />
               {badge}
             </div>
             <h1 className="mt-2.5 text-2xl font-black tracking-tight text-white sm:text-3xl">
               {title}
             </h1>
-            <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-indigo-100/80">
+            <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-blue-50/90">
               {description}
             </p>
           </div>
         </div>
 
-        <div className="relative mt-5 flex flex-wrap gap-2 border-t border-white/10 pt-4">
+        <div className="relative mt-5 flex flex-wrap gap-2 border-t border-white/15 pt-4">
           {KTX_NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href;
@@ -147,14 +147,14 @@ export function KtxPageHeader({
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold whitespace-nowrap transition",
                   active
-                    ? "bg-white text-slate-950 shadow-sm"
-                    : "bg-white/10 text-indigo-100 hover:bg-white/20 hover:text-white",
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "bg-white/15 text-blue-50 hover:bg-white/25 hover:text-white",
                 )}
               >
                 <Icon
                   className={cn(
                     "h-3.5 w-3.5",
-                    active ? "text-indigo-600" : "text-indigo-300",
+                    active ? "text-blue-600" : "text-sky-200",
                   )}
                 />
                 {item.label}

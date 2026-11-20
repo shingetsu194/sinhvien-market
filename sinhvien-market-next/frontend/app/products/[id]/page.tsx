@@ -291,8 +291,8 @@ function ProductDetailContent() {
 
           <div className="mt-5 flex flex-wrap gap-3">
             {product.sellerId === user?.id && (
-              <div className="w-full rounded-2xl border border-indigo-500/25 bg-indigo-500/10 p-4 text-xs">
-                <p className="font-extrabold text-indigo-600 dark:text-indigo-300">
+              <div className="w-full rounded-2xl border border-blue-500/25 bg-blue-500/10 p-4 text-xs">
+                <p className="font-extrabold text-blue-600 dark:text-blue-300">
                   ✨ Đây là tin đăng của bạn
                 </p>
                 <p className="mt-1 text-muted">

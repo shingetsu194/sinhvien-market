@@ -89,55 +89,39 @@ export default function AdminLoginPage() {
 
   return (
     <div
-      className="dark relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8 text-slate-100"
-      style={{
-        background:
-          "radial-gradient(ellipse at 60% 0%, rgba(236,72,153,0.18) 0%, transparent 50%), radial-gradient(ellipse at 10% 100%, rgba(99,102,241,0.22) 0%, transparent 50%), linear-gradient(180deg, #0f172a 0%, #020617 100%)",
-      }}
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-blue-50 via-white to-sky-100 px-4 py-8 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.025) 40px, rgba(255,255,255,0.025) 41px), repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.025) 40px, rgba(255,255,255,0.025) 41px)",
-        }}
+        className="pointer-events-none absolute -top-32 -right-32 h-[460px] w-[460px] rounded-full bg-blue-400/15 blur-[90px]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-32 -left-32 h-[420px] w-[420px] rounded-full bg-sky-400/15 blur-[90px]"
       />
 
       <main
-        className="relative z-10 w-full max-w-md rounded-xl border border-white/10 p-6 shadow-[0_40px_100px_rgba(0,0,0,0.65)] backdrop-blur-2xl animate-slide-up sm:p-8"
-        style={{ background: "rgba(30, 41, 59, 0.86)" }}
+        className="relative z-10 w-full max-w-md rounded-2xl border border-blue-100 bg-white/95 p-6 shadow-[0_24px_64px_rgba(37,99,235,0.12)] backdrop-blur-2xl animate-slide-up sm:p-8 dark:border-slate-800 dark:bg-slate-900/90"
       >
         <div className="mb-6 text-center">
           <div className="mb-1 flex items-center justify-center gap-3">
             <div
               aria-hidden="true"
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-field text-white"
-              style={{
-                background: "linear-gradient(135deg, #ec4899, #f97316)",
-                boxShadow: "0 8px 24px rgba(236, 72, 153, 0.5)",
-              }}
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-field bg-linear-to-br from-blue-600 to-sky-500 text-white shadow-md-p"
             >
               <ShieldAlert className="h-6 w-6" />
             </div>
             <div className="text-left">
-              <h1 className="text-xl font-black tracking-tight text-white">
-                Admin<span className="text-pink-400">Panel</span>
+              <h1 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                Admin<span className="text-blue-600 dark:text-sky-400">Panel</span>
               </h1>
-              <p className="text-xs font-medium text-white/45">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
                 SinhVienMarket
               </p>
             </div>
           </div>
 
-          <span
-            className="mt-3 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold"
-            style={{
-              background: "rgba(236, 72, 153, 0.12)",
-              border: "1px solid rgba(236, 72, 153, 0.28)",
-              color: "#f9a8d4",
-            }}
-          >
+          <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-xs font-bold text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/15 dark:text-sky-300">
             <Lock className="h-3.5 w-3.5" aria-hidden="true" />
             Yêu cầu xác thực
           </span>
@@ -167,7 +151,6 @@ export default function AdminLoginPage() {
             required
             disabled={isSubmitting}
             icon={<Mail className="h-4 w-4" />}
-            className="border-white/15 bg-white/6 text-white placeholder:text-white/35 focus:border-pink-400 focus:ring-pink-500/20"
             error={errors.email?.message}
             {...register("email")}
           />
@@ -180,7 +163,6 @@ export default function AdminLoginPage() {
             required
             disabled={isSubmitting}
             icon={<KeyRound className="h-4 w-4" />}
-            className="border-white/15 bg-white/6 text-white placeholder:text-white/35 focus:border-pink-400 focus:ring-pink-500/20"
             error={errors.password?.message}
             {...register("password")}
           />
@@ -192,10 +174,6 @@ export default function AdminLoginPage() {
               fullWidth
               loading={isSubmitting}
               loadingText="Đang xác thực..."
-              className="border-0 text-white shadow-[0_6px_24px_rgba(236,72,153,0.4)] hover:shadow-[0_10px_30px_rgba(236,72,153,0.55)]"
-              style={{
-                background: "linear-gradient(135deg, #ec4899, #f97316)",
-              }}
             >
               <ShieldCheck className="h-4 w-4" aria-hidden="true" />
               Xác thực &amp; Đăng nhập
@@ -203,15 +181,8 @@ export default function AdminLoginPage() {
           </div>
         </form>
 
-        <div
-          className="mt-5 flex items-center gap-2.5 rounded-field px-3.5 py-3 text-xs font-medium"
-          style={{
-            background: "rgba(251, 191, 36, 0.08)",
-            border: "1px solid rgba(251, 191, 36, 0.22)",
-            color: "rgba(253, 224, 71, 0.88)",
-          }}
-        >
-          <Lock className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <div className="mt-5 flex items-center gap-2.5 rounded-field border border-blue-100 bg-blue-50/70 px-3.5 py-3 text-xs font-medium text-blue-800 dark:border-blue-800/50 dark:bg-blue-950/40 dark:text-sky-200">
+          <Lock className="h-4 w-4 shrink-0 text-blue-600 dark:text-sky-400" aria-hidden="true" />
           <span>
             Hệ thống bảo mật theo dõi mọi lần đăng nhập. Tối đa 5 lần sai / 15
             phút.
@@ -221,7 +192,7 @@ export default function AdminLoginPage() {
         <div className="mt-5 text-center">
           <Link
             href="/login-role"
-            className="inline-flex items-center gap-1 text-xs font-medium text-white/45 transition-colors hover:text-white/80"
+            className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 transition-colors hover:text-blue-600 dark:text-slate-400 dark:hover:text-sky-400"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
             Quay lại cổng chính

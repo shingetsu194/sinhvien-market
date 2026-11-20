@@ -30,12 +30,12 @@ const NOTICE_TYPE_META: Record<
 > = {
   announcement: {
     label: "Thông báo Ban quản lý",
-    badgeCls: "bg-indigo-500/15 text-indigo-600 dark:text-indigo-300",
+    badgeCls: "bg-blue-500/15 text-blue-600 dark:text-blue-300",
     icon: Megaphone,
   },
   event: {
     label: "Sự kiện nội khu",
-    badgeCls: "bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-300",
+    badgeCls: "bg-sky-500/15 text-sky-600 dark:text-sky-300",
     icon: Calendar,
   },
   rule: {
@@ -202,7 +202,7 @@ function ResidenceAnnouncementsContent() {
           </div>
           <Link
             href="/residence/assistant"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-indigo-500/15 px-3.5 py-2 text-xs font-extrabold text-indigo-600 transition hover:bg-indigo-500/25 dark:text-indigo-300"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-blue-500/15 px-3.5 py-2 text-xs font-extrabold text-blue-600 transition hover:bg-blue-500/25 dark:text-blue-300"
           >
             <MessageSquareMore className="h-3.5 w-3.5" />
             Hỏi Trợ lý Nội quy

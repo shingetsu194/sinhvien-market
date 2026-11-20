@@ -37,12 +37,12 @@ import { cn } from "@/lib/cn";
 import { formatDateTimeVi, formatVnd } from "@/lib/validation/admin";
 
 const CATEGORY_GRADIENTS = [
-  "from-indigo-500 to-purple-500 shadow-indigo-500/30",
-  "from-pink-500 to-orange-500 shadow-pink-500/30",
-  "from-cyan-500 to-blue-500 shadow-cyan-500/30",
-  "from-emerald-500 to-green-600 shadow-emerald-500/30",
-  "from-amber-500 to-red-500 shadow-amber-500/30",
-  "from-purple-500 to-pink-500 shadow-purple-500/30",
+  "from-blue-600 to-sky-500 shadow-blue-500/25",
+  "from-sky-500 to-cyan-500 shadow-sky-500/25",
+  "from-blue-500 to-blue-600 shadow-blue-500/25",
+  "from-cyan-600 to-blue-600 shadow-cyan-500/25",
+  "from-blue-700 to-blue-500 shadow-blue-600/25",
+  "from-sky-600 to-blue-500 shadow-sky-500/25",
 ];
 
 function HomeContent() {
@@ -125,7 +125,7 @@ function HomeContent() {
                   <div key={b.id} className="relative min-w-full">
                     <Link
                       href={b.link || "/products"}
-                      className="block relative h-44 sm:h-60 md:h-72 w-full overflow-hidden bg-linear-to-r from-indigo-900 via-purple-900 to-pink-900"
+                      className="block relative h-44 sm:h-60 md:h-72 w-full overflow-hidden bg-linear-to-r from-blue-700 via-blue-600 to-sky-600"
                     >
                       {b.imageUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -135,7 +135,7 @@ function HomeContent() {
                           className="h-full w-full object-cover opacity-85 transition duration-500 group-hover:scale-[1.02]"
                         />
                       )}
-                      <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-950/25 to-transparent" />
+                      <div className="absolute inset-0 bg-linear-to-t from-blue-950/80 via-blue-950/25 to-transparent" />
                       <div className="absolute bottom-5 left-6 right-6 flex items-end justify-between gap-4 text-white">
                         <div>
                           <span className="inline-block rounded-full bg-white/20 px-3 py-1 text-[11px] font-extrabold tracking-wider uppercase backdrop-blur-md">
@@ -145,7 +145,7 @@ function HomeContent() {
                             {b.title}
                           </h2>
                         </div>
-                        <span className="hidden shrink-0 items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-xs font-extrabold text-indigo-700 shadow-md sm:inline-flex">
+                        <span className="hidden shrink-0 items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-xs font-extrabold text-blue-700 shadow-md sm:inline-flex">
                           Khám phá ngay
                           <ArrowRight className="h-3.5 w-3.5" />
                         </span>
@@ -203,35 +203,35 @@ function HomeContent() {
         </section>
       )}
 
-      <section className="relative overflow-hidden bg-linear-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] py-16 lg:py-24">
-        <div className="pointer-events-none absolute -top-40 -left-32 h-[500px] w-[500px] rounded-full bg-indigo-500/35 blur-[95px]" />
-        <div className="pointer-events-none absolute -right-24 -bottom-40 h-[420px] w-[420px] rounded-full bg-pink-500/35 blur-[95px]" />
+      <section className="relative overflow-hidden border-b border-blue-100 bg-linear-to-br from-blue-50 via-white to-sky-100/70 py-14 lg:py-20 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950">
+        <div className="pointer-events-none absolute -top-40 -left-32 h-[460px] w-[460px] rounded-full bg-blue-400/15 blur-[95px]" />
+        <div className="pointer-events-none absolute -right-24 -bottom-40 h-[400px] w-[400px] rounded-full bg-sky-400/15 blur-[95px]" />
 
         <div className="relative z-10 mx-auto max-w-7xl px-4">
           <div className="flex flex-col items-center gap-12 lg:flex-row">
             <div className="text-center lg:w-1/2 lg:text-left">
-              <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold tracking-wider text-purple-200 backdrop-blur-md">
-                <Zap className="h-3.5 w-3.5 text-amber-400" />
-                Đấu giá ngược · Mua bán · Trao đổi · Giveaway
+              <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-xs font-bold tracking-wider text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/15 dark:text-sky-300">
+                <Zap className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
+                Đấu giá ngược · Mua bán · Trao đổi · Ký túc xá
               </div>
 
-              <h1 className="text-4xl leading-tight font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
+              <h1 className="text-4xl leading-tight font-black tracking-tight text-slate-900 sm:text-5xl lg:text-6xl dark:text-white">
                 Chợ Sinh Viên
                 <br />
-                <span className="bg-linear-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-blue-700 via-blue-600 to-sky-500 bg-clip-text text-transparent dark:from-blue-400 dark:to-sky-300">
                   KTX Đại học Quốc gia
                 </span>
               </h1>
 
-              <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-white/75 lg:mx-0 lg:text-lg">
+              <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-slate-600 lg:mx-0 lg:text-lg dark:text-slate-300">
                 Mua bán sách giáo trình, đồ điện tử, đồ dùng KTX với giá sinh viên hợp lý nhất. Tham gia đấu giá ngược —{" "}
-                <strong className="text-purple-300">giá tự giảm theo thời gian</strong>, chốt đơn ngay khi ưng ý!
+                <strong className="text-blue-700 dark:text-sky-300">giá tự giảm theo thời gian</strong>, chốt đơn ngay khi ưng ý!
               </p>
 
               <div className="mt-8 flex flex-wrap justify-center gap-3.5 lg:justify-start">
                 <Link
                   href="/products"
-                  className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-indigo-500 to-purple-500 px-7 py-3.5 text-base font-extrabold text-white shadow-[0_8px_28px_rgba(99,102,241,0.5)] transition hover:-translate-y-0.5 hover:brightness-110"
+                  className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-600 to-sky-600 px-7 py-3.5 text-base font-extrabold text-white shadow-[0_8px_24px_rgba(37,99,235,0.3)] transition hover:-translate-y-0.5 hover:brightness-105"
                 >
                   <ShoppingBag className="h-5 w-5" />
                   Mua sắm ngay
@@ -241,15 +241,15 @@ function HomeContent() {
                   user.role === "admin" ? (
                     <Link
                       href="/admin"
-                      className="inline-flex items-center gap-2 rounded-xl border-2 border-rose-400/50 bg-rose-500/20 px-7 py-3.5 text-base font-extrabold text-rose-100 backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-rose-500/30"
+                      className="inline-flex items-center gap-2 rounded-xl border-2 border-blue-200 bg-white px-7 py-3.5 text-base font-extrabold text-blue-700 shadow-xs transition hover:-translate-y-0.5 hover:border-blue-400 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-800 dark:text-sky-300"
                     >
-                      <ShieldCheck className="h-5 w-5 text-rose-300" />
+                      <ShieldCheck className="h-5 w-5 text-blue-600 dark:text-sky-400" />
                       Vào Admin Panel
                     </Link>
                   ) : (
                     <Link
                       href="/products"
-                      className="inline-flex items-center gap-2 rounded-xl border-2 border-white/30 bg-white/10 px-7 py-3.5 text-base font-bold text-white backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-white/20"
+                      className="inline-flex items-center gap-2 rounded-xl border-2 border-blue-200 bg-white px-7 py-3.5 text-base font-bold text-blue-700 shadow-xs transition hover:-translate-y-0.5 hover:border-blue-400 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                     >
                       <PlusCircle className="h-5 w-5" />
                       Khám phá sản phẩm
@@ -259,14 +259,14 @@ function HomeContent() {
                   <>
                     <Link
                       href="/login-role"
-                      className="inline-flex items-center gap-2 rounded-xl border-2 border-white/30 bg-white/10 px-6 py-3.5 text-base font-bold text-white backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-white/20"
+                      className="inline-flex items-center gap-2 rounded-xl border-2 border-blue-200 bg-white px-6 py-3.5 text-base font-bold text-slate-700 shadow-xs transition hover:-translate-y-0.5 hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                     >
                       <LogIn className="h-5 w-5" />
                       Đăng nhập
                     </Link>
                     <Link
                       href="/register"
-                      className="inline-flex items-center gap-2 rounded-xl border-2 border-indigo-400/40 bg-indigo-500/20 px-6 py-3.5 text-base font-bold text-indigo-100 backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-indigo-500/30"
+                      className="inline-flex items-center gap-2 rounded-xl border-2 border-blue-200 bg-blue-50 px-6 py-3.5 text-base font-bold text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-100 dark:border-blue-500/40 dark:bg-blue-500/20 dark:text-sky-200"
                     >
                       <UserPlus className="h-5 w-5" />
                       Đăng ký miễn phí
@@ -275,30 +275,30 @@ function HomeContent() {
                 )}
               </div>
 
-              <div className="mt-10 inline-flex items-center rounded-2xl border border-white/15 bg-white/10 px-6 py-4 backdrop-blur-md">
+              <div className="mt-10 inline-flex items-center rounded-2xl border border-blue-100 bg-white px-6 py-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div className="px-4 text-center">
-                  <span className="block text-2xl font-black text-white">
+                  <span className="block text-2xl font-black text-blue-600 dark:text-sky-400">
                     {stats?.activeProducts ?? products.length}+
                   </span>
-                  <span className="mt-0.5 block text-xs text-white/60">
+                  <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
                     Sản phẩm đang bán
                   </span>
                 </div>
-                <div className="h-9 w-px bg-white/20" />
+                <div className="h-9 w-px bg-blue-100 dark:bg-slate-800" />
                 <div className="px-4 text-center">
-                  <span className="block text-2xl font-black text-white">
+                  <span className="block text-2xl font-black text-blue-600 dark:text-sky-400">
                     {stats?.totalUsers ?? 7}+
                   </span>
-                  <span className="mt-0.5 block text-xs text-white/60">
+                  <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
                     Thành viên KTX
                   </span>
                 </div>
-                <div className="h-9 w-px bg-white/20" />
+                <div className="h-9 w-px bg-blue-100 dark:bg-slate-800" />
                 <div className="px-4 text-center">
-                  <span className="block text-2xl font-black text-white">
+                  <span className="block text-2xl font-black text-blue-600 dark:text-sky-400">
                     {stats?.txToday ?? 2}+
                   </span>
-                  <span className="mt-0.5 block text-xs text-white/60">
+                  <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
                     GD hôm nay
                   </span>
                 </div>
@@ -306,58 +306,58 @@ function HomeContent() {
             </div>
 
             <div className="hidden justify-center lg:flex lg:w-1/2">
-              <div className="w-full max-w-[390px] rounded-3xl border border-white/15 bg-white/6 p-7 backdrop-blur-xl shadow-2xl">
-                <div className="flex items-center gap-4 border-b border-white/10 py-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-indigo-500 to-purple-500 text-white shadow-md">
+              <div className="w-full max-w-[390px] rounded-3xl border border-blue-100 bg-white p-7 shadow-[0_20px_50px_rgba(37,99,235,0.1)] dark:border-slate-800 dark:bg-slate-900">
+                <div className="flex items-center gap-4 border-b border-slate-100 py-4 dark:border-slate-800">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-sky-500 text-white shadow-sm">
                     <Zap className="h-6 w-6" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       Đấu giá ngược thông minh
                     </p>
-                    <p className="mt-0.5 text-xs text-white/55">
+                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                       Giá giảm dần tự động — mua ngay khi thấy hợp lý
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 border-b border-white/10 py-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-pink-500 to-orange-500 text-white shadow-md">
+                <div className="flex items-center gap-4 border-b border-slate-100 py-4 dark:border-slate-800">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-sky-500 to-blue-600 text-white shadow-sm">
                     <Gift className="h-6 w-6" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       Sự kiện Giveaway hàng tuần
                     </p>
-                    <p className="mt-0.5 text-xs text-white/55">
+                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                       Quay số trúng thưởng công khai dành cho sinh viên
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 border-b border-white/10 py-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-cyan-500 to-blue-500 text-white shadow-md">
+                <div className="flex items-center gap-4 border-b border-slate-100 py-4 dark:border-slate-800">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-500 to-cyan-500 text-white shadow-sm">
                     <CreditCard className="h-6 w-6" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       Thanh toán tiện lợi
                     </p>
-                    <p className="mt-0.5 text-xs text-white/55">
+                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                       Hỗ trợ ZaloPay, chuyển khoản ngân hàng và COD tại KTX
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4 py-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-emerald-500 to-green-600 text-white shadow-md">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-700 to-blue-500 text-white shadow-sm">
                     <ShieldCheck className="h-6 w-6" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       Kiểm duyệt & Bảo mật 2 lớp
                     </p>
-                    <p className="mt-0.5 text-xs text-white/55">
+                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                       Xác thực OTP sinh viên & hệ thống kiểm duyệt Admin 24/7
                     </p>
                   </div>
@@ -371,42 +371,42 @@ function HomeContent() {
       {giveaway && (
         <section
           id="giveaway"
-          className="relative overflow-hidden bg-linear-to-br from-[#0f0c29] via-[#302b63] to-[#1a055c] py-16 text-white"
+          className="relative overflow-hidden bg-linear-to-br from-blue-600 via-blue-700 to-sky-700 py-14 text-white"
         >
           <div className="mx-auto max-w-7xl px-4">
-            <div className="flex flex-col items-center justify-center gap-8 rounded-3xl border border-white/15 bg-white/5 p-8 text-center backdrop-blur-md md:flex-row md:text-left">
+            <div className="flex flex-col items-center justify-center gap-8 rounded-3xl border border-white/20 bg-white/10 p-8 text-center backdrop-blur-md md:flex-row md:text-left">
               <div className="relative shrink-0">
                 {giveaway.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={giveaway.imageUrl}
                     alt={giveaway.title}
-                    className="h-40 w-40 rounded-2xl border-2 border-amber-400/50 object-cover shadow-2xl"
+                    className="h-40 w-40 rounded-2xl border-2 border-white/50 object-cover shadow-2xl"
                   />
                 ) : (
-                  <div className="flex h-40 w-40 items-center justify-center rounded-2xl border-2 border-amber-400/40 bg-linear-to-br from-amber-500/20 to-pink-500/20 text-amber-300 shadow-2xl">
+                  <div className="flex h-40 w-40 items-center justify-center rounded-2xl border-2 border-white/40 bg-white/15 text-white shadow-2xl">
                     <Gift className="h-16 w-16" />
                   </div>
                 )}
-                <span className="absolute -top-3 -right-3 flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-amber-400 to-red-500 text-lg shadow-lg">
+                <span className="absolute -top-3 -right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white text-lg shadow-lg">
                   🎁
                 </span>
               </div>
 
               <div className="flex-1">
-                <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/35 bg-amber-400/15 px-3.5 py-1 text-xs font-extrabold tracking-wider text-amber-300 uppercase">
+                <span className="inline-flex items-center gap-1 rounded-full border border-white/30 bg-white/15 px-3.5 py-1 text-xs font-extrabold tracking-wider text-blue-50 uppercase">
                   <Sparkles className="h-3.5 w-3.5" />
                   Sự kiện Giveaway đặc biệt
                 </span>
                 <h2 className="mt-2.5 text-2xl font-black text-white sm:text-3xl">
                   {giveaway.title}
                 </h2>
-                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/75 sm:text-base">
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-blue-50/90 sm:text-base">
                   {giveaway.description}
                 </p>
-                <div className="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs text-white/60 md:justify-start">
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs text-blue-100 md:justify-start">
                   <span className="inline-flex items-center gap-1.5">
-                    <Clock className="h-4 w-4 text-amber-400" />
+                    <Clock className="h-4 w-4 text-sky-200" />
                     Hạn đăng ký:{" "}
                     <strong className="text-white">
                       {formatDateTimeVi(giveaway.endTime)}
@@ -415,7 +415,7 @@ function HomeContent() {
                   <span>•</span>
                   <span>
                     Đã có{" "}
-                    <strong className="text-amber-300">
+                    <strong className="text-white">
                       {giveaway.participantCount + (joinedGiveaway ? 1 : 0)}
                     </strong>{" "}
                     sinh viên tham gia
@@ -426,7 +426,7 @@ function HomeContent() {
                   {!user ? (
                     <Link
                       href="/login"
-                      className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-amber-500 to-red-500 px-7 py-3 text-sm font-extrabold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110"
+                      className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-extrabold text-blue-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-blue-50"
                     >
                       <LogIn className="h-4 w-4" />
                       Đăng nhập để tham gia miễn phí
@@ -434,13 +434,13 @@ function HomeContent() {
                   ) : user.role === "admin" ? (
                     <Link
                       href={`/admin/giveaway-spin?id=${giveaway.id}`}
-                      className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-amber-400 to-orange-500 px-7 py-3 text-sm font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5"
+                      className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-black text-blue-700 shadow-lg transition hover:-translate-y-0.5"
                     >
                       <Dices className="h-4 w-4" />
                       Mở bàn quay số Admin
                     </Link>
                   ) : hasJoined ? (
-                    <span className="inline-flex items-center gap-2 rounded-xl border-2 border-emerald-400/40 bg-emerald-500/15 px-7 py-3 text-sm font-extrabold text-emerald-300">
+                    <span className="inline-flex items-center gap-2 rounded-xl border-2 border-white/40 bg-white/15 px-7 py-3 text-sm font-extrabold text-white">
                       <CheckCircle2 className="h-4 w-4" />
                       Đã đăng ký tham gia vòng quay ✓
                     </span>
@@ -448,7 +448,7 @@ function HomeContent() {
                     <button
                       type="button"
                       onClick={() => setJoinedGiveaway(true)}
-                      className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-linear-to-r from-indigo-500 to-purple-500 px-7 py-3 text-sm font-extrabold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110"
+                      className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-extrabold text-blue-700 shadow-lg transition hover:-translate-y-0.5 hover:bg-blue-50"
                     >
                       <Dices className="h-4 w-4" />
                       Tham gia vòng quay ngay!
@@ -494,8 +494,17 @@ function HomeContent() {
                   href={`/products/${p.id}`}
                   className="group flex flex-col overflow-hidden rounded-2xl border-2 border-border bg-surface transition duration-300 hover:-translate-y-1.5 hover:border-rose-400/60 hover:shadow-xl"
                 >
-                  <div className="relative flex h-44 items-center justify-center bg-linear-to-br from-rose-500/10 via-orange-500/10 to-indigo-500/10">
-                    <Zap className="h-14 w-14 text-rose-500/35 transition duration-300 group-hover:scale-110" />
+                  <div className="relative flex h-44 items-center justify-center overflow-hidden bg-linear-to-br from-rose-500/10 via-orange-500/10 to-blue-500/10">
+                    {p.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={p.imageUrl}
+                        alt={p.title}
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <Zap className="h-14 w-14 text-rose-500/35 transition duration-300 group-hover:scale-110" />
+                    )}
                     <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-linear-to-r from-rose-600 to-orange-500 px-3 py-1 text-[11px] font-extrabold text-white shadow-md">
                       <Zap className="h-3 w-3" />
                       Đấu giá ngược
@@ -615,8 +624,17 @@ function HomeContent() {
                 href={`/products/${p.id}`}
                 className="group flex flex-col overflow-hidden rounded-2xl border-2 border-border bg-surface transition duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-lg"
               >
-                <div className="relative flex h-36 items-center justify-center bg-surface-2">
-                  <ShoppingBag className="h-10 w-10 text-muted/40 transition group-hover:scale-110" />
+                <div className="relative flex h-36 items-center justify-center overflow-hidden bg-surface-2">
+                  {p.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={p.imageUrl}
+                      alt={p.title}
+                      className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <ShoppingBag className="h-10 w-10 text-muted/40 transition group-hover:scale-110" />
+                  )}
                   {p.type === "auction" && (
                     <span className="absolute top-2 left-2 rounded-full bg-linear-to-r from-rose-500 to-orange-500 px-2.5 py-0.5 text-[10px] font-extrabold text-white shadow-xs">
                       ⚡ Đấu giá
@@ -653,7 +671,7 @@ function HomeContent() {
       </section>
 
       {!user && (
-        <section className="relative overflow-hidden bg-linear-to-br from-[#1e1b4b] via-[#4f46e5] to-[#7c3aed] py-16 text-center text-white">
+        <section className="relative overflow-hidden bg-linear-to-br from-blue-600 via-blue-700 to-sky-600 py-16 text-center text-white">
           <div className="relative z-10 mx-auto max-w-3xl px-4">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-4 py-1 text-xs font-extrabold tracking-wider uppercase">
               <Rocket className="h-3.5 w-3.5" />
@@ -662,13 +680,13 @@ function HomeContent() {
             <h2 className="mt-4 text-3xl font-black sm:text-4xl">
               Sẵn sàng mua sắm & thanh lý đồ KTX thông minh?
             </h2>
-            <p className="mx-auto mt-3 max-w-lg text-base text-white/80">
+            <p className="mx-auto mt-3 max-w-lg text-base text-blue-50/90">
               Đăng ký miễn phí bằng email sinh viên, đăng bài trong 2 phút, tiết kiệm hàng trăm nghìn mỗi học kỳ.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 rounded-2xl bg-white px-7 py-3.5 text-sm font-extrabold text-indigo-700 shadow-xl transition hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-2xl bg-white px-7 py-3.5 text-sm font-extrabold text-blue-700 shadow-xl transition hover:-translate-y-0.5 hover:bg-blue-50"
               >
                 <UserPlus className="h-4 w-4" />
                 Tạo tài khoản ngay
