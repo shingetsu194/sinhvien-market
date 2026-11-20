@@ -1,0 +1,463 @@
+[
+ {
+  "id": "R01",
+  "description": "Cần tìm sách giải tích năm nhất, giá dưới 80k, còn sạch sẽ",
+  "image": null,
+  "categoryId": 1,
+  "budgetMax": 80000,
+  "minCondition": "like_new",
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "condition": "soft"
+  },
+  "scenario": "paraphrase"
+ },
+ {
+  "id": "R02",
+  "description": "bàn nhỏ để học trên giường tầng ktx",
+  "image": null,
+  "categoryId": 5,
+  "budgetMax": 300000,
+  "minCondition": null,
+  "building": "B",
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "location": "soft"
+  },
+  "scenario": "paraphrase"
+ },
+ {
+  "id": "R03",
+  "description": "tai nghe không dây chụp tai để nghe nhạc, còn mới",
+  "image": null,
+  "categoryId": 2,
+  "budgetMax": 800000,
+  "minCondition": "like_new",
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "condition": "soft"
+  },
+  "scenario": "paraphrase"
+ },
+ {
+  "id": "R04",
+  "description": "bàn phím cơ gõ êm cho laptop",
+  "image": null,
+  "categoryId": 2,
+  "budgetMax": 700000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "soft"
+  },
+  "scenario": "counterfactual_budget"
+ },
+ {
+  "id": "R05",
+  "description": "máy tính cầm tay để thi đại cương",
+  "image": null,
+  "categoryId": 3,
+  "budgetMax": 400000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "multi_match"
+ },
+ {
+  "id": "R06",
+  "description": "laptop học lập trình giá rẻ",
+  "image": null,
+  "categoryId": 2,
+  "budgetMax": 2500000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "hard_block"
+ },
+ {
+  "id": "R07",
+  "description": "đèn để bàn bảo vệ mắt cho phòng ktx",
+  "image": null,
+  "categoryId": 5,
+  "budgetMax": 200000,
+  "minCondition": null,
+  "building": "A",
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "location": "soft"
+  },
+  "scenario": "paraphrase"
+ },
+ {
+  "id": "R08",
+  "description": "ghế ngồi học thoải mái cho phòng trọ",
+  "image": null,
+  "categoryId": 5,
+  "budgetMax": 300000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "no_supply"
+ },
+ {
+  "id": "R09",
+  "description": "đàn guitar cho người mới tập",
+  "image": null,
+  "categoryId": 6,
+  "budgetMax": 1000000,
+  "minCondition": "like_new",
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "condition": "soft"
+  },
+  "scenario": "related_item"
+ },
+ {
+  "id": "R10",
+  "description": "thiết bị nghe nhạc di động",
+  "image": null,
+  "categoryId": 2,
+  "budgetMax": 1200000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "multi_match"
+ },
+ {
+  "id": "R12",
+  "description": "mua áo khoác trường size L",
+  "image": null,
+  "categoryId": 4,
+  "budgetMax": 150000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "exact"
+ },
+ {
+  "id": "R13",
+  "description": "tìm sách c++ java lập trình hướng đối tượng",
+  "image": null,
+  "categoryId": 1,
+  "budgetMax": 100000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "related_item"
+ },
+ {
+  "id": "R14",
+  "description": "can giay the thao size 42",
+  "image": null,
+  "categoryId": 4,
+  "budgetMax": 200000,
+  "minCondition": "used",
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "condition": "soft"
+  },
+  "scenario": "no_diacritics"
+ },
+ {
+  "id": "R15",
+  "description": "cần dụng cụ vẽ kỹ thuật cho môn đại cương",
+  "image": null,
+  "categoryId": 3,
+  "budgetMax": 100000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "paraphrase"
+ },
+ {
+  "id": "R16",
+  "description": "muốn tìm đồ để nấu ăn trong phòng",
+  "image": null,
+  "categoryId": 5,
+  "budgetMax": 400000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "exchange_excluded"
+ },
+ {
+  "id": "R17",
+  "description": "muốn đổi sách vật lý lấy sách khác",
+  "image": null,
+  "categoryId": 1,
+  "budgetMax": null,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": true,
+  "flags": {
+   "category": "hard"
+  },
+  "scenario": "exchange_allowed"
+ },
+ {
+  "id": "R18",
+  "description": "cần pin sạc dự phòng đi học, tình trạng còn mới",
+  "image": null,
+  "categoryId": 2,
+  "budgetMax": 300000,
+  "minCondition": "like_new",
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "condition": "soft"
+  },
+  "scenario": "counterfactual_condition"
+ },
+ {
+  "id": "R19",
+  "description": "tìm màn hình để làm việc với laptop",
+  "image": null,
+  "categoryId": 2,
+  "budgetMax": 1600000,
+  "minCondition": null,
+  "building": "A",
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "location": "soft"
+  },
+  "scenario": "counterfactual_location"
+ },
+ {
+  "id": "R20",
+  "description": "balo đựng laptop chống nước",
+  "image": null,
+  "categoryId": 3,
+  "budgetMax": 200000,
+  "minCondition": null,
+  "building": "A",
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "location": "soft"
+  },
+  "scenario": "counterfactual_location"
+ },
+ {
+  "id": "R21",
+  "description": "can ban hoc ktx khu a",
+  "image": null,
+  "categoryId": 5,
+  "budgetMax": 300000,
+  "minCondition": null,
+  "building": "A",
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "location": "hard"
+  },
+  "scenario": "hard_block_no_diacritics"
+ },
+ {
+  "id": "R22",
+  "description": "tìm đàn để tập chơi nhạc",
+  "image": null,
+  "categoryId": 6,
+  "budgetMax": 1300000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "multi_match"
+ },
+ {
+  "id": "R23",
+  "description": "đồ dùng tiện lợi cho giường tầng ktx",
+  "image": null,
+  "categoryId": 5,
+  "budgetMax": 250000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "multi_match"
+ },
+ {
+  "id": "R24",
+  "description": "sách tiếng anh luyện thi chứng chỉ",
+  "image": null,
+  "categoryId": 1,
+  "budgetMax": 50000,
+  "minCondition": "like_new",
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "condition": "soft"
+  },
+  "scenario": "counterfactual_condition"
+ },
+ {
+  "id": "R25",
+  "description": "ai có đồ gì để mang đi học vẽ không",
+  "image": null,
+  "categoryId": null,
+  "budgetMax": null,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {},
+  "scenario": "text_only"
+ },
+ {
+  "id": "R26",
+  "description": "cần mua ấm đun nước siêu tốc để pha mì trong phòng trọ",
+  "image": null,
+  "categoryId": 5,
+  "budgetMax": 180000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "multimodal_sparse_offer"
+ },
+ {
+  "id": "R27",
+  "description": "tìm mua vợt cầu lông học giáo dục thể chất",
+  "image": null,
+  "categoryId": 6,
+  "budgetMax": 250000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "multimodal_sparse_offer"
+ },
+ {
+  "id": "R28",
+  "description": "ai pass món giống trong hình dưới 900k hú mình với, cần mua gấp trong tuần",
+  "image": "r28.jpg",
+  "categoryId": 2,
+  "budgetMax": 900000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "multimodal_image_query"
+ },
+ {
+  "id": "R29",
+  "description": "tìm mua lại 1 cây y hệt ảnh chụp để tự tập ở phòng, ai có nhắn mình",
+  "image": "r29.jpg",
+  "categoryId": 6,
+  "budgetMax": 1000000,
+  "minCondition": null,
+  "building": null,
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard"
+  },
+  "scenario": "multimodal_image_query"
+ },
+ {
+  "id": "R30",
+  "description": "cần tìm máy tính bỏ túi casio fx 580 để mang vào phòng thi",
+  "image": null,
+  "categoryId": 3,
+  "budgetMax": 360000,
+  "minCondition": "like_new",
+  "building": "A",
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "condition": "hard",
+   "location": "soft"
+  },
+  "scenario": "multimodal_sparse_offer"
+ },
+ {
+  "id": "R31",
+  "description": "tìm nồi cơm điện nhỏ nấu ăn 1 người, ưu tiên còn như mới ở ktx a",
+  "image": null,
+  "categoryId": 5,
+  "budgetMax": 350000,
+  "minCondition": "like_new",
+  "building": "A",
+  "allowExchange": false,
+  "flags": {
+   "category": "hard",
+   "budget": "hard",
+   "condition": "soft",
+   "location": "soft"
+  },
+  "scenario": "counterfactual_multi"
+ }
+]
