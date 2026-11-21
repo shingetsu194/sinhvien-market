@@ -153,6 +153,63 @@ class ResidenceOperationsTest extends TestCase
         ));
     }
 
+    public function test_check_out_completes_allocation_frees_bed_and_cannot_repeat(): void
+    {
+        $contractId = $this->createResidenceContract($this->studentId, '2030-08-01', '2031-07-31');
+        $allocation = $this->operations->allocateBed($contractId, $this->bedIds[0], $this->managerId, null);
+
+        try {
+            $this->operations->endResidenceContract($contractId, 'terminated', '2030-07-01', $this->managerId, null);
+            self::fail('An end date before check-in must be rejected.');
+        } catch (\DomainException $e) {
+            self::assertSame('INVALID_END_DATE', $e->getMessage());
+        }
+
+        $ended = $this->operations->endResidenceContract(
+            $contractId, 'terminated', '2031-01-15', $this->managerId, 'Left early'
+        );
+        self::assertSame('terminated', $ended['status']);
+        self::assertSame('2031-01-15', $ended['end_date']);
+        self::assertSame('completed', $this->scalar(
+            'SELECT status FROM residence_bed_allocations WHERE id = ?', [(int)$allocation['id']]
+        ));
+        self::assertSame('available', $this->scalar('SELECT status FROM residence_beds WHERE id = ?', [$this->bedIds[0]]));
+        self::assertSame('completed', $this->scalar(
+            "SELECT event_type FROM residence_allocation_events WHERE allocation_id = ? ORDER BY id DESC LIMIT 1",
+            [(int)$allocation['id']]
+        ));
+
+        // The freed bed can be given to another student right away.
+        $next = $this->createResidenceContract($this->secondStudentId, '2031-02-01', '2031-07-31');
+        self::assertSame($this->bedIds[0], (int)$this->operations->allocateBed($next, $this->bedIds[0], $this->managerId, null)['bed_id']);
+
+        try {
+            $this->operations->endResidenceContract($contractId, 'expired', '2031-01-20', $this->managerId, null);
+            self::fail('An ended contract cannot be ended again.');
+        } catch (\DomainException $e) {
+            self::assertSame('CONTRACT_NOT_ACTIVE', $e->getMessage());
+        }
+    }
+
+    public function test_active_rental_contract_can_be_terminated_once(): void
+    {
+        $rentalAppId = $this->operations->submitRentalApplication(
+            $this->secondStudentId, $this->spaceId, '2030-01-01', '2030-12-31', 'Campus Books', null
+        );
+        $this->operations->reviewRentalApplication($rentalAppId, $this->managerId, 'approve', null);
+        $contractId = (int)$this->scalar('SELECT id FROM rental_contracts WHERE application_id = ?', [$rentalAppId]);
+
+        $ended = $this->operations->terminateRentalContract($contractId, '2030-06-30');
+        self::assertSame('terminated', $ended['status']);
+        self::assertSame('2030-06-30', $ended['end_date']);
+        try {
+            $this->operations->terminateRentalContract($contractId, '2030-07-31');
+            self::fail('A terminated rental contract cannot be terminated again.');
+        } catch (\DomainException $e) {
+            self::assertSame('CONTRACT_NOT_ACTIVE', $e->getMessage());
+        }
+    }
+
     private function createResidenceContract(int $userId, string $start, string $end): int
     {
         $number = 'TEST-' . strtoupper(bin2hex(random_bytes(5)));

@@ -21,6 +21,8 @@ import {
 import {
   assignResidenceBed,
   deleteInventoryResource,
+  endResidenceContract,
+  terminateRentalContract,
   deleteRentalSpace,
   getAvailableBeds,
   getBedAllocations,
@@ -58,23 +60,66 @@ const resourceFields: Record<Resource, Array<[string, string, string?]>> = {
     ["status", "Trạng thái"],
   ],
   floors: [
-    ["buildingId", "ID tòa", "number"],
+    ["buildingId", "Tòa", "number"],
     ["floorNumber", "Số tầng", "number"],
     ["name", "Tên tầng"],
   ],
   rooms: [
-    ["floorId", "ID tầng", "number"],
+    ["floorId", "Tầng", "number"],
     ["roomNumber", "Số phòng"],
     ["roomType", "Loại phòng"],
     ["capacity", "Sức chứa", "number"],
     ["status", "Trạng thái"],
   ],
   beds: [
-    ["roomId", "ID phòng", "number"],
+    ["roomId", "Phòng", "number"],
     ["bedNumber", "Mã giường"],
     ["status", "Trạng thái"],
   ],
 };
+
+const STATUS_OPTIONS: Record<Resource, Array<[string, string]>> = {
+  buildings: [["active", "Đang hoạt động"], ["inactive", "Ngừng hoạt động"]],
+  floors: [],
+  rooms: [["active", "Đang hoạt động"], ["maintenance", "Đang bảo trì"], ["inactive", "Ngừng sử dụng"]],
+  beds: [["available", "Trống"], ["occupied", "Có người ở"], ["maintenance", "Đang bảo trì"], ["inactive", "Ngừng sử dụng"]],
+};
+const ROOM_TYPES: Array<[string, string]> = [
+  ["standard", "Tiêu chuẩn"],
+  ["private", "Phòng riêng"],
+  ["accessible", "Hỗ trợ người khuyết tật"],
+];
+const STATUS_LABEL: Record<string, string> = {
+  active: "Đang hoạt động",
+  inactive: "Ngừng sử dụng",
+  maintenance: "Đang bảo trì",
+  available: "Trống",
+  occupied: "Có người ở",
+  terminated: "Đã chấm dứt",
+  expired: "Đã hết hạn",
+};
+
+/** Human-readable summary of an inventory row (instead of raw JSON). */
+function describeRow(resource: Resource, row: Record<string, unknown>): string {
+  const s = (key: string) => (row[key] === null || row[key] === undefined ? "" : String(row[key]));
+  const status = STATUS_LABEL[s("status")] ?? s("status");
+  const building = s("buildingName") || s("buildingCode");
+  switch (resource) {
+    case "buildings":
+      return [s("code"), s("address"), status].filter(Boolean).join(" · ");
+    case "floors":
+      return [building, `Tầng ${s("floorNumber")}`].filter(Boolean).join(" · ");
+    case "rooms":
+      return [
+        `${building} · Tầng ${s("floorNumber")}`,
+        ROOM_TYPES.find(([value]) => value === s("roomType"))?.[1] ?? s("roomType"),
+        `Sức chứa ${s("capacity")}`,
+        status,
+      ].join(" · ");
+    case "beds":
+      return [`${building} · Tầng ${s("floorNumber")} · Phòng ${s("roomNumber")}`, status].join(" · ");
+  }
+}
 
 const fieldClass =
   "mt-1 w-full rounded-xl border border-border bg-bg px-3.5 py-2.5 text-sm font-normal text-fg outline-none transition focus:border-primary";
@@ -315,6 +360,48 @@ function OperationsContent() {
     }
   }
 
+  async function checkOut(row: BedAllocation) {
+    const today = new Date().toISOString().slice(0, 10);
+    const endDate = window.prompt(
+      `Ngày trả phòng của ${row.studentName} (YYYY-MM-DD). Hợp đồng đến ${row.endDate}.`,
+      today < row.endDate ? today : row.endDate,
+    );
+    if (!endDate) return;
+    const status = endDate >= row.endDate ? "expired" : "terminated";
+    if (
+      !window.confirm(
+        `Kết thúc hợp đồng ${row.contractNumber} ngày ${endDate} (${status === "expired" ? "hết hạn" : "chấm dứt sớm"}) và trả giường?`,
+      )
+    )
+      return;
+    setError("");
+    setNotice("");
+    try {
+      await endResidenceContract(row.contractId, { status, endDate, note: "Trả phòng" });
+      setNotice(`Đã trả phòng cho ${row.studentName}; giường đã trống.`);
+      await load();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Không kết thúc được hợp đồng.");
+    }
+  }
+
+  async function endRental(contractId: number, contractNumber: string) {
+    const endDate = window.prompt(
+      `Ngày chấm dứt hợp đồng thuê ${contractNumber} (YYYY-MM-DD):`,
+      new Date().toISOString().slice(0, 10),
+    );
+    if (!endDate) return;
+    setError("");
+    setNotice("");
+    try {
+      await terminateRentalContract(contractId, endDate);
+      setNotice(`Đã chấm dứt hợp đồng thuê ${contractNumber}.`);
+      await load();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Không chấm dứt được hợp đồng thuê.");
+    }
+  }
+
   async function saveSpace(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -501,20 +588,52 @@ function OperationsContent() {
           onSubmit={saveResource}
           className="mt-4 grid gap-3 rounded-2xl border border-border bg-bg/60 p-4 sm:grid-cols-3"
         >
-          {resourceFields[resource].map(([key, label, type]) => (
-            <label key={key} className="text-xs font-bold text-fg">
-              {label}
-              <input
-                required
-                type={type ?? "text"}
-                value={values[key] ?? ""}
-                onChange={(e) =>
-                  setValues({ ...values, [key]: e.target.value })
-                }
-                className="mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-normal text-fg outline-none focus:border-primary"
-              />
-            </label>
-          ))}
+          {resourceFields[resource].map(([key, label, type]) => {
+            const inputClass =
+              "mt-1 w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-normal text-fg outline-none focus:border-primary";
+            const onChange = (value: string) => setValues({ ...values, [key]: value });
+            // Parents, status and room type are picked from lists instead of typed by hand.
+            const options: Array<[string, string]> | null =
+              key === "status"
+                ? STATUS_OPTIONS[resource]
+                : key === "roomType"
+                  ? ROOM_TYPES
+                  : key === "buildingId"
+                    ? (inventory?.buildings ?? []).map((b) => [String(b.id), `${b.name} (${b.code})`])
+                    : key === "floorId"
+                      ? (inventory?.floors ?? []).map((f) => [String(f.id), `${f.buildingName || f.buildingCode} · Tầng ${f.floorNumber}`])
+                      : key === "roomId"
+                        ? (inventory?.rooms ?? []).map((r) => [String(r.id), `${r.buildingName || r.buildingCode} · Phòng ${r.roomNumber}`])
+                        : null;
+            return (
+              <label key={key} className="text-xs font-bold text-fg">
+                {label}
+                {options ? (
+                  <select
+                    required
+                    value={values[key] ?? ""}
+                    onChange={(e) => onChange(e.target.value)}
+                    className={inputClass}
+                  >
+                    <option value="">-- Chọn --</option>
+                    {options.map(([value, text]) => (
+                      <option key={value} value={value}>
+                        {text}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    required
+                    type={type ?? "text"}
+                    value={values[key] ?? ""}
+                    onChange={(e) => onChange(e.target.value)}
+                    className={inputClass}
+                  />
+                )}
+              </label>
+            );
+          })}
           <button
             disabled={busy}
             className="self-end rounded-xl bg-primary px-4 py-2.5 text-sm font-extrabold text-white shadow-xs transition hover:bg-primary-dark disabled:opacity-50"
@@ -540,8 +659,8 @@ function OperationsContent() {
                       row.code,
                   )}
                 </strong>
-                <p className="mt-0.5 font-mono text-xs text-muted">
-                  {JSON.stringify(row)}
+                <p className="mt-0.5 text-xs text-muted">
+                  {describeRow(resource, row)}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -690,6 +809,13 @@ function OperationsContent() {
                     className="cursor-pointer rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-100"
                   >
                     Chuyển
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void checkOut(row)}
+                    className="cursor-pointer rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-extrabold whitespace-nowrap text-rose-700 transition hover:bg-rose-100"
+                  >
+                    Trả phòng
                   </button>
                 </div>
               </div>
@@ -1027,7 +1153,7 @@ function OperationsContent() {
               </div>
               <div>
                 <h3 className="text-base font-extrabold text-fg">
-                  Hợp đồng mặt bằng đang hiệu lực ({rentalContracts.length})
+                  Hợp đồng thuê mặt bằng ({rentalContracts.length})
                 </h3>
                 <p className="text-xs text-muted">
                   Các ki-ốt đã ký hợp đồng khai thác dịch vụ sinh viên.
@@ -1050,8 +1176,17 @@ function OperationsContent() {
                       {Number(contract.monthlyPrice).toLocaleString("vi-VN")}{" "}
                       ₫/tháng
                     </strong>{" "}
-                    · {contract.status}
+                    · {STATUS_LABEL[contract.status] ?? contract.status}
                   </p>
+                  {contract.status === "active" && (
+                    <button
+                      type="button"
+                      onClick={() => void endRental(contract.id, contract.contractNumber)}
+                      className="mt-2 cursor-pointer rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 transition hover:bg-rose-100"
+                    >
+                      Chấm dứt hợp đồng
+                    </button>
+                  )}
                 </div>
               ))}
               {rentalContracts.length === 0 && (

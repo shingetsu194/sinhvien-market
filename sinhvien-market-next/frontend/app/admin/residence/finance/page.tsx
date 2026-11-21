@@ -20,20 +20,22 @@ import {
   getAdminResidencePayments,
   reviewResidencePayment,
   saveFeeCategory,
+  voidResidenceInvoice,
   type FeeCategory,
   type ResidenceInvoice,
   type ResidencePayment,
 } from "@/lib/api/residence-finance";
+import { getBedAllocations, type BedAllocation } from "@/lib/api/residence-operations";
 
 const money = (value: number) =>
   `${new Intl.NumberFormat("vi-VN").format(value)} ₫`;
 
 const INVOICE_STATUS_VI: Record<string, { label: string; cls: string }> = {
-  issued: {
+  open: {
     label: "Chưa thanh toán",
     cls: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-300",
   },
-  partially_paid: {
+  partial: {
     label: "Đã đóng một phần",
     cls: "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-500/15 dark:text-sky-300",
   },
@@ -41,9 +43,9 @@ const INVOICE_STATUS_VI: Record<string, { label: string; cls: string }> = {
     label: "Đã tất toán",
     cls: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300",
   },
-  overdue: {
-    label: "Quá hạn",
-    cls: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-300",
+  void: {
+    label: "Đã hủy",
+    cls: "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-500/15 dark:text-slate-300",
   },
 };
 
@@ -55,6 +57,9 @@ function FinanceAdminContent() {
   const [categories, setCategories] = useState<FeeCategory[]>([]);
   const [invoices, setInvoices] = useState<ResidenceInvoice[]>([]);
   const [payments, setPayments] = useState<ResidencePayment[]>([]);
+  // Students with a residence contract: the invoice form picks from them
+  // instead of asking for a numeric account ID.
+  const [residents, setResidents] = useState<BedAllocation[]>([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -68,12 +73,14 @@ function FinanceAdminContent() {
       getAdminFeeCategories(),
       getAdminInvoices(),
       getAdminResidencePayments(),
+      getBedAllocations(),
     ])
-      .then(([feeCategories, nextInvoices, nextPayments]) => {
+      .then(([feeCategories, nextInvoices, nextPayments, nextResidents]) => {
         if (!active) return;
         setCategories(feeCategories);
         setInvoices(nextInvoices);
         setPayments(nextPayments);
+        setResidents(nextResidents);
       })
       .catch((cause: unknown) => {
         if (active)
@@ -131,8 +138,10 @@ function FinanceAdminContent() {
     setError("");
     setMessage("");
     try {
+      const [userId, contractId] = String(data.get("resident")).split(":").map(Number);
       await createResidenceInvoice({
-        userId: Number(data.get("userId")),
+        userId,
+        contractId: contractId || undefined,
         description: String(data.get("description")),
         issuedAt: String(data.get("issuedAt")),
         dueDate: String(data.get("dueDate")),
@@ -152,6 +161,22 @@ function FinanceAdminContent() {
       setError(
         cause instanceof Error ? cause.message : "Không tạo được hóa đơn.",
       );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function cancelInvoice(invoice: ResidenceInvoice) {
+    if (!window.confirm(`Hủy hóa đơn ${invoice.invoiceNumber} của ${invoice.studentName}?`)) return;
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      await voidResidenceInvoice(invoice.id);
+      setMessage(`Đã hủy hóa đơn ${invoice.invoiceNumber}.`);
+      await reload();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Không hủy được hóa đơn.");
     } finally {
       setBusy(false);
     }
@@ -300,15 +325,16 @@ function FinanceAdminContent() {
           </div>
 
           <label className="text-xs font-bold text-fg">
-            ID tài khoản sinh viên *
-            <input
-              required
-              name="userId"
-              type="number"
-              min="1"
-              defaultValue="1"
-              className={fieldClass}
-            />
+            Sinh viên (theo hợp đồng lưu trú) *
+            <select required name="resident" defaultValue="" className={fieldClass}>
+              <option value="">-- Chọn sinh viên --</option>
+              {residents.map((r) => (
+                <option key={r.contractId} value={`${r.userId}:${r.contractId}`}>
+                  {r.studentName} · {r.contractNumber}
+                  {r.roomNumber ? ` · ${r.buildingCode}/${r.roomNumber}` : " · chờ phân giường"}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="text-xs font-bold text-fg">
             Mô tả kỳ hóa đơn *
@@ -491,9 +517,6 @@ function FinanceAdminContent() {
                   >
                     {st.label}
                   </span>
-                  <span className="font-mono text-[11px] text-muted">
-                    {invoice.status}
-                  </span>
                 </div>
                 <p className="mt-1.5 font-extrabold text-fg">
                   {invoice.studentName} · {invoice.description}
@@ -513,6 +536,16 @@ function FinanceAdminContent() {
                     {money(invoice.outstandingAmount)}
                   </strong>
                 </p>
+                {invoice.status === "open" && invoice.paidAmount === 0 && (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => void cancelInvoice(invoice)}
+                    className="mt-2 cursor-pointer rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 transition hover:bg-rose-100 disabled:opacity-50"
+                  >
+                    Hủy hóa đơn
+                  </button>
+                )}
               </div>
             </article>
           );

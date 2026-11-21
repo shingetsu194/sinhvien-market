@@ -484,6 +484,22 @@ export const reviewResidencePayment = async (
   return null;
 };
 
+/** Void an invoice issued by mistake (only while nothing has been collected). */
+export const voidResidenceInvoice = async (id: number): Promise<null> => {
+  if (!USE_MOCK) {
+    return apiRequest<null>(`/admin/residence/invoices/${id}/void`, { method: "POST" });
+  }
+  const store = readMockFinanceStore();
+  store.invoices = store.invoices.map((i) =>
+    i.id === id && i.status === "open" ? { ...i, status: "void" } : i,
+  );
+  store.payments = store.payments.map((p) =>
+    p.invoiceId === id && p.status === "pending" ? { ...p, status: "rejected" } : p,
+  );
+  writeMockFinanceStore(store);
+  return null;
+};
+
 export const createResidenceNotice = async (input: {
   type: ResidenceNotice["type"];
   title: string;

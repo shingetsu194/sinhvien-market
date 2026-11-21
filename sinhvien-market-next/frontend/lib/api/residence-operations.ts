@@ -614,6 +614,42 @@ export async function transferResidenceBed(
   return { id: allocationId };
 }
 
+/**
+ * Check-out: end a residence contract and free its bed.
+ * "expired" = stay ran to term, "terminated" = ended early.
+ */
+export async function endResidenceContract(
+  contractId: number,
+  input: { status: "expired" | "terminated"; endDate: string; note?: string },
+) {
+  if (!USE_MOCK) {
+    return apiRequest<{ id: number; status: string }>(
+      `/admin/residence/contracts/${contractId}/end`,
+      { method: "POST", body: { ...input, note: input.note ?? "" } },
+    );
+  }
+  const store = readMockOpsStore();
+  store.allocations = store.allocations.filter((a) => a.contractId !== contractId);
+  writeMockOpsStore(store);
+  return { id: contractId, status: input.status };
+}
+
+/** End an active rental (kiosk) contract early. */
+export async function terminateRentalContract(contractId: number, endDate: string) {
+  if (!USE_MOCK) {
+    return apiRequest<RentalContract>(`/admin/rental/contracts/${contractId}/terminate`, {
+      method: "POST",
+      body: { endDate },
+    });
+  }
+  const store = readMockOpsStore();
+  store.rentalContracts = store.rentalContracts.map((c) =>
+    c.id === contractId ? { ...c, status: "terminated", endDate } : c,
+  );
+  writeMockOpsStore(store);
+  return store.rentalContracts.find((c) => c.id === contractId);
+}
+
 export async function getAccommodationHistory(): Promise<
   AccommodationHistoryItem[]
 > {

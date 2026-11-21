@@ -154,6 +154,41 @@ class ResidenceFinance extends Model
         return $invoices;
     }
 
+    /**
+     * Void an invoice issued by mistake. Only an "open" invoice with no
+     * confirmed payment can be voided; payments still waiting for review are
+     * rejected so the student is not asked to pay a void invoice.
+     */
+    public function voidInvoice(int $invoiceId, int $actorId): void
+    {
+        $this->pdo()->beginTransaction();
+        try {
+            $invoice = $this->queryOne('SELECT * FROM residence_invoices WHERE id = ? FOR UPDATE', [$invoiceId]);
+            if ($invoice === null) {
+                throw new \DomainException('INVOICE_NOT_FOUND');
+            }
+            $confirmed = $this->queryOne(
+                "SELECT COUNT(*) AS n FROM residence_payments WHERE invoice_id = ? AND status = 'confirmed'",
+                [$invoiceId]
+            );
+            if ($invoice['status'] !== 'open' || (int)$confirmed['n'] > 0) {
+                throw new \DomainException('INVOICE_NOT_VOIDABLE');
+            }
+            $this->execute(
+                "UPDATE residence_payments SET status = 'rejected', reviewed_by = ?, reviewed_at = CURRENT_TIMESTAMP
+                 WHERE invoice_id = ? AND status = 'pending'",
+                [$actorId, $invoiceId]
+            );
+            $this->execute("UPDATE residence_invoices SET status = 'void' WHERE id = ?", [$invoiceId]);
+            $this->pdo()->commit();
+        } catch (\Throwable $e) {
+            if ($this->pdo()->inTransaction()) {
+                $this->pdo()->rollBack();
+            }
+            throw $e;
+        }
+    }
+
     public function payments(?int $userId = null): array
     {
         $sql = 'SELECT p.*, i.invoice_number, u.name AS student_name

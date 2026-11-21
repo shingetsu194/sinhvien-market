@@ -157,6 +157,22 @@ class ResidenceFinanceApiController extends ApiController
         $this->created(['id' => $id], 'Đã ghi nhận yêu cầu thanh toán, đang chờ đối soát.');
     }
 
+    /** Void an invoice issued by mistake (no confirmed payment yet). */
+    public function voidInvoice(): void
+    {
+        $actor = $this->requirePermission('residence.finance.manage');
+        $this->requireCsrf();
+        try {
+            (new ResidenceFinance())->voidInvoice(
+                filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT) ?: 0,
+                (int)$actor['id']
+            );
+        } catch (\DomainException $e) {
+            $this->financeDomainError($e);
+        }
+        $this->success(null, 'Đã hủy hóa đơn.');
+    }
+
     public function reviewPayment(): void
     {
         $actor = $this->requirePermission('residence.finance.manage');
@@ -294,6 +310,7 @@ class ResidenceFinanceApiController extends ApiController
             'PAYMENT_EXCEEDS_BALANCE' => ['PAYMENT_EXCEEDS_BALANCE', 'Số tiền thanh toán vượt quá số dư hóa đơn.', 409],
             'PAYMENT_NOT_FOUND' => ['NOT_FOUND', 'Không tìm thấy bản ghi thanh toán.', 404],
             'PAYMENT_ALREADY_REVIEWED' => ['PAYMENT_ALREADY_REVIEWED', 'Bản ghi thanh toán đã được đối soát.', 409],
+            'INVOICE_NOT_VOIDABLE' => ['INVOICE_NOT_VOIDABLE', 'Chỉ hủy được hóa đơn chưa thu khoản nào.', 409],
             default => ['VALIDATION_ERROR', 'Dữ liệu hóa đơn không hợp lệ.', 422],
         };
         $this->error($code, $message, $status);

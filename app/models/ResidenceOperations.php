@@ -264,6 +264,101 @@ class ResidenceOperations extends Model
     }
 
     /**
+     * Check-out: end a residence contract. "expired" = the stay ran to term,
+     * "terminated" = ended early. The active bed allocation is completed on
+     * $endDate, the bed becomes available again and the event is logged.
+     * A contract still waiting for a bed can be ended too (no allocation).
+     *
+     * @return array<string, mixed> the updated contract
+     */
+    public function endResidenceContract(int $contractId, string $status, string $endDate, int $actorId, ?string $note): array
+    {
+        if (!in_array($status, ['expired', 'terminated'], true)) {
+            throw new \InvalidArgumentException('INVALID_CONTRACT_END_STATUS');
+        }
+        $this->pdo()->beginTransaction();
+        try {
+            $contract = $this->queryOne('SELECT * FROM residence_contracts WHERE id = ? FOR UPDATE', [$contractId]);
+            if (!$contract) {
+                throw new \DomainException('CONTRACT_NOT_FOUND');
+            }
+            if (!in_array($contract['status'], ['pending_assignment', 'active'], true)) {
+                throw new \DomainException('CONTRACT_NOT_ACTIVE');
+            }
+            if ($endDate < $contract['start_date'] || $endDate > $contract['end_date']) {
+                throw new \DomainException('INVALID_END_DATE');
+            }
+            $allocation = $this->queryOne(
+                "SELECT * FROM residence_bed_allocations WHERE contract_id = ? AND status = 'active' FOR UPDATE",
+                [$contractId]
+            );
+            if ($allocation) {
+                if ($endDate < $allocation['start_date']) {
+                    throw new \DomainException('INVALID_END_DATE');
+                }
+                $this->execute(
+                    "UPDATE residence_bed_allocations SET status = 'completed', end_date = ? WHERE id = ?",
+                    [$endDate, (int)$allocation['id']]
+                );
+                $this->execute("UPDATE residence_beds SET status = 'available' WHERE id = ?", [(int)$allocation['bed_id']]);
+                $this->recordAllocationEvent((int)$allocation['id'], $actorId, 'completed', (int)$allocation['bed_id'], null, $endDate, $note);
+            }
+            $this->execute(
+                'UPDATE residence_contracts SET status = ?, end_date = ? WHERE id = ?',
+                [$status, $endDate, $contractId]
+            );
+            $this->pdo()->commit();
+            return $this->queryOne(
+                'SELECT c.*, u.name AS student_name FROM residence_contracts c JOIN users u ON u.id = c.user_id WHERE c.id = ?',
+                [$contractId]
+            ) ?? throw new \RuntimeException('Ended contract could not be reloaded.');
+        } catch (\Throwable $e) {
+            if ($this->pdo()->inTransaction()) {
+                $this->pdo()->rollBack();
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * End an active rental (kiosk) contract early on $endDate.
+     *
+     * @return array<string, mixed> the updated contract
+     */
+    public function terminateRentalContract(int $contractId, string $endDate): array
+    {
+        $this->pdo()->beginTransaction();
+        try {
+            $contract = $this->queryOne('SELECT * FROM rental_contracts WHERE id = ? FOR UPDATE', [$contractId]);
+            if (!$contract) {
+                throw new \DomainException('RENTAL_CONTRACT_NOT_FOUND');
+            }
+            if ($contract['status'] !== 'active') {
+                throw new \DomainException('CONTRACT_NOT_ACTIVE');
+            }
+            if ($endDate < $contract['start_date'] || $endDate > $contract['end_date']) {
+                throw new \DomainException('INVALID_END_DATE');
+            }
+            $this->execute(
+                "UPDATE rental_contracts SET status = 'terminated', end_date = ? WHERE id = ?",
+                [$endDate, $contractId]
+            );
+            $this->pdo()->commit();
+            return $this->queryOne(
+                'SELECT c.*, s.space_code, s.name AS space_name, u.name AS tenant_name
+                 FROM rental_contracts c JOIN rental_spaces s ON s.id = c.space_id
+                 JOIN users u ON u.id = c.user_id WHERE c.id = ?',
+                [$contractId]
+            ) ?? throw new \RuntimeException('Terminated rental contract could not be reloaded.');
+        } catch (\Throwable $e) {
+            if ($this->pdo()->inTransaction()) {
+                $this->pdo()->rollBack();
+            }
+            throw $e;
+        }
+    }
+
+    /**
      * @return list<array<string, mixed>>
      */
     public function accommodationHistory(int $userId): array

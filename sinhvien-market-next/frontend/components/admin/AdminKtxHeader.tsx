@@ -6,7 +6,7 @@ import {
   Building2,
   CreditCard,
   Gauge,
-  SearchCheck,
+  Megaphone,
   Wrench,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -33,9 +33,9 @@ const ADMIN_KTX_NAV = [
     icon: CreditCard,
   },
   {
-    href: "/admin/marketplace/matching",
-    label: "Đánh giá Matching",
-    icon: SearchCheck,
+    href: "/admin/residence/notices",
+    label: "Thông báo & Nội quy",
+    icon: Megaphone,
   },
 ];
 

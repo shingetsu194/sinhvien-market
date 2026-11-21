@@ -28,7 +28,7 @@ import {
   LogOut,
   Menu,
   RotateCcw,
-  SearchCheck,
+  Megaphone,
   ShieldAlert,
   ShieldCheck,
   StarHalf,
@@ -169,7 +169,7 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    section: "Ký túc xá & Ghép nối",
+    section: "Ký túc xá",
     items: [
       {
         href: "/admin/residence/dashboard",
@@ -192,9 +192,9 @@ const NAV_GROUPS: NavGroup[] = [
         icon: CreditCard,
       },
       {
-        href: "/admin/marketplace/matching",
-        label: "Đánh giá Matching",
-        icon: SearchCheck,
+        href: "/admin/residence/notices",
+        label: "Thông báo & Nội quy",
+        icon: Megaphone,
       },
     ],
   },

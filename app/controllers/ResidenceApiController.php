@@ -279,6 +279,48 @@ class ResidenceApiController extends ApiController
         }
     }
 
+    /** Check-out / end a residence contract and free its bed. */
+    public function endContract(): void
+    {
+        $actor = $this->requirePermission('residence.contract.manage');
+        $this->requireCsrf();
+        $contractId = (int)($_GET['id'] ?? 0);
+        $data = $this->requestData();
+        $status = $this->field($data, 'status') ?: 'expired';
+        $endDate = $this->field($data, 'endDate') ?: date('Y-m-d');
+        $note = $this->field($data, 'note');
+        if ($contractId < 1 || !in_array($status, ['expired', 'terminated'], true)
+            || !$this->isValidDate($endDate) || mb_strlen($note) > 1000) {
+            $this->validationError('Thông tin kết thúc hợp đồng không hợp lệ.');
+        }
+        try {
+            $contract = (new ResidenceOperations())->endResidenceContract(
+                $contractId, $status, $endDate, (int)$actor['id'], $note !== '' ? $note : null
+            );
+            $this->success($this->camelize($contract), 'Đã kết thúc hợp đồng và trả giường.');
+        } catch (\DomainException $e) {
+            $this->operationDomainError($e);
+        }
+    }
+
+    /** End an active rental (kiosk) contract early. */
+    public function terminateRentalContract(): void
+    {
+        $this->requirePermission('rental.space.manage');
+        $this->requireCsrf();
+        $contractId = (int)($_GET['id'] ?? 0);
+        $endDate = $this->field($this->requestData(), 'endDate') ?: date('Y-m-d');
+        if ($contractId < 1 || !$this->isValidDate($endDate)) {
+            $this->validationError('Thông tin chấm dứt hợp đồng thuê không hợp lệ.');
+        }
+        try {
+            $contract = (new ResidenceOperations())->terminateRentalContract($contractId, $endDate);
+            $this->success($this->camelize($contract), 'Đã chấm dứt hợp đồng thuê mặt bằng.');
+        } catch (\DomainException $e) {
+            $this->operationDomainError($e);
+        }
+    }
+
     public function transferBed(): void
     {
         $actor = $this->requirePermission('residence.contract.manage');
@@ -662,6 +704,9 @@ class ResidenceApiController extends ApiController
             'SPACE_NOT_AVAILABLE' => ['SPACE_NOT_AVAILABLE', 'Mặt bằng hiện không còn khả dụng.', 409],
             'RENTAL_SPACE_OVERLAP' => ['RENTAL_SPACE_OVERLAP', 'Khoảng thời gian thuê bị trùng hoặc mặt bằng đã được đặt.', 409],
             'INVALID_STATE_TRANSITION' => ['INVALID_STATE_TRANSITION', 'Đề nghị thuê đã được xử lý.', 409],
+            'CONTRACT_NOT_ACTIVE' => ['INVALID_STATE_TRANSITION', 'Hợp đồng đã kết thúc trước đó.', 409],
+            'INVALID_END_DATE' => ['INVALID_END_DATE', 'Ngày kết thúc phải nằm trong thời hạn hợp đồng và sau ngày nhận phòng.', 422],
+            'RENTAL_CONTRACT_NOT_FOUND' => ['NOT_FOUND', 'Không tìm thấy hợp đồng thuê mặt bằng.', 404],
         ];
         [$apiCode, $message, $status] = $messages[$code] ?? ['OPERATION_CONFLICT', 'Không thể hoàn tất thao tác.', 409];
         $this->error($apiCode, $message, $status);
