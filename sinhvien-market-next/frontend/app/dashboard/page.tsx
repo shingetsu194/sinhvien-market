@@ -105,7 +105,7 @@ function DashboardContent() {
         </div>
       ) : (
         <>
-          <div className="mb-7 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-6 text-white shadow-lg shadow-indigo-500/20 sm:p-8">
+          <div className="mb-7 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-gradient-to-br from-blue-600 via-sky-600 to-sky-500 p-6 text-white shadow-lg shadow-blue-500/20 sm:p-8">
             <div>
               <p className="text-sm font-medium text-white/75">Xin chào,</p>
               <h2 className="mt-1 text-2xl font-black sm:text-3xl">
@@ -115,7 +115,7 @@ function DashboardContent() {
             </div>
             <Link
               href="/products/create"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-indigo-700 transition hover:-translate-y-0.5 hover:bg-indigo-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-50"
             >
               <Plus className="h-4 w-4" />
               Đăng bán mới
@@ -128,7 +128,7 @@ function DashboardContent() {
                 label: "Bài đăng",
                 value: loading ? "…" : String(listings.length),
                 icon: Package,
-                tone: "text-indigo-500",
+                tone: "text-blue-500",
               },
               {
                 label: "Đã bán",

@@ -290,6 +290,22 @@ function ProductDetailContent() {
           )}
 
           <div className="mt-5 flex flex-wrap gap-3">
+            {product.sellerId === user?.id && (
+              <div className="w-full rounded-2xl border border-blue-500/25 bg-blue-500/10 p-4 text-xs">
+                <p className="font-extrabold text-blue-600 dark:text-blue-300">
+                  ✨ Đây là tin đăng của bạn
+                </p>
+                <p className="mt-1 text-muted">
+                  Bạn có thể theo dõi trạng thái kiểm duyệt, chỉnh sửa hoặc làm mới tin trong trang quản lý cá nhân.
+                </p>
+                <Link
+                  href="/my-listings"
+                  className="mt-2.5 inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-white"
+                >
+                  Quản lý trong Tin đăng của tôi
+                </Link>
+              </div>
+            )}
             {product.sellerId !== user?.id && (
               <Button
                 type="button"

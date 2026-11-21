@@ -28,7 +28,15 @@ import {
   validateCategoryName,
 } from "@/lib/validation/admin";
 
-const STORAGE_KEY = "svm_mock_admin_db_v1";
+const STORAGE_KEY = "svm_mock_admin_db_v5";
+
+function escapeXml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
 interface AdminMockDb {
   users: AdminUserRecord[];
@@ -59,8 +67,8 @@ function makeBannerSvg(
     <rect width="800" height="300" rx="20" fill="url(#g)"/>
     <circle cx="700" cy="60" r="110" fill="rgba(255,255,255,0.12)"/>
     <circle cx="120" cy="250" r="90" fill="rgba(255,255,255,0.08)"/>
-    <text x="56" y="135" fill="#ffffff" font-family="sans-serif" font-size="34" font-weight="800">${title}</text>
-    <text x="56" y="185" fill="rgba(255,255,255,0.85)" font-family="sans-serif" font-size="20" font-weight="600">${subtitle}</text>
+    <text x="56" y="135" fill="#ffffff" font-family="sans-serif" font-size="34" font-weight="800">${escapeXml(title)}</text>
+    <text x="56" y="185" fill="rgba(255,255,255,0.85)" font-family="sans-serif" font-size="20" font-weight="600">${escapeXml(subtitle)}</text>
   </svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
@@ -91,9 +99,9 @@ function createInitialDb(): AdminMockDb {
       },
       {
         id: 4,
-        name: "Phương tiện di chuyển",
-        slug: "phuong-tien-di-chuyen",
-        icon: "bi-bicycle",
+        name: "Thời trang & Phụ kiện",
+        slug: "thoi-trang-phu-kien",
+        icon: "bi-bag",
         createdAt: "2026-09-03T10:00:00+07:00",
       },
       {
@@ -299,7 +307,7 @@ function createInitialDb(): AdminMockDb {
         type: "sale",
         price: 65000,
         condition: "like_new",
-        status: "pending",
+        status: "active",
         hasTransactions: false,
         createdAt: "2026-10-28T07:10:00+07:00",
       },
@@ -314,7 +322,7 @@ function createInitialDb(): AdminMockDb {
         type: "auction",
         price: 850000,
         condition: "used",
-        status: "pending",
+        status: "active",
         hasTransactions: false,
         createdAt: "2026-10-28T06:45:00+07:00",
       },
@@ -326,10 +334,10 @@ function createInitialDb(): AdminMockDb {
         sellerId: 7,
         sellerName: "Võ Tuấn Kiệt",
         sellerEmail: "kiet.vo@student.edu.vn",
-        type: "exchange",
-        price: null,
+        type: "sale",
+        price: 220000,
         condition: "like_new",
-        status: "pending",
+        status: "active",
         hasTransactions: false,
         createdAt: "2026-10-27T21:30:00+07:00",
       },
@@ -338,13 +346,13 @@ function createInitialDb(): AdminMockDb {
         title: "Máy tính bỏ túi Casio fx-580VN X chính hãng Bitex",
         categoryId: 5,
         categoryName: "Đồ dùng học tập",
-        sellerId: 3,
-        sellerName: "Trần Quốc Bảo",
-        sellerEmail: "unverified@demo.vn",
+        sellerId: 1,
+        sellerName: "Nguyễn Minh Anh",
+        sellerEmail: "student@demo.vn",
         type: "sale",
         price: 380000,
         condition: "like_new",
-        status: "pending",
+        status: "active",
         hasTransactions: false,
         createdAt: "2026-10-27T19:15:00+07:00",
       },
@@ -365,14 +373,14 @@ function createInitialDb(): AdminMockDb {
       },
       {
         id: 106,
-        title: "Xe đạp thể thao Giant Escape 3 đi học trong Làng Đại học",
-        categoryId: 4,
-        categoryName: "Phương tiện di chuyển",
+        title: "Bàn học gấp gọn gỗ thông đặt giường tầng KTX",
+        categoryId: 3,
+        categoryName: "Đồ gia dụng KTX",
         sellerId: 6,
         sellerName: "Đỗ Khánh Linh",
         sellerEmail: "linh.do@student.edu.vn",
         type: "sale",
-        price: 2400000,
+        price: 180000,
         condition: "used",
         status: "active",
         hasTransactions: false,
@@ -404,7 +412,7 @@ function createInitialDb(): AdminMockDb {
         type: "sale",
         price: 110000,
         condition: "used",
-        status: "sold",
+        status: "active",
         hasTransactions: true,
         createdAt: "2026-10-14T11:00:00+07:00",
       },
@@ -438,6 +446,51 @@ function createInitialDb(): AdminMockDb {
         hasTransactions: false,
         rejectionReason: "Không cho phép kinh doanh tài khoản số dùng chung trái quy định.",
         createdAt: "2026-10-12T17:00:00+07:00",
+      },
+      {
+        id: 111,
+        title: "Giáo trình Giải tích 1 & Đại số tuyến tính (Bản in mới chờ duyệt)",
+        categoryId: 1,
+        categoryName: "Sách & Giáo trình",
+        sellerId: 3,
+        sellerName: "Trần Quốc Bảo",
+        sellerEmail: "unverified@demo.vn",
+        type: "sale",
+        price: 55000,
+        condition: "like_new",
+        status: "pending",
+        hasTransactions: false,
+        createdAt: "2026-10-28T08:00:00+07:00",
+      },
+      {
+        id: 112,
+        title: "Giá đỡ Laptop nhôm 6 nấc chỉnh độ cao cho bàn học KTX",
+        categoryId: 5,
+        categoryName: "Đồ dùng học tập",
+        sellerId: 7,
+        sellerName: "Võ Tuấn Kiệt",
+        sellerEmail: "kiet.vo@student.edu.vn",
+        type: "exchange",
+        price: null,
+        condition: "new",
+        status: "pending",
+        hasTransactions: false,
+        createdAt: "2026-10-28T07:50:00+07:00",
+      },
+      {
+        id: 113,
+        title: "Quạt mini kẹp bàn học KTX pin sạc 4000mAh",
+        categoryId: 3,
+        categoryName: "Đồ gia dụng KTX",
+        sellerId: 1,
+        sellerName: "Nguyễn Minh Anh",
+        sellerEmail: "student@demo.vn",
+        type: "sale",
+        price: 95000,
+        condition: "like_new",
+        status: "sold",
+        hasTransactions: true,
+        createdAt: "2026-10-10T09:00:00+07:00",
       },
     ],
     transactions: [
@@ -654,7 +707,7 @@ function createInitialDb(): AdminMockDb {
         rateeName: "Đỗ Khánh Linh",
         rateeEmail: "linh.do@student.edu.vn",
         productId: 106,
-        productTitle: "Xe đạp thể thao Giant Escape 3 đi học trong Làng Đại học",
+        productTitle: "Bàn học gấp gọn gỗ thông đặt giường tầng KTX",
         stars: 1,
         comment: "Bình luận chứa từ ngữ công kích cá nhân không phù hợp tiêu chuẩn cộng đồng.",
         status: "hidden",
@@ -668,8 +721,8 @@ function createInitialDb(): AdminMockDb {
         imageUrl: makeBannerSvg(
           "Chào Tân Sinh Viên 2026",
           "Săn giáo trình & đồ dùng KTX tiết kiệm đến 70%",
-          "#4f46e5",
-          "#9333ea",
+          "#1d4ed8",
+          "#0284c7",
         ),
         link: "/products?category=sach-giao-trinh",
         isActive: true,
@@ -682,8 +735,8 @@ function createInitialDb(): AdminMockDb {
         imageUrl: makeBannerSvg(
           "Đấu Giá Đồ Công Nghệ",
           "Laptop, bàn phím cơ, tai nghe chính hãng giá khởi điểm từ 50K",
-          "#0284c7",
-          "#4f46e5",
+          "#0369a1",
+          "#2563eb",
         ),
         link: "/products?type=auction",
         isActive: true,
@@ -696,8 +749,8 @@ function createInitialDb(): AdminMockDb {
         imageUrl: makeBannerSvg(
           "Giveaway Tháng 10",
           "Tham gia miễn phí dành cho mọi sinh viên đã xác thực email",
-          "#db2777",
-          "#f97316",
+          "#1e40af",
+          "#0ea5e9",
         ),
         link: "/giveaways",
         isActive: false,
@@ -714,8 +767,8 @@ function createInitialDb(): AdminMockDb {
         imageUrl: makeBannerSvg(
           "DareU EK87 Mechanical",
           "Quà tặng Giveaway SinhVienMarket",
-          "#6366f1",
-          "#ec4899",
+          "#1d4ed8",
+          "#0284c7",
         ),
         endTime: "2026-11-10T20:00:00+07:00",
         status: "active",
@@ -1529,8 +1582,8 @@ export async function mockCreateBanner(input: {
       makeBannerSvg(
         cleanTitle,
         input.link.trim() || "SinhVienMarket",
-        "#6366f1",
-        "#8b5cf6",
+        "#2563eb",
+        "#0284c7",
       ),
     createdAt: new Date().toISOString(),
   };
@@ -1666,7 +1719,7 @@ export async function mockCreateGiveaway(input: {
     endTime: new Date(input.endTime).toISOString(),
     imageUrl:
       input.imageUrl ||
-      makeBannerSvg(cleanTitle, "Giveaway SinhVienMarket", "#6366f1", "#ec4899"),
+      makeBannerSvg(cleanTitle, "Giveaway SinhVienMarket", "#2563eb", "#0ea5e9"),
     status: "active",
     winnerId: null,
     winnerName: null,

@@ -42,7 +42,7 @@ const PAYMENT_METHOD_LABELS: Record<
   banking: {
     label: "🏦 Chuyển khoản",
     badgeClass:
-      "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300",
+      "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
   },
   zalopay: {
     label: "⚡ ZaloPay",
@@ -52,7 +52,7 @@ const PAYMENT_METHOD_LABELS: Record<
   momo: {
     label: "💳 MoMo",
     badgeClass:
-      "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300",
+      "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300",
   },
 };
 
@@ -78,7 +78,7 @@ const ORDER_STATUS_LABELS: Record<
   received: {
     label: "Đã nhận hàng",
     badgeClass:
-      "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300",
+      "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300",
   },
   completed: {
     label: "Hoàn thành",
@@ -189,7 +189,7 @@ function ReportsContent({ fromDate, toDate }: ReportsContentProps) {
             <span className="text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
               Tổng số đơn phát sinh
             </span>
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
               <ShoppingBag className="h-5 w-5" />
             </span>
           </div>
@@ -223,14 +223,14 @@ function ReportsContent({ fromDate, toDate }: ReportsContentProps) {
         <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-white">
-              <BarChart3 className="h-5 w-5 text-indigo-500" />
+              <BarChart3 className="h-5 w-5 text-blue-500" />
               Biểu đồ doanh số theo ngày
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Thống kê giá trị giao dịch phát sinh theo từng ngày trong khoảng đã chọn
             </p>
           </div>
-          <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300">
+          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600 dark:bg-blue-500/15 dark:text-blue-300">
             {byDay.length} ngày có phát sinh
           </span>
         </div>
@@ -255,15 +255,15 @@ function ReportsContent({ fromDate, toDate }: ReportsContentProps) {
               return (
                 <div
                   key={item.day}
-                  className="group flex flex-col items-center rounded-xl border border-slate-100 bg-slate-50/60 p-3 transition hover:border-indigo-300 hover:bg-indigo-50/40 dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:border-indigo-500/40"
+                  className="group flex flex-col items-center rounded-xl border border-slate-100 bg-slate-50/60 p-3 transition hover:border-blue-300 hover:bg-blue-50/40 dark:border-slate-800/80 dark:bg-slate-800/40 dark:hover:border-blue-500/40"
                 >
-                  <span className="mb-2 text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                  <span className="mb-2 text-xs font-bold text-blue-600 dark:text-blue-400">
                     {formatVnd(item.amount)}
                   </span>
                   <div className="flex h-36 w-full items-end justify-center rounded-lg bg-slate-200/50 px-4 py-2 dark:bg-slate-900/60">
                     <div
                       style={{ height: `${heightPct}%` }}
-                      className="w-full max-w-[44px] rounded-t-lg bg-linear-to-t from-indigo-600 to-indigo-400 shadow-sm transition-all duration-300 group-hover:from-indigo-500 group-hover:to-cyan-400"
+                      className="w-full max-w-[44px] rounded-t-lg bg-linear-to-t from-blue-600 to-blue-400 shadow-sm transition-all duration-300 group-hover:from-blue-500 group-hover:to-cyan-400"
                     />
                   </div>
                   <span className="mt-2.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -347,7 +347,7 @@ function ReportsContent({ fromDate, toDate }: ReportsContentProps) {
                       <td className="px-4 py-3.5">
                         <Link
                           href={`/admin/users/detail?id=${tx.buyerId}`}
-                          className="inline-flex items-center gap-1 font-medium text-slate-800 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-indigo-400"
+                          className="inline-flex items-center gap-1 font-medium text-slate-800 hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400"
                         >
                           {tx.buyerName}
                           <ExternalLink className="h-3 w-3 opacity-60" />
@@ -356,7 +356,7 @@ function ReportsContent({ fromDate, toDate }: ReportsContentProps) {
                       <td className="px-4 py-3.5">
                         <Link
                           href={`/admin/users/detail?id=${tx.sellerId}`}
-                          className="inline-flex items-center gap-1 font-medium text-slate-800 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-indigo-400"
+                          className="inline-flex items-center gap-1 font-medium text-slate-800 hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400"
                         >
                           {tx.sellerName}
                           <ExternalLink className="h-3 w-3 opacity-60" />
@@ -436,7 +436,7 @@ function ReportsPageInner() {
           <div className="flex flex-wrap items-end gap-3">
             <div>
               <label htmlFor="report-from" className={adminLabelClass}>
-                <Calendar className="mr-1 inline h-3.5 w-3.5 text-indigo-500" />
+                <Calendar className="mr-1 inline h-3.5 w-3.5 text-blue-500" />
                 Từ ngày
               </label>
               <input
@@ -450,7 +450,7 @@ function ReportsPageInner() {
 
             <div>
               <label htmlFor="report-to" className={adminLabelClass}>
-                <Calendar className="mr-1 inline h-3.5 w-3.5 text-indigo-500" />
+                <Calendar className="mr-1 inline h-3.5 w-3.5 text-blue-500" />
                 Đến ngày
               </label>
               <input
@@ -464,7 +464,7 @@ function ReportsPageInner() {
 
             <button
               type="submit"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-xs transition hover:bg-indigo-500"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-xs transition hover:bg-blue-500"
             >
               <Filter className="h-4 w-4" />
               Lọc báo cáo

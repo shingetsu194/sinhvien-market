@@ -15,7 +15,7 @@ export function Logo({ href = "/login-role", className, onDark }: LogoProps) {
     <>
       <span
         aria-hidden="true"
-        className="flex h-9 w-9 items-center justify-center rounded-field bg-linear-to-br from-primary to-secondary text-white shadow-sm-p"
+        className="flex h-9 w-9 items-center justify-center rounded-field bg-linear-to-br from-blue-600 to-sky-500 text-white shadow-sm-p"
       >
         <Store className="h-5 w-5" />
       </span>
@@ -24,7 +24,7 @@ export function Logo({ href = "/login-role", className, onDark }: LogoProps) {
           "text-xl font-black tracking-tight",
           onDark
             ? "text-white"
-            : "bg-linear-to-r from-primary to-accent bg-clip-text text-transparent",
+            : "bg-linear-to-r from-blue-700 to-sky-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-sky-300",
         )}
       >
         SinhVienMarket

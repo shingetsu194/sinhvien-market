@@ -34,7 +34,7 @@ function SellerAvatar({
   ) : (
     <div
       aria-hidden="true"
-      className={`${size} flex items-center justify-center rounded-full border-2 border-border bg-gradient-to-br from-indigo-500 to-purple-600 font-black text-white`}
+      className={`${size} flex items-center justify-center rounded-full border-2 border-border bg-gradient-to-br from-blue-500 to-sky-600 font-black text-white`}
     >
       {seller.name.trim().charAt(0).toUpperCase()}
     </div>
@@ -89,16 +89,22 @@ function LeaderboardContent() {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
-      <header className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-blue-900 px-6 py-12 text-center text-white shadow-xl sm:py-16">
+      <header className="relative mb-8 overflow-hidden rounded-3xl border border-blue-200/80 bg-gradient-to-br from-blue-600 via-blue-700 to-sky-600 px-6 py-10 text-center text-white shadow-lg sm:py-14 dark:border-blue-500/30">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_30%,rgba(99,102,241,.3),transparent_38%),radial-gradient(circle_at_75%_70%,rgba(168,85,247,.22),transparent_40%)]"
+          className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-white/15 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-sky-300/20 blur-3xl"
         />
         <div className="relative">
-          <Trophy className="mx-auto mb-3 h-11 w-11 text-amber-300" />
-          <h1 className="text-3xl font-black sm:text-4xl">Bảng xếp hạng</h1>
-          <p className="mt-2 text-sm text-white/70 sm:text-base">
-            Tôn vinh những người bán uy tín trong cộng đồng sinh viên
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/25 bg-white/15 text-white shadow-sm">
+            <Trophy className="h-7 w-7 text-sky-200" />
+          </div>
+          <h1 className="text-3xl font-black sm:text-4xl">Bảng xếp hạng Sinh viên</h1>
+          <p className="mt-2 text-sm text-blue-50/90 sm:text-base">
+            Tôn vinh những người bán uy tín và đóng góp tích cực trong cộng đồng KTX
           </p>
         </div>
       </header>
@@ -226,8 +232,8 @@ function LeaderboardContent() {
           )}
 
           {!loadingUser && user && (
-            <section className="flex flex-wrap items-center gap-4 rounded-2xl border-2 border-indigo-500/30 bg-indigo-500/5 p-5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 text-2xl">
+            <section className="flex flex-wrap items-center gap-4 rounded-2xl border-2 border-blue-500/30 bg-blue-500/5 p-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-2xl">
                 🎯
               </div>
               <div className="min-w-0 flex-1">

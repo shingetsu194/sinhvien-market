@@ -125,7 +125,7 @@ interface MockFlowStore {
   listingStatuses: Record<number, ProductStatus>;
 }
 
-const STORAGE_KEY = "svm_mock_user_flows_v1";
+const STORAGE_KEY = "svm_mock_user_flows_v2";
 
 function readStore(): MockFlowStore {
   if (typeof localStorage === "undefined") {
@@ -138,8 +138,72 @@ function readStore(): MockFlowStore {
     const stored = raw ? (JSON.parse(raw) as Partial<MockFlowStore>) : {};
     return {
       listings: stored.listings ?? [],
-      conversations: stored.conversations ?? [],
-      messages: stored.messages ?? [],
+      conversations:
+        stored.conversations ??
+        [
+          {
+            id: 501,
+            ownerId: 1,
+            productId: 106,
+            productTitle: "Bàn học gấp gọn gỗ thông đặt giường tầng KTX",
+            otherUserId: 6,
+            otherUserName: "Đỗ Khánh Linh",
+            lastMessage: "Tối nay 19h bạn ghé sảnh Tòa B2 lấy bàn học nha!",
+            updatedAt: "2026-11-12T18:30:00+07:00",
+            unreadCount: 1,
+          },
+          {
+            id: 502,
+            ownerId: 1,
+            productId: 107,
+            productTitle: "Đàn Guitar Acoustic Rosen G11 kèm bao da 3 lớp",
+            otherUserId: 7,
+            otherUserName: "Võ Tuấn Kiệt",
+            lastMessage: "Đàn còn nguyên bao da 3 lớp và capo bạn nhé.",
+            updatedAt: "2026-11-11T20:15:00+07:00",
+            unreadCount: 0,
+          },
+        ],
+      messages:
+        stored.messages ??
+        [
+          {
+            id: 601,
+            conversationId: 501,
+            senderId: 1,
+            senderName: "Nguyễn Minh Anh",
+            body: "Chào Linh, bàn học gấp gọn gỗ thông còn không bạn? Mình ở Tòa B2 muốn lấy luôn.",
+            type: "text",
+            offerPrice: null,
+            offerStatus: null,
+            createdAt: "2026-11-12T18:20:00+07:00",
+            isMine: true,
+          },
+          {
+            id: 602,
+            conversationId: 501,
+            senderId: 6,
+            senderName: "Đỗ Khánh Linh",
+            body: "Tối nay 19h bạn ghé sảnh Tòa B2 xem xe thử nha!",
+            type: "text",
+            offerPrice: null,
+            offerStatus: null,
+            createdAt: "2026-11-12T18:30:00+07:00",
+            isMine: false,
+          },
+          {
+            id: 603,
+            conversationId: 502,
+            senderId: 7,
+            senderName: "Võ Tuấn Kiệt",
+            body: "Đàn còn nguyên bao da 3 lớp và capo bạn nhé.",
+            type: "text",
+            offerPrice: null,
+            offerStatus: null,
+            createdAt: "2026-11-11T20:15:00+07:00",
+            isMine: false,
+          },
+        ],
       notifications:
         stored.notifications ??
         [

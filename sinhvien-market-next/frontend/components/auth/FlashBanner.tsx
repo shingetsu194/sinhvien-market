@@ -1,7 +1,8 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { Alert } from "@/components/ui/Alert";
 import {
@@ -14,12 +15,38 @@ import {
 const getServerSnapshot = () => "";
 
 export function FlashBanner() {
+  const pathname = usePathname();
+  const initialPathRef = useRef<string | null>(null);
   const raw = useSyncExternalStore(
     subscribeFlash,
     getFlashSnapshot,
     getServerSnapshot,
   );
   const flash = parseFlash(raw);
+
+  useEffect(() => {
+    if (!raw) {
+      initialPathRef.current = null;
+      return;
+    }
+    if (initialPathRef.current === null) {
+      initialPathRef.current = pathname;
+      return;
+    }
+    if (initialPathRef.current !== pathname) {
+      clearFlash();
+      initialPathRef.current = null;
+    }
+  }, [pathname, raw]);
+
+  useEffect(() => {
+    if (!flash || flash.action) return;
+    const timer = window.setTimeout(() => {
+      clearFlash();
+    }, 4500);
+    return () => window.clearTimeout(timer);
+  }, [flash, raw]);
+
   if (!flash) return null;
 
   return (

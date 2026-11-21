@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+cache/*.npz
+cache/*.pkl
+hf_cache/

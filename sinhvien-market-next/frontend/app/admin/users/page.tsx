@@ -177,10 +177,10 @@ function UsersContent() {
 
   return (
     <div>
-      <div className="relative mb-8 flex flex-col items-center justify-between gap-6 overflow-hidden rounded-[24px] bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#4f46e5] p-6 shadow-[0_20px_60px_rgba(99,102,241,0.3)] md:flex-row md:p-8">
-        <div className="pointer-events-none absolute -top-[100px] right-[50px] h-[350px] w-[350px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.35)_0%,transparent_65%)]" />
+      <div className="relative mb-8 flex flex-col items-center justify-between gap-6 overflow-hidden rounded-[24px] bg-gradient-to-br from-blue-700 via-blue-600 to-sky-600 p-6 shadow-[0_16px_44px_rgba(37,99,235,0.22)] md:flex-row md:p-8">
+        <div className="pointer-events-none absolute -top-[100px] right-[50px] h-[350px] w-[350px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,transparent_65%)]" />
         <div className="relative z-10 flex w-full items-center gap-4 md:w-auto">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-400 to-purple-400 text-white shadow-md">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-400 to-sky-400 text-white shadow-md">
             <Users className="h-6 w-6" aria-hidden="true" />
           </div>
           <div>
@@ -287,7 +287,7 @@ function UsersContent() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 text-sm font-extrabold text-white">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-sky-500 text-sm font-extrabold text-white">
                             {u.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
@@ -310,7 +310,7 @@ function UsersContent() {
                             Admin
                           </span>
                         ) : (
-                          <span className="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-[11px] font-bold text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
+                          <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-[11px] font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
                             Sinh viên
                           </span>
                         )}
@@ -355,7 +355,7 @@ function UsersContent() {
                         <div className="flex items-center justify-end gap-2">
                           <Link
                             href={`/admin/users/detail?id=${u.id}`}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 px-3 py-1.5 text-xs font-bold text-white no-underline transition-all hover:-translate-y-0.5"
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-blue-500 to-sky-500 px-3 py-1.5 text-xs font-bold text-white no-underline transition-all hover:-translate-y-0.5"
                           >
                             <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                             Chi tiết

@@ -36,7 +36,7 @@ const STATUS: Record<UserListing["status"], { label: string; className: string }
   },
   sold: {
     label: "Đã bán",
-    className: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
+    className: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
   },
   cancelled: {
     label: "Đã gỡ",
@@ -141,14 +141,28 @@ function MyListingsContent() {
             return (
               <article
                 key={listing.id}
-                className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-4 sm:flex-row sm:items-center"
+                className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-4 shadow-xs transition hover:border-blue-300 sm:flex-row sm:items-center"
               >
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-primary">
-                  <PackageOpen className="h-8 w-8" />
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-blue-50/60 text-primary dark:bg-surface-2">
+                  {listing.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={listing.imageUrl}
+                      alt={listing.title}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <PackageOpen className="h-8 w-8" />
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="font-extrabold text-fg">{listing.title}</h2>
+                    <Link
+                      href={`/products/${listing.id}`}
+                      className="font-extrabold text-fg transition hover:text-primary"
+                    >
+                      {listing.title}
+                    </Link>
                     <span
                       className={`rounded-full px-2.5 py-1 text-xs font-bold ${status.className}`}
                     >
@@ -156,7 +170,13 @@ function MyListingsContent() {
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-muted">
-                    {listing.categoryName} · {listing.type} ·{" "}
+                    {listing.categoryName} ·{" "}
+                    {listing.type === "sale"
+                      ? "Mua bán"
+                      : listing.type === "exchange"
+                        ? "Trao đổi"
+                        : "Đấu giá ngược"}{" "}
+                    ·{" "}
                     {new Intl.DateTimeFormat("vi-VN", {
                       dateStyle: "medium",
                     }).format(new Date(listing.createdAt))}

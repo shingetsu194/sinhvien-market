@@ -39,8 +39,8 @@ const CONFETTI_PIECES = Array.from({ length: 28 }, (_, idx) => ({
   delay: `${(idx % 7) * 0.12}s`,
   color: [
     "bg-amber-400",
-    "bg-pink-500",
-    "bg-indigo-500",
+    "bg-sky-500",
+    "bg-blue-500",
     "bg-emerald-400",
     "bg-cyan-400",
   ][idx % 5],
@@ -249,7 +249,7 @@ function GiveawaySpinInner() {
         </p>
         <Link
           href="/admin/giveaways"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
         >
           <ArrowLeft className="h-4 w-4" />
           Quay lại danh sách Giveaways
@@ -307,14 +307,14 @@ function GiveawaySpinInner() {
                 className="h-16 w-16 shrink-0 rounded-2xl border border-slate-200 object-cover dark:border-slate-700"
               />
             ) : (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-500 to-pink-500 text-white shadow-md">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500 to-sky-500 text-white shadow-md">
                 <Gift className="h-8 w-8" />
               </div>
             )}
 
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
                   GIVEAWAY #{giveaway.id}
                 </span>
                 {isEnded ? (
@@ -345,7 +345,7 @@ function GiveawaySpinInner() {
                 Hạn đăng ký
               </span>
               <span className="mt-0.5 inline-flex items-center gap-1 font-bold text-slate-700 dark:text-slate-200">
-                <Calendar className="h-3.5 w-3.5 text-indigo-500" />
+                <Calendar className="h-3.5 w-3.5 text-blue-500" />
                 {formatDateTimeVi(giveaway.endTime)}
               </span>
             </div>
@@ -354,7 +354,7 @@ function GiveawaySpinInner() {
               <span className="block text-[11px] text-slate-400">
                 Danh sách hợp lệ
               </span>
-              <span className="mt-0.5 inline-flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-400">
+              <span className="mt-0.5 inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400">
                 <Users className="h-3.5 w-3.5" />
                 {giveaway.participants.length} sinh viên
               </span>
@@ -411,7 +411,7 @@ function GiveawaySpinInner() {
         )}
 
         <div className="mb-5 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/20 px-3 py-1 text-xs font-bold text-indigo-300">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/20 px-3 py-1 text-xs font-bold text-blue-300">
             <Dices className="h-3.5 w-3.5" />
             Bàn quay ngẫu nhiên công bằng (6 giây)
           </span>
@@ -431,7 +431,7 @@ function GiveawaySpinInner() {
         ) : (
           <div
             ref={viewportRef}
-            className="relative mx-auto overflow-hidden rounded-2xl border-2 border-indigo-500/40 bg-slate-900/90 py-6 shadow-inner"
+            className="relative mx-auto overflow-hidden rounded-2xl border-2 border-blue-500/40 bg-slate-900/90 py-6 shadow-inner"
           >
             <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-linear-to-r from-slate-950 to-transparent" />
             <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-linear-to-l from-slate-950 to-transparent" />
@@ -465,7 +465,7 @@ function GiveawaySpinInner() {
                         : "border-slate-800 bg-slate-900/90",
                     )}
                   >
-                    <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-purple-600 text-sm font-extrabold text-white shadow-sm">
+                    <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-sky-600 text-sm font-extrabold text-white shadow-sm">
                       {getInitials(player.name)}
                     </div>
                     <p className="mt-2.5 truncate text-sm font-bold text-white">
@@ -487,7 +487,7 @@ function GiveawaySpinInner() {
               type="button"
               disabled={spinning || giveaway.participants.length === 0}
               onClick={handleStartSpin}
-              className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-amber-400 via-orange-500 to-pink-500 px-7 py-3 text-sm font-black text-slate-950 shadow-lg transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-amber-400 via-orange-500 to-sky-500 px-7 py-3 text-sm font-black text-slate-950 shadow-lg transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Dices className={cn("h-5 w-5", spinning && "animate-spin")} />
               {spinning ? "Đang quay thưởng..." : "Bắt đầu Quay số!"}
@@ -550,7 +550,7 @@ function GiveawaySpinInner() {
                       <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                         <Link
                           href={`/admin/users/detail?id=${p.id}`}
-                          className="inline-flex items-center gap-1.5 hover:text-indigo-600 dark:hover:text-indigo-400"
+                          className="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                           {p.name}
                           <ExternalLink className="h-3 w-3 opacity-60" />
@@ -614,7 +614,7 @@ function GiveawaySpinInner() {
               <button
                 type="button"
                 onClick={() => setWinnerModalPlayer(null)}
-                className="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-bold text-white hover:bg-indigo-500"
+                className="rounded-xl bg-blue-600 px-5 py-2 text-xs font-bold text-white hover:bg-blue-500"
               >
                 Hoàn tất
               </button>

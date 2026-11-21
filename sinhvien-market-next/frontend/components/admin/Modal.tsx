@@ -13,7 +13,7 @@ type Tone = "indigo" | "cyan" | "red" | "amber" | "emerald";
 
 const toneStyles: Record<Tone, string> = {
   indigo:
-    "from-indigo-500 to-purple-500 shadow-[0_8px_24px_rgba(99,102,241,0.4)]",
+    "from-blue-500 to-sky-500 shadow-[0_8px_24px_rgba(99,102,241,0.4)]",
   cyan: "from-cyan-500 to-blue-500 shadow-[0_8px_24px_rgba(6,182,212,0.4)]",
   red: "from-red-500 to-red-600 shadow-[0_8px_24px_rgba(239,68,68,0.4)]",
   amber: "from-amber-500 to-orange-500 shadow-[0_8px_24px_rgba(245,158,11,0.4)]",
@@ -22,7 +22,7 @@ const toneStyles: Record<Tone, string> = {
 };
 
 export const toneButtonClass: Record<Tone, string> = {
-  indigo: "bg-gradient-to-r from-indigo-500 to-purple-500",
+  indigo: "bg-gradient-to-r from-blue-500 to-sky-500",
   cyan: "bg-gradient-to-r from-cyan-500 to-blue-500",
   red: "bg-gradient-to-r from-red-500 to-red-600",
   amber: "bg-gradient-to-r from-amber-500 to-orange-500",

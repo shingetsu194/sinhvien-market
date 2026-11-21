@@ -13,9 +13,11 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   AlertTriangle,
   BarChart3,
+  Building2,
   CheckCircle2,
   ChevronUp,
   ClipboardCheck,
+  CreditCard,
   ExternalLink,
   FileText,
   FlaskConical,
@@ -26,11 +28,13 @@ import {
   LogOut,
   Menu,
   RotateCcw,
+  SearchCheck,
   ShieldAlert,
   ShieldCheck,
   StarHalf,
   Tags,
   Users,
+  Wrench,
   X,
   XCircle,
 } from "lucide-react";
@@ -164,6 +168,36 @@ const NAV_GROUPS: NavGroup[] = [
       },
     ],
   },
+  {
+    section: "Ký túc xá & Ghép nối",
+    items: [
+      {
+        href: "/admin/residence/dashboard",
+        label: "Dashboard KTX",
+        icon: Gauge,
+      },
+      {
+        href: "/admin/residence",
+        label: "Xét duyệt lưu trú",
+        icon: Building2,
+      },
+      {
+        href: "/admin/residence/operations",
+        label: "Vận hành & Phòng ở",
+        icon: Wrench,
+      },
+      {
+        href: "/admin/residence/finance",
+        label: "Phí & Hóa đơn KTX",
+        icon: CreditCard,
+      },
+      {
+        href: "/admin/marketplace/matching",
+        label: "Đánh giá Matching",
+        icon: SearchCheck,
+      },
+    ],
+  },
 ];
 
 function isNavItemActive(
@@ -218,7 +252,13 @@ export function AdminShell({ title, children, onResetMock }: AdminShellProps) {
           router.replace("/admin-login");
           return;
         }
-        if (u.role !== "admin") {
+        const isDormManagerRoute =
+          pathname.startsWith("/admin/residence") ||
+          pathname.startsWith("/admin/marketplace/matching");
+        if (
+          u.role !== "admin" &&
+          !(isDormManagerRoute && u.roles?.includes("dorm_manager"))
+        ) {
           setAccessDenied(true);
           return;
         }
@@ -230,7 +270,7 @@ export function AdminShell({ title, children, onResetMock }: AdminShellProps) {
     return () => {
       alive = false;
     };
-  }, [router]);
+  }, [pathname, router]);
 
   useEffect(() => {
     function handleScroll() {
@@ -302,14 +342,14 @@ export function AdminShell({ title, children, onResetMock }: AdminShellProps) {
                 className={cn(
                   "mb-0.5 flex items-center gap-3 rounded-[10px] px-3.5 py-2.5 text-[13.5px] font-semibold no-underline transition-all",
                   active
-                    ? "border border-indigo-500/35 bg-gradient-to-br from-indigo-500/35 to-purple-500/25 text-indigo-200 shadow-[0_2px_12px_rgba(99,102,241,0.2)]"
-                    : "text-white/60 hover:translate-x-0.5 hover:bg-white/[0.08] hover:text-white",
+                    ? "border border-blue-400/35 bg-gradient-to-br from-blue-600/40 to-sky-500/25 text-white shadow-[0_2px_12px_rgba(37,99,235,0.25)]"
+                    : "text-blue-100/70 hover:translate-x-0.5 hover:bg-white/[0.1] hover:text-white",
                 )}
               >
                 <Icon
                   className={cn(
                     "h-4 w-4 shrink-0",
-                    active ? "text-indigo-300" : "text-white/55",
+                    active ? "text-sky-300" : "text-blue-200/65",
                   )}
                   aria-hidden="true"
                 />
@@ -328,29 +368,25 @@ export function AdminShell({ title, children, onResetMock }: AdminShellProps) {
         <aside
           className="fixed top-0 bottom-0 left-0 z-40 hidden w-64 flex-col overflow-x-hidden overflow-y-auto lg:flex"
           style={{
-            background: "linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%)",
-            borderRight: "1px solid rgba(255,255,255,0.06)",
-            boxShadow: "4px 0 24px rgba(0,0,0,0.25)",
+            background: "linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%)",
+            borderRight: "1px solid rgba(255,255,255,0.08)",
+            boxShadow: "4px 0 24px rgba(15,23,42,0.18)",
           }}
         >
           <Link
             href="/admin"
-            className="flex shrink-0 items-center gap-3 border-b border-white/[0.07] px-5 py-5 no-underline"
+            className="flex shrink-0 items-center gap-3 border-b border-white/[0.08] px-5 py-5 no-underline"
           >
             <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] text-white"
-              style={{
-                background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                boxShadow: "0 4px 12px rgba(99,102,241,0.5)",
-              }}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-linear-to-br from-blue-500 to-sky-500 text-white shadow-[0_4px_12px_rgba(37,99,235,0.45)]"
             >
               <ShieldCheck className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
               <div className="text-base font-black text-white">
-                Admin<span className="text-indigo-300">Panel</span>
+                Admin<span className="text-sky-300">Panel</span>
               </div>
-              <div className="text-[11px] font-bold tracking-wider text-white/40 uppercase">
+              <div className="text-[11px] font-bold tracking-wider text-blue-200/50 uppercase">
                 SinhVienMarket
               </div>
             </div>
@@ -392,25 +428,22 @@ export function AdminShell({ title, children, onResetMock }: AdminShellProps) {
             sidebarOpen ? "translate-x-0" : "-translate-x-full",
           )}
           style={{
-            background: "linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%)",
+            background: "linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%)",
           }}
         >
-          <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-4">
+          <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
             <Link
               href="/admin"
               onClick={() => setSidebarOpen(false)}
               className="flex items-center gap-3 no-underline"
             >
               <div
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] text-white"
-                style={{
-                  background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                }}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-linear-to-br from-blue-500 to-sky-500 text-white"
               >
                 <ShieldCheck className="h-4 w-4" aria-hidden="true" />
               </div>
               <div className="text-sm font-black text-white">
-                Admin<span className="text-indigo-300">Panel</span>
+                Admin<span className="text-sky-300">Panel</span>
               </div>
             </Link>
             <button
@@ -439,7 +472,7 @@ export function AdminShell({ title, children, onResetMock }: AdminShellProps) {
               </button>
 
               <h1 className="m-0 flex items-center gap-2 text-lg font-extrabold text-fg">
-                <span className="inline-block h-5 w-1 shrink-0 rounded-full bg-gradient-to-b from-indigo-500 to-purple-500" />
+                <span className="inline-block h-5 w-1 shrink-0 rounded-full bg-gradient-to-b from-blue-600 to-sky-500" />
                 {title}
               </h1>
             </div>
@@ -449,11 +482,7 @@ export function AdminShell({ title, children, onResetMock }: AdminShellProps) {
 
               <div className="flex items-center gap-2 border-l border-border pl-2.5">
                 <div
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-extrabold text-white"
-                  style={{
-                    background: "linear-gradient(135deg, #6366f1, #ec4899)",
-                    boxShadow: "0 2px 8px rgba(99,102,241,0.35)",
-                  }}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-blue-600 to-sky-500 text-sm font-extrabold text-white shadow-[0_2px_8px_rgba(37,99,235,0.3)]"
                 >
                   {userInitial}
                 </div>

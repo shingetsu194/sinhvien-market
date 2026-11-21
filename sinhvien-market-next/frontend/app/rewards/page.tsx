@@ -77,27 +77,29 @@ function RewardsContent() {
         </div>
       ) : (
         <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-          <section className="rounded-3xl bg-linear-to-br from-amber-400 via-orange-500 to-rose-500 p-6 text-white shadow-lg sm:p-8">
+          <section className="rounded-3xl border border-blue-200 bg-linear-to-br from-blue-600 via-blue-700 to-sky-600 p-6 text-white shadow-lg sm:p-8 dark:border-blue-500/30">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-bold text-white/80">Số dư hiện tại</p>
+                <p className="text-sm font-bold text-blue-100">Số dư xu tích lũy</p>
                 <p className="mt-2 flex items-center gap-2 text-4xl font-black">
-                  <Coins className="h-9 w-9" />
+                  <Coins className="h-9 w-9 text-sky-200" />
                   {rewards.balance}
-                  <span className="text-xl">xu</span>
+                  <span className="text-xl font-bold text-blue-100">xu</span>
                 </p>
               </div>
-              <span className="rounded-2xl bg-white/15 p-3">
-                <Sparkles className="h-7 w-7" />
+              <span className="rounded-2xl border border-white/20 bg-white/15 p-3">
+                <Sparkles className="h-7 w-7 text-sky-200" />
               </span>
             </div>
-            <div className="mt-8 rounded-2xl bg-black/10 p-4">
+            <div className="mt-8 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-xs">
               <div className="flex items-center justify-between text-sm font-bold">
                 <span className="inline-flex items-center gap-2">
-                  <Flame className="h-4 w-4" />
-                  Chuỗi điểm danh
+                  <Flame className="h-4 w-4 text-sky-200" />
+                  Chuỗi điểm danh liên tiếp
                 </span>
-                <span>{rewards.checkinStreak} ngày</span>
+                <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-xs">
+                  {rewards.checkinStreak} ngày
+                </span>
               </div>
               <div className="mt-3 grid grid-cols-7 gap-2">
                 {Array.from({ length: 7 }, (_, index) => {
@@ -105,8 +107,10 @@ function RewardsContent() {
                   return (
                     <span
                       key={index}
-                      className={`flex aspect-square items-center justify-center rounded-full text-xs font-extrabold ${
-                        completed ? "bg-white text-orange-600" : "bg-white/20"
+                      className={`flex aspect-square items-center justify-center rounded-full text-xs font-extrabold transition ${
+                        completed
+                          ? "bg-white text-blue-700 shadow-sm"
+                          : "border border-white/20 bg-white/15 text-blue-100"
                       }`}
                       aria-label={`Ngày ${index + 1}${
                         completed ? " đã điểm danh" : ""
@@ -117,14 +121,14 @@ function RewardsContent() {
                   );
                 })}
               </div>
-              <p className="mt-3 text-xs text-white/85">
-                Mốc 7 ngày nhận 50 xu; điểm danh thường nhận 10 xu.
+              <p className="mt-3 text-xs text-blue-50/90">
+                Mốc 7 ngày liên tiếp nhận thưởng 50 xu; điểm danh mỗi ngày nhận +10 xu.
               </p>
             </div>
           </section>
 
-          <section className="flex flex-col rounded-3xl border border-border bg-surface p-6 sm:p-8">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
+          <section className="flex flex-col rounded-3xl border border-blue-100 bg-surface p-6 shadow-xs sm:p-8 dark:border-border">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-sky-300">
               <CalendarCheck className="h-6 w-6" />
             </div>
             <h2 className="mt-4 text-xl font-black text-fg">

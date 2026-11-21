@@ -87,7 +87,7 @@ function PublicProfilePageContent() {
       </Link>
 
       <section className="overflow-hidden rounded-3xl border border-border bg-surface shadow-sm">
-        <div className="h-28 bg-linear-to-r from-indigo-600 via-violet-600 to-fuchsia-500 sm:h-36" />
+        <div className="h-28 bg-linear-to-r from-blue-600 via-blue-600 to-sky-500 sm:h-36" />
         <div className="px-5 pb-6 sm:px-8">
           <div className="-mt-12 flex flex-wrap items-end justify-between gap-4 sm:-mt-14">
             <div className="flex items-end gap-4">
@@ -127,7 +127,7 @@ function PublicProfilePageContent() {
                 label={`${profile.ratingCount} đánh giá`}
               />
               <RatingStat
-                icon={<PackageOpen className="h-4 w-4 text-indigo-500" />}
+                icon={<PackageOpen className="h-4 w-4 text-blue-500" />}
                 value={String(profile.activeProducts.length)}
                 label="tin đang bán"
               />
@@ -202,7 +202,7 @@ function PublicProfilePageContent() {
                 href={`/products/${product.id}`}
                 className="group rounded-2xl border border-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg"
               >
-                <div className="flex h-32 items-center justify-center rounded-xl bg-linear-to-br from-indigo-500/10 to-fuchsia-500/10 text-primary">
+                <div className="flex h-32 items-center justify-center rounded-xl bg-linear-to-br from-blue-500/10 to-sky-500/10 text-primary">
                   <PackageOpen className="h-10 w-10" />
                 </div>
                 <div className="mt-4 flex items-start justify-between gap-3">
@@ -312,7 +312,7 @@ function ProfileAvatar({ name, src }: { name: string; src: string | null }) {
       className="h-24 w-24 rounded-2xl border-4 border-surface bg-surface object-cover shadow-md sm:h-28 sm:w-28"
     />
   ) : (
-    <div className="flex h-24 w-24 items-center justify-center rounded-2xl border-4 border-surface bg-linear-to-br from-indigo-500 to-fuchsia-600 text-3xl font-black text-white shadow-md sm:h-28 sm:w-28">
+    <div className="flex h-24 w-24 items-center justify-center rounded-2xl border-4 border-surface bg-linear-to-br from-blue-500 to-sky-600 text-3xl font-black text-white shadow-md sm:h-28 sm:w-28">
       {name.trim().charAt(0).toLocaleUpperCase("vi") || "U"}
     </div>
   );

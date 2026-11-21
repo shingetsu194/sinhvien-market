@@ -94,6 +94,8 @@ export const WARNING_LABEL: Record<string, string> = {
 };
 
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+/** sessionStorage key: image picked from the header search box, read by /products. */
+export const HEADER_IMAGE_KEY = "svm_ai_search_image";
 
 export function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

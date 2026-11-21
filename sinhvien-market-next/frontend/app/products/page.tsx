@@ -30,6 +30,7 @@ import {
 import type { MarketplaceProduct } from "@/lib/api/marketplace";
 import {
   FALLBACK_REASON_LABEL,
+  HEADER_IMAGE_KEY,
   MAX_IMAGE_BYTES,
   WARNING_LABEL,
   fileToDataUrl,
@@ -229,7 +230,7 @@ function ProductCard({
 }
 
 function ProductsCatalogInner() {
-  const { user } = useMainShell();
+  const { user, loadingUser } = useMainShell();
   const searchParams = useSearchParams();
   const initialQ = searchParams.get("q") ?? "";
   const initialCat = Number(searchParams.get("category") ?? "0") || 0;
@@ -353,6 +354,50 @@ function ProductsCatalogInner() {
       window.clearTimeout(timer);
     };
   }, [smartActive, smartEnabled, keyword, categoryId, typeFilter, conditionFilter, priceMin, priceMax]);
+
+  // The header search box (MainShell) navigates here with ?q= or ?aiImage=<ts>
+  // (image kept in sessionStorage). Follow it even when already on /products,
+  // and run the real smart search with the same checks as the camera button.
+  const qParam = searchParams.get("q");
+  const aiImageParam = searchParams.get("aiImage");
+  const handledHeaderImage = useRef<string | null>(null);
+  // New ?q= while mounted: adjust state during render (no effect needed).
+  const [seenQParam, setSeenQParam] = useState(qParam);
+  if (qParam !== seenQParam) {
+    setSeenQParam(qParam);
+    if (qParam !== null) {
+      setKeyword(qParam);
+      if (smartEnabled) setActiveQuery(qParam.trim());
+    }
+  }
+  useEffect(() => {
+    if (!aiImageParam || loadingUser || !smartEnabled) return;
+    // Applied asynchronously like the other effects here; the ref and storage are
+    // only consumed when the timer fires, so a StrictMode re-run does not lose it.
+    const timer = window.setTimeout(() => {
+      if (handledHeaderImage.current === aiImageParam) return;
+      handledHeaderImage.current = aiImageParam;
+      let dataUrl: string | null = null;
+      try {
+        const stored = JSON.parse(window.sessionStorage.getItem(HEADER_IMAGE_KEY) ?? "null") as
+          | { dataUrl?: unknown }
+          | null;
+        window.sessionStorage.removeItem(HEADER_IMAGE_KEY);
+        dataUrl = typeof stored?.dataUrl === "string" ? stored.dataUrl : null;
+      } catch {
+        dataUrl = null;
+      }
+      if (!dataUrl) return;
+      if (!user) setNotice("Đăng nhập để tìm kiếm bằng ảnh.");
+      else if (!/^data:image\/(jpeg|png|webp);base64,/.test(dataUrl)) setNotice("Ảnh phải là JPG, PNG hoặc WEBP.");
+      else if (((dataUrl.length - dataUrl.indexOf(",") - 1) * 3) / 4 > MAX_IMAGE_BYTES) setNotice("Ảnh tối đa 2MB.");
+      else {
+        setNotice("");
+        setImageDataUrl(dataUrl);
+      }
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [aiImageParam, loadingUser, user, smartEnabled]);
 
   function submitSearch(event?: FormEvent) {
     event?.preventDefault();
