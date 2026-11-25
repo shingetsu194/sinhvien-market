@@ -1,8 +1,8 @@
-name: PHPUnit Tests
+name: Tests
 
 on:
   push:
-    branches: [ "main", "feature/**" ]
+    branches: [ "main", "feature/**", "fix/**", "merge/**" ]
   pull_request:
     branches: [ "main" ]
 
@@ -26,8 +26,8 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.1'
-        extensions: pdo, pdo_mysql, mbstring, curl
+        php-version: '8.3'
+        extensions: pdo, pdo_mysql, mbstring, curl, fileinfo
         coverage: none
 
     - name: Validate composer.json and composer.lock
@@ -63,3 +63,36 @@ jobs:
         PUSHER_APP_KEY: fake_key
         PUSHER_APP_SECRET: fake_secret
         PUSHER_APP_CLUSTER: ap1
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sinhvien-market-next/frontend
+    env:
+      NEXT_PUBLIC_USE_MOCK: "false"
+      NEXT_PUBLIC_API_URL: /api
+      PHP_BACKEND_URL: http://127.0.0.1:8081
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+        cache-dependency-path: sinhvien-market-next/frontend/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Lint
+      run: npx eslint .
+
+    - name: Unit tests
+      run: npx vitest run
+
+    - name: Production build (also generates route types)
+      run: npx next build
+
+    - name: Type check
+      run: npx tsc --noEmit

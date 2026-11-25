@@ -199,9 +199,12 @@ class ResidenceOperationsTest extends TestCase
         $this->operations->reviewRentalApplication($rentalAppId, $this->managerId, 'approve', null);
         $contractId = (int)$this->scalar('SELECT id FROM rental_contracts WHERE application_id = ?', [$rentalAppId]);
 
+        self::assertSame('occupied', $this->scalar('SELECT status FROM rental_spaces WHERE id = ?', [$this->spaceId]));
+
         $ended = $this->operations->terminateRentalContract($contractId, '2030-06-30');
         self::assertSame('terminated', $ended['status']);
         self::assertSame('2030-06-30', $ended['end_date']);
+        self::assertSame('available', $this->scalar('SELECT status FROM rental_spaces WHERE id = ?', [$this->spaceId]));
         try {
             $this->operations->terminateRentalContract($contractId, '2030-07-31');
             self::fail('A terminated rental contract cannot be terminated again.');

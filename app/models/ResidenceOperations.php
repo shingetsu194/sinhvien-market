@@ -343,6 +343,11 @@ class ResidenceOperations extends Model
                 "UPDATE rental_contracts SET status = 'terminated', end_date = ? WHERE id = ?",
                 [$endDate, $contractId]
             );
+            // Free the space again unless an admin took it out of service meanwhile.
+            $this->execute(
+                "UPDATE rental_spaces SET status = 'available' WHERE id = ? AND status = 'occupied'",
+                [(int)$contract['space_id']]
+            );
             $this->pdo()->commit();
             return $this->queryOne(
                 'SELECT c.*, s.space_code, s.name AS space_name, u.name AS tenant_name
@@ -639,6 +644,8 @@ class ResidenceOperations extends Model
                     [$number, $applicationId, $application['space_id'], $application['user_id'],
                         $application['start_date'], $application['end_date'], $space['monthly_price']]
                 );
+                // The space is now let: it no longer shows as available to other applicants.
+                $this->execute("UPDATE rental_spaces SET status = 'occupied' WHERE id = ?", [(int)$application['space_id']]);
             }
             $this->pdo()->commit();
             return $this->queryOne(

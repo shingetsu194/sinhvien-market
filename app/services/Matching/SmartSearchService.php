@@ -231,11 +231,22 @@ class SmartSearchService
         $indexed = 0;
         $missing = 0;
         $key = $this->gemini->modelKey();
+        // One query for every stored vector; image hashes come from the candidate
+        // query (SHA2 in the DB), so blobs are only read when a vector is missing.
+        $saved = $this->model->savedEmbeddingsFor([$key . ':text', $key . ':image']);
+        $cached = static function (int $id, string $modelKey, string $hash) use ($saved): ?array {
+            $row = $saved[$id][$modelKey] ?? null;
+            if ($row === null || $row['hash'] !== $hash) {
+                return null;
+            }
+            $vector = json_decode($row['json'], true);
+            return is_array($vector) ? $vector : null;
+        };
         foreach ($candidates as &$c) {
             $id = (int)$c['id'];
             $text = $c['title'] . "\n" . $c['description'] . "\nDanh mục: " . $c['category_name'];
             $textHash = hash('sha256', $text);
-            $c['textVec'] = $this->model->savedEmbedding($id, $key . ':text', $textHash);
+            $c['textVec'] = $cached($id, $key . ':text', $textHash);
             if ($c['textVec'] === null && $budget > 0) {
                 $budget--;
                 $c['textVec'] = $this->gemini->embedText($text, 'RETRIEVAL_DOCUMENT');
@@ -245,16 +256,17 @@ class SmartSearchService
                 }
             }
             $c['imageVec'] = null;
-            if ((int)$c['has_image'] === 1) {
-                $image = $this->model->productImage($id);
-                if ($image !== null) {
-                    $imageHash = hash('sha256', $image['data']);
-                    $c['imageVec'] = $this->model->savedEmbedding($id, $key . ':image', $imageHash);
-                    if ($c['imageVec'] === null && $budget > 0) {
+            if ((int)$c['has_image'] === 1 && !empty($c['image_hash'])) {
+                $imageHash = (string)$c['image_hash'];
+                $c['imageVec'] = $cached($id, $key . ':image', $imageHash);
+                if ($c['imageVec'] === null && $budget > 0) {
+                    $image = $this->model->productImage($id);
+                    if ($image !== null) {
                         $budget--;
                         $c['imageVec'] = $this->gemini->embedImage($image['data'], $image['mime']);
                         if ($c['imageVec'] !== null) {
-                            $this->model->saveEmbedding($id, $key . ':image', $c['imageVec'], $imageHash);
+                            // Same hash as SHA2(data, 256) in the candidate query.
+                            $this->model->saveEmbedding($id, $key . ':image', $c['imageVec'], hash('sha256', $image['data']));
                             $indexed++;
                         }
                     }

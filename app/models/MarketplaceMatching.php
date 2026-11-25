@@ -52,7 +52,9 @@ class MarketplaceMatching extends Model
                        p.category_id, c.name AS category_name, u.name AS seller_name,
                        u.is_student_verified AS seller_verified,
                        sb.building_id AS seller_building_id, sb.building_name AS seller_building_name,
-                       (pi.product_id IS NOT NULL) AS has_image
+                       (pi.product_id IS NOT NULL) AS has_image,
+                       -- hashed in the DB so a search never ships image blobs to PHP
+                       SHA2(pi.data, 256) AS image_hash
                 FROM products p
                 JOIN categories c ON c.id = p.category_id
                 JOIN users u ON u.id = p.user_id
@@ -102,6 +104,33 @@ class MarketplaceMatching extends Model
     {
         $row = $this->queryOne('SELECT data, mime FROM product_images WHERE product_id = ?', [$productId]);
         return $row === null ? null : ['data' => (string)$row['data'], 'mime' => (string)$row['mime']];
+    }
+
+    /**
+     * All stored vectors for the given model keys in ONE query (smart search used
+     * to issue one query per listing and modality). Vectors stay JSON strings so
+     * the caller decodes only those whose content hash still matches.
+     *
+     * @param list<string> $modelKeys
+     * @return array<int, array<string, array{hash:string, json:string}>> product id => model key => row
+     */
+    public function savedEmbeddingsFor(array $modelKeys): array
+    {
+        if ($modelKeys === []) {
+            return [];
+        }
+        $marks = implode(',', array_fill(0, count($modelKeys), '?'));
+        $out = [];
+        foreach ($this->query(
+            "SELECT product_id, model_key, content_hash, embedding FROM marketplace_product_embeddings
+             WHERE model_key IN ({$marks})",
+            array_values($modelKeys)
+        ) as $row) {
+            $out[(int)$row['product_id']][(string)$row['model_key']] = [
+                'hash' => (string)$row['content_hash'], 'json' => (string)$row['embedding'],
+            ];
+        }
+        return $out;
     }
 
     public function savedEmbedding(int $productId, string $modelKey, string $contentHash): ?array

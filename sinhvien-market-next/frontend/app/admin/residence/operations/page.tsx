@@ -121,6 +121,16 @@ function describeRow(resource: Resource, row: Record<string, unknown>): string {
   }
 }
 
+/** Empty form for a resource, with a sensible default status. */
+function defaultValues(resource: Resource): Record<string, string> {
+  return Object.fromEntries(
+    resourceFields[resource].map(([key]) => [
+      key,
+      key === "status" ? (resource === "beds" ? "available" : "active") : key === "roomType" ? "standard" : "",
+    ]),
+  );
+}
+
 const fieldClass =
   "mt-1 w-full rounded-xl border border-border bg-bg px-3.5 py-2.5 text-sm font-normal text-fg outline-none transition focus:border-primary";
 
@@ -142,7 +152,7 @@ function OperationsContent() {
   >([]);
   const [resource, setResource] = useState<Resource>("buildings");
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [values, setValues] = useState<Record<string, string>>({});
+  const [values, setValues] = useState<Record<string, string>>(() => defaultValues("buildings"));
   const [assign, setAssign] = useState({ contractId: "", bedId: "" });
   const [transfer, setTransfer] = useState<
     Record<number, { bedId: string; date: string }>
@@ -253,18 +263,7 @@ function OperationsContent() {
 
   function startCreate() {
     setEditingId(null);
-    setValues(
-      Object.fromEntries(
-        resourceFields[resource].map(([key]) => [
-          key,
-          key === "status"
-            ? resource === "beds"
-              ? "available"
-              : "active"
-            : "",
-        ]),
-      ),
-    );
+    setValues(defaultValues(resource));
   }
 
   function startEdit(row: Record<string, unknown>) {
@@ -570,7 +569,7 @@ function OperationsContent() {
                 onClick={() => {
                   setResource(item);
                   setEditingId(null);
-                  setValues({});
+                  setValues(defaultValues(item));
                 }}
                 className={`cursor-pointer rounded-xl px-3.5 py-2 text-xs font-extrabold transition ${
                   resource === item
