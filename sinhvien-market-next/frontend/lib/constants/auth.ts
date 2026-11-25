@@ -25,6 +25,9 @@ const GOOGLE_LOGIN_ERRORS: Record<string, string> = {
   state: "Phiên đăng nhập Google đã hết hạn hoặc không hợp lệ. Vui lòng thử lại.",
   token: "Máy chủ không xác thực được với Google. Vui lòng thử lại sau hoặc báo quản trị viên.",
   profile: "Không lấy được thông tin tài khoản từ Google. Vui lòng thử lại.",
+  unverified: "Email của tài khoản Google này chưa được Google xác minh nên không thể dùng để đăng nhập.",
+  locked: "Tài khoản đang bị khóa. Vui lòng liên hệ quản trị viên.",
+  admin: "Tài khoản quản trị vui lòng đăng nhập qua cổng Admin.",
 };
 
 /** Vietnamese message for a Google login failure code; null when there is none. */

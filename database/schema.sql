@@ -533,27 +533,17 @@ CREATE TABLE `report_evidence` (
 --  SEED DATA - Dữ liệu mẫu ban đầu
 -- ============================================================
 
--- Tài khoản Admin mặc định — Password: Admin@123
+-- Tài khoản mẫu cho môi trường phát triển (mật khẩu chung: Admin@123).
+-- Email thuộc tên miền dành riêng cho thử nghiệm (RFC 2606) nên không trùng
+-- người thật. ĐỔI mật khẩu admin ngay sau khi cài; không dùng cho production.
 INSERT INTO `users` (`name`, `email`, `password`, `role`, `is_verified`, `last_verified_at`) VALUES
-('Quản Trị Viên', 'admin@market.com',
+('Quản Trị Viên', 'admin@sinhvienmarket.example',
  '$2y$12$SgUUG97QUauWA2EuHa/iXufwMcJ6JDRX0irQZ5252MTsc0u9yZEfe',
- 'admin', 1, NOW());
-
--- Tài khoản Admin thứ hai — Password: Admin@123
-INSERT INTO `users` (`name`, `email`, `password`, `role`, `is_verified`, `last_verified_at`) VALUES
-('Kato', 'darkrover1080@gmail.com',
- '$2y$12$SgUUG97QUauWA2EuHa/iXufwMcJ6JDRX0irQZ5252MTsc0u9yZEfe',
- 'admin', 1, NOW());
-
--- Tài khoản sinh viên mẫu — Password: Admin@123
-INSERT INTO `users` (`name`, `email`, `password`, `role`, `is_verified`, `last_verified_at`) VALUES
-('Kagato', 'katosama0902@gmail.com',
+ 'admin', 1, NOW()),
+('Sinh viên Mẫu A', 'sinhvien.a@hutech.example.edu',
  '$2y$12$SgUUG97QUauWA2EuHa/iXufwMcJ6JDRX0irQZ5252MTsc0u9yZEfe',
  'student', 1, NOW()),
-('Nguyễn Văn An', 'an@student.edu.vn',
- '$2y$12$SgUUG97QUauWA2EuHa/iXufwMcJ6JDRX0irQZ5252MTsc0u9yZEfe',
- 'student', 1, NOW()),
-('Trần Thị Bình', 'binh@student.edu.vn',
+('Sinh viên Mẫu B', 'sinhvien.b@example.com',
  '$2y$12$SgUUG97QUauWA2EuHa/iXufwMcJ6JDRX0irQZ5252MTsc0u9yZEfe',
  'student', 1, NOW());
 

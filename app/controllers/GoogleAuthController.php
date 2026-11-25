@@ -96,6 +96,14 @@ class GoogleAuthController extends Controller
         $avatarUrl = $googleUser['picture'] ?? '';
         // Google chỉ chứng minh quyền sở hữu hộp thư khi email_verified === true.
         $emailVerified = ($googleUser['email_verified'] ?? false) === true;
+        // Without a verified address, linking by email would let anyone who adds
+        // a victim's address to a Google account take over that local account.
+        if (!$emailVerified || $googleId === '') {
+            error_log('Google OAuth: refused unverified Google email');
+            Flash::set('error', 'Email Google chưa được xác minh nên không thể dùng để đăng nhập.');
+            $this->redirect('/login?oauth_error=unverified');
+            return;
+        }
 
         // 5. Xử lý logic tạo / tìm tài khoản
         $userModel = new User();
@@ -193,6 +201,20 @@ class GoogleAuthController extends Controller
     private function loginUser(array $user): void
     {
         $userModel = new User();
+        // Same rules as the password login: locked accounts stay out, and admins
+        // use the admin portal (password + its own checks), not Google.
+        if ((int)($user['is_locked'] ?? 0) === 1) {
+            Flash::set('error', 'Tài khoản đang bị khóa.');
+            $this->redirect('/login?oauth_error=locked');
+            return;
+        }
+        if (($user['role'] ?? 'student') === 'admin') {
+            Flash::set('error', 'Tài khoản quản trị đăng nhập qua cổng Admin.');
+            $this->redirect('/login?oauth_error=admin');
+            return;
+        }
+        // New session id after authentication (prevents session fixation).
+        session_regenerate_id(true);
         // Ghi session đăng nhập (giống AuthController::login)
         $_SESSION['user'] = [
             'id'                  => $user['id'],

@@ -172,10 +172,7 @@ class AuthController extends Controller
         $needsOtp      = false;
         $needsUnverify = false; // BUG-004 fix: khởi tạo sớm tránh undefined variable
 
-        // Bỏ qua OTP vĩnh viễn cho tài khoản admin ảo này
-        if ($email === 'admin@market.com' || $email === 'admin@sinhvienmarket.com') {
-            $needsOtp = false;
-        } else if ((int)$user['is_verified'] === 0) {
+        if ((int)$user['is_verified'] === 0) {
             // Chỉ bắt OTP với tài khoản CHƯA xác thực lần nào.
             // Đã BỎ chính sách bắt xác thực lại sau mỗi 3 ngày: vừa khiến student
             // phải nhập OTP liên tục, vừa phụ thuộc email (không ổn định trên Railway).

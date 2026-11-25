@@ -194,8 +194,7 @@ class NextApiController extends ApiController
             ]);
         }
 
-        if ((int)($user['is_verified'] ?? 0) !== 1
-            && !in_array($email, ['admin@market.com', 'admin@sinhvienmarket.com'], true)) {
+        if ((int)($user['is_verified'] ?? 0) !== 1) {
             $otp = sprintf('%06d', random_int(100000, 999999));
             $users->updateOtp((int)$user['id'], $otp, date('Y-m-d H:i:s', time() + 900));
             $_SESSION['verify_email'] = $email;
