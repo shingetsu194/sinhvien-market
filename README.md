@@ -168,68 +168,25 @@ Browser Request
 
 ## 🚀 Cài Đặt & Chạy Local
 
-### Yêu Cầu
-- [Laragon](https://laragon.org) (hoặc XAMPP)
-- PHP >= 8.1
-- MySQL >= 8.0
+Hướng dẫn đầy đủ (DB, API PHP, giao diện Next.js, dữ liệu demo, kiểm thử, lỗi thường gặp):
+**[`docs/HUONG_DAN_CHAY.md`](./docs/HUONG_DAN_CHAY.md)**.
 
-### Các Bước
+Tóm tắt:
 
-**1. Clone repository**
-```bash
-git clone https://github.com/katosama0902-pixel/sinhvien-market.git
-cd sinhvien-market
+```powershell
+# DB mới + migration
+Get-Content .\database\schema.sql -Raw | mysql -u root sinhvien_market
+php scripts/migrate.php
+# API (đã điền .env từ .env.example)
+php -S 127.0.0.1:8081 index.php
+# Giao diện
+cd sinhvien-market-next/frontend; npm ci; npm run dev   # http://localhost:3000
 ```
 
-**2. Tạo cơ sở dữ liệu**
-```sql
-CREATE DATABASE sinhvien_market CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-Sau đó import file `database/schema.sql` vào database vừa tạo.
+## 🔑 Tài Khoản Mẫu
 
-**3. Cấu hình môi trường**
-```bash
-cp .env.example .env
-```
-Mở file `.env` và điền thông tin:
-```env
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_NAME=sinhvien_market
-DB_USER=root
-DB_PASS=
-
-APP_NAME=SinhVienMarket
-APP_URL=http://localhost:8080/sinhvien-market
-APP_ENV=development
-APP_DEBUG=true
-
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USER=your_email@gmail.com
-MAIL_PASS=your_app_password
-
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_REDIRECT_URI=http://localhost:8080/sinhvien-market/auth/google/callback
-
-GEMINI_API_KEY=your_gemini_api_key
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-```
-
-**4. Khởi động Laragon và truy cập**
-```
-http://localhost:8080/sinhvien-market
-```
-
----
-
-## 🔑 Tài Khoản Mặc Định
-
-| Role | Email | Mật khẩu |
-|------|-------|----------|
-| Admin | admin@sinhvienmarket.com | *(xem trong schema.sql)* |
-| Student | *(tự đăng ký)* | *(OTP qua email)* |
+`schema.sql` tạo `admin@sinhvienmarket.example` (admin), `sinhvien.a@hutech.example.edu` và
+`sinhvien.b@example.com` với mật khẩu `Admin@123`, chỉ dùng cho môi trường phát triển và **phải đổi ngay sau khi cài**.
 
 ---
 
