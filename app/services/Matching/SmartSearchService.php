@@ -273,8 +273,11 @@ class SmartSearchService
      * (cross-modal cosines sit lower than same-modality ones: "modality gap").
      * Constants come from the evaluated prototype; re-tune on a dev split (W8).
      */
-    /** @return array<int,float> product id => BM25 relevance (title weighted twice, as in the prototype) */
-    private static function keywordScores(array $request, array $candidates): array
+    /**
+     * @return array<int,float> product id => BM25 relevance (title weighted twice, as in the prototype)
+     * @internal public for scripts/eval (W8 benchmark runs the production scoring offline)
+     */
+    public static function keywordScores(array $request, array $candidates): array
     {
         $docs = [];
         foreach ($candidates as $c) {
@@ -283,7 +286,12 @@ class SmartSearchService
         return VietnameseBm25::scores($request['description'], $docs);
     }
 
-    private static function semanticScores(array $candidates, array $qText, ?array $qImage, array $keyword): array
+    /**
+     * @param ?array $keyword BM25 scores for the hybrid text channel; null = embedding only
+     *   (W8 ablation "without BM25"). Production always passes the BM25 scores.
+     * @internal public for scripts/eval
+     */
+    public static function semanticScores(array $candidates, array $qText, ?array $qImage, ?array $keyword): array
     {
         $clamp = static fn(float $v): float => max(0.0, min(1.0, $v));
         $ti = [];
@@ -304,8 +312,12 @@ class SmartSearchService
             $tt = $c['textVec'] !== null
                 ? $clamp((GeminiEmbeddingService::cosine($qText, $c['textVec']) - 0.45) / (0.83 - 0.45)) : 0.0;
             // Hybrid text channel exactly as evaluated (prototype M1): embedding + Vietnamese BM25.
-            $kw = (float)($keyword[$c['id']] ?? 0.0);
-            $channels['text'] = $kw > 0 ? $clamp(0.72 * $tt + 0.28 * $kw) : $tt * 0.56;
+            if ($keyword === null) {
+                $channels['text'] = $tt;
+            } else {
+                $kw = (float)($keyword[$c['id']] ?? 0.0);
+                $channels['text'] = $kw > 0 ? $clamp(0.72 * $tt + 0.28 * $kw) : $tt * 0.56;
+            }
             if (isset($ti[$c['id']])) {
                 $abs = $clamp(($ti[$c['id']] - 0.30) / (0.44 - 0.30));
                 $margin = $clamp(($ti[$c['id']] - $meanTi - 0.025) / (0.10 - 0.025));
