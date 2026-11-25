@@ -41,6 +41,13 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   },
 };
 
+const CONTRACT_STATUS_VI: Record<string, string> = {
+  pending_assignment: "chờ phân giường",
+  active: "đang hiệu lực",
+  expired: "đã hết hạn",
+  terminated: "đã chấm dứt",
+};
+
 const ROOM_TYPE_VI: Record<string, string> = {
   standard: "Phòng tiêu chuẩn (4–6 giường)",
   service: "Phòng dịch vụ có máy lạnh (2–4 giường)",
@@ -284,9 +291,6 @@ function ResidenceReviewContent() {
                       >
                         {badge.label}
                       </span>
-                      <span className="rounded-md bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-semibold text-muted">
-                        {application.status}
-                      </span>
                     </div>
                     <h3 className="mt-2 text-lg font-extrabold text-fg">
                       {application.studentName || application.studentEmail}
@@ -331,7 +335,7 @@ function ResidenceReviewContent() {
                     <p className="inline-flex items-center gap-1.5 font-bold text-blue-700 sm:col-span-2 dark:text-sky-300">
                       <FileText className="h-4 w-4" />
                       Hợp đồng: {application.contractNumber} (
-                      {application.contractStatus})
+                      {CONTRACT_STATUS_VI[application.contractStatus ?? ""] ?? application.contractStatus})
                     </p>
                   )}
                 </div>

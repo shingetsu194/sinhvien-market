@@ -69,6 +69,8 @@ export type UserTransactionStatus =
 export interface ConversationSummary {
   id: number;
   ownerId?: number;
+  /** Viewer's side of the conversation (real API only). */
+  myRole?: "buyer" | "seller";
   productId: number;
   productTitle: string;
   otherUserId: number;

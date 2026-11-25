@@ -80,6 +80,31 @@ export function saveBuyerRequest(input: Omit<SmartSearchInput, "nearMe" | "limit
   return apiRequest<SavedBuyerRequest>("/marketplace/requests", { method: "POST", body: input });
 }
 
+export interface BuyerRequestSummary extends SavedBuyerRequest {
+  categoryId: number | null;
+  categoryName: string | null;
+  budgetMax: number | null;
+  minCondition: ProductCondition | null;
+  buildingName: string | null;
+  allowExchange: boolean;
+  hasImage: boolean;
+  createdAt: string;
+}
+
+/** The signed-in student's saved needs ("Lưu nhu cầu"), newest first. */
+export function getMyBuyerRequests(): Promise<BuyerRequestSummary[]> {
+  return apiRequest<BuyerRequestSummary[]>("/marketplace/requests");
+}
+
+export function closeBuyerRequest(id: number): Promise<{ id: number; status: "closed" }> {
+  return apiRequest<{ id: number; status: "closed" }>(`/marketplace/requests/${id}/close`, { method: "POST" });
+}
+
+/** Re-run the saved need against today's listings (same engine as the search box). */
+export function getBuyerRequestMatches(id: number): Promise<SmartSearchResponse> {
+  return apiRequest<SmartSearchResponse>(`/marketplace/requests/${id}/matches`, { method: "POST" });
+}
+
 export const FALLBACK_REASON_LABEL: Record<string, string> = {
   not_configured: "AI chưa được cấu hình",
   rate_limited: "AI đang quá tải",

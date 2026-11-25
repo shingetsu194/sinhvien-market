@@ -454,7 +454,7 @@ function ProductsCatalogInner() {
         allowExchange: input.allowExchange,
         flags: input.flags,
       });
-      setNotice("Đã lưu nhu cầu. Bạn có thể xem lại khi có người đăng món phù hợp.");
+      setNotice("Đã lưu nhu cầu. Xem lại và nhận gợi ý mới ở mục “Nhu cầu đã lưu” (trang cá nhân).");
     } catch (error: unknown) {
       setNotice(error instanceof Error ? error.message : "Không lưu được nhu cầu.");
     } finally {

@@ -227,7 +227,9 @@ class ChatController extends Controller
                         // than an "AI is down" line that looks like it came from the seller.
                         $aiResponse = \App\Services\GoogleAiService::tryAsk($prompt, 20); // runs after the sender's response
                         if ($aiResponse !== null && $aiResponse !== '') {
-                            $aiText  = "🤖 *[Hệ thống tự động]* " . $aiResponse . "\n_(Chủ shop đang vắng mặt, bạn cứ để lại lời nhắn nha)_";
+                            // Plain text: the chat UI shows messages verbatim (no markdown rendering).
+                            $aiResponse = trim(str_replace(['**', '__'], '', $aiResponse));
+                            $aiText  = "🤖 [Trả lời tự động] " . $aiResponse . "\n(Người bán đang vắng mặt, bạn cứ để lại lời nhắn nhé.)";
                             $aiMsgId = $this->msgModel->send($convId, $conv['seller_id'], $aiText);
                             $pusher->trigger('chat.' . $user['id'], 'new_message', [
                                 'id'          => $aiMsgId,

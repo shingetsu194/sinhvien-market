@@ -556,9 +556,6 @@ function ResidenceContent() {
                               >
                                 {meta.label}
                               </span>
-                              <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-muted">
-                                {application.status}
-                              </span>
                             </div>
                           </div>
                           <p className="mt-2 text-xs font-semibold text-fg">

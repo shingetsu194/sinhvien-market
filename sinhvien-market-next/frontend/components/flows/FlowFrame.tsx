@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Bell,
+  Bookmark,
   ClipboardList,
   Coins,
   Grid,
@@ -24,6 +25,7 @@ const PORTAL_NAV_ITEMS = [
   { href: "/my-listings", label: "Tin đã đăng", icon: PackageOpen },
   { href: "/products/create", label: "Đăng bán mới", icon: PlusCircle },
   { href: "/transactions", label: "Đơn mua & bán", icon: ClipboardList },
+  { href: "/requests", label: "Nhu cầu đã lưu", icon: Bookmark },
   { href: "/wishlist", label: "Yêu thích", icon: Heart },
   { href: "/chat", label: "Tin nhắn", icon: MessageCircle },
   { href: "/notifications", label: "Thông báo", icon: Bell },

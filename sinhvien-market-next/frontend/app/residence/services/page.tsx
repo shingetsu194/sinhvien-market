@@ -31,6 +31,15 @@ const REQUEST_TYPE_LABELS: Record<ServiceRequest["requestType"], string> = {
   feedback: "Góp ý & Phản ánh",
 };
 
+/** Groups returned by the local repair classifier (LocalRepairClassifier.php). */
+const REPAIR_CATEGORY_VI: Record<string, string> = {
+  plumbing: "Điện nước – cấp thoát nước",
+  electrical: "Điện",
+  furniture: "Nội thất",
+  cleaning: "Vệ sinh",
+  other: "Khác",
+};
+
 const PRIORITY_META: Record<string, { label: string; cls: string }> = {
   low: {
     label: "Ưu tiên Thấp",
@@ -173,7 +182,7 @@ function ServicesContent() {
       const result = await createServiceRequest(form);
       if (result.classification) {
         setNotice(
-          `Đã gửi phiếu hỗ trợ! Hệ thống tự động phân nhóm "${result.classification.category}" · Gợi ý ưu tiên: ${result.classification.recommendedPriority} (${Math.round(result.classification.confidence * 100)}%).`,
+          `Đã gửi phiếu hỗ trợ! Hệ thống tự động phân nhóm "${REPAIR_CATEGORY_VI[result.classification.category] ?? result.classification.category}" · Gợi ý: ${PRIORITY_META[result.classification.recommendedPriority]?.label ?? result.classification.recommendedPriority} (độ tin cậy ${Math.round(result.classification.confidence * 100)}%).`,
         );
       } else {
         setNotice("Đã gửi phiếu yêu cầu đến bộ phận kỹ thuật & dịch vụ KTX.");
@@ -450,8 +459,8 @@ function ServicesContent() {
                       <div className="mt-3 rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 text-xs">
                         <div className="flex items-center gap-1.5 font-extrabold text-blue-600 dark:text-blue-300">
                           <Sparkles className="h-3.5 w-3.5" />
-                          Phân loại tự động: {item.aiCategory} · Gợi ý ưu tiên{" "}
-                          {item.aiRecommendedPriority} (
+                          Phân loại tự động: {REPAIR_CATEGORY_VI[item.aiCategory] ?? item.aiCategory} · Gợi ý:{" "}
+                          {PRIORITY_META[item.aiRecommendedPriority ?? ""]?.label ?? item.aiRecommendedPriority} (
                           {Math.round((item.aiConfidence ?? 0) * 100)}%)
                         </div>
                         <p className="mt-1 text-muted">{item.aiReason}</p>

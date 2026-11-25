@@ -99,6 +99,29 @@ const STATUS_LABEL: Record<string, string> = {
   expired: "Đã hết hạn",
 };
 
+const SPACE_STATUS_VI: Record<string, string> = {
+  available: "Đang trống",
+  reserved: "Đã giữ chỗ",
+  occupied: "Đã cho thuê",
+  inactive: "Ngừng sử dụng",
+};
+const RENTAL_APP_STATUS_VI: Record<string, string> = {
+  submitted: "Chờ xét duyệt",
+  under_review: "Đang thẩm định",
+  approved: "Đã duyệt",
+  rejected: "Từ chối",
+  withdrawn: "Đã rút",
+};
+const REQUEST_TYPE_VI: Record<string, string> = { service: "Dịch vụ", repair: "Sửa chữa", feedback: "Góp ý" };
+const PRIORITY_VI: Record<string, string> = { low: "Thấp", normal: "Bình thường", high: "Cao", urgent: "Khẩn cấp" };
+const REQUEST_STATUS_VI: Record<string, string> = {
+  submitted: "Mới tiếp nhận",
+  assigned: "Đã phân công",
+  in_progress: "Đang xử lý",
+  resolved: "Đã xử lý xong",
+  closed: "Đã đóng",
+};
+
 /** Human-readable summary of an inventory row (instead of raw JSON). */
 function describeRow(resource: Resource, row: Record<string, unknown>): string {
   const s = (key: string) => (row[key] === null || row[key] === undefined ? "" : String(row[key]));
@@ -849,9 +872,9 @@ function OperationsContent() {
                 </strong>
                 <p className="mt-0.5 text-xs text-muted">
                   Người gửi: <strong>{request.requesterName}</strong> · Loại:{" "}
-                  {request.requestType} · Ưu tiên:{" "}
+                  {REQUEST_TYPE_VI[request.requestType] ?? request.requestType} · Ưu tiên:{" "}
                   <span className="font-bold text-primary">
-                    {request.priority}
+                    {PRIORITY_VI[request.priority] ?? request.priority}
                   </span>
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-muted">
@@ -860,7 +883,7 @@ function OperationsContent() {
               </div>
               <div className="space-y-2">
                 <p className="text-xs text-muted">
-                  Trạng thái: <strong className="text-fg">{request.status}</strong>{" "}
+                  Trạng thái: <strong className="text-fg">{REQUEST_STATUS_VI[request.status] ?? request.status}</strong>{" "}
                   · KTV: <strong>{request.assignedName ?? "Chưa phân"}</strong>
                 </p>
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -901,7 +924,7 @@ function OperationsContent() {
                       ] as const
                     ).map((status) => (
                       <option key={status} value={status}>
-                        {status}
+                        {REQUEST_STATUS_VI[status]}
                       </option>
                     ))}
                   </select>
@@ -1041,7 +1064,7 @@ function OperationsContent() {
                   <p className="text-xs text-muted">
                     {space.location} ·{" "}
                     {Number(space.monthlyPrice).toLocaleString("vi-VN")} ₫/tháng
-                    · {space.status}
+                    · {SPACE_STATUS_VI[space.status] ?? space.status}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -1105,8 +1128,8 @@ function OperationsContent() {
                   <p className="font-extrabold text-fg">
                     {app.applicationNumber} · {app.applicantName} ·{" "}
                     {app.spaceName} ·{" "}
-                    <span className="font-mono text-xs text-primary">
-                      {app.status}
+                    <span className="text-xs font-bold text-primary">
+                      {RENTAL_APP_STATUS_VI[app.status] ?? app.status}
                     </span>
                   </p>
                   <p className="mt-1 text-xs text-muted">

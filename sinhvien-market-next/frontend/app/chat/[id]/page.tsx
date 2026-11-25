@@ -34,6 +34,15 @@ function formatMessageTime(value: string): string {
   return new Intl.DateTimeFormat("vi-VN", { timeStyle: "short" }).format(date);
 }
 
+const OFFER_STATUS_VI: Record<string, string> = {
+  pending: "đang chờ",
+  accepted: "đã chấp nhận",
+  rejected: "đã từ chối",
+};
+
+/** How often an open conversation fetches new messages (the other side's replies, the auto-reply bot). */
+const POLL_MS = 5000;
+
 function ConversationContent() {
   const { user, loadingUser } = useMainShell();
   const params = useParams<{ id: string }>();
@@ -76,9 +85,38 @@ function ConversationContent() {
     void Promise.resolve().then(refresh);
   }, [loadingUser, refresh, user]);
 
+  // Poll while the tab is visible so replies appear without reloading the page.
+  useEffect(() => {
+    if (!user || !conversation) return;
+    let active = true;
+    const timer = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      getConversationMessages(conversation.id)
+        .then((next) => {
+          if (!active) return;
+          setMessages((current) => {
+            const changed =
+              next.length !== current.length ||
+              next.some((m, i) => m.id !== current[i]?.id || m.offerStatus !== current[i]?.offerStatus);
+            return changed ? next : current;
+          });
+        })
+        .catch(() => {
+          // Transient network error: keep the current messages and try again next tick.
+        });
+    }, POLL_MS);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [user, conversation]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages.length]);
+
+  // Only the buyer can make an offer (the API rejects it from the seller).
+  const isSeller = conversation?.myRole === "seller";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -216,7 +254,7 @@ function ConversationContent() {
                       }).format(message.offerPrice)}
                       {message.offerStatus && (
                         <span className="ml-2 text-xs font-semibold opacity-75">
-                          ({message.offerStatus})
+                          ({OFFER_STATUS_VI[message.offerStatus] ?? message.offerStatus})
                         </span>
                       )}
                     </p>
@@ -256,6 +294,7 @@ function ConversationContent() {
           onSubmit={submit}
           className="space-y-2 border-t border-border p-3"
         >
+          {!isSeller && (
           <div className="flex flex-wrap items-end gap-2">
             <label className="min-w-40 flex-1 text-xs font-bold text-muted">
               Đề nghị giá (₫)
@@ -279,6 +318,7 @@ function ConversationContent() {
               Đề nghị giá
             </Button>
           </div>
+          )}
           <div className="flex items-end gap-2">
             <textarea
               rows={2}
@@ -288,6 +328,13 @@ function ConversationContent() {
               className="min-h-11 flex-1 resize-none rounded-xl border border-border bg-bg px-4 py-3 text-sm text-fg outline-none focus:border-primary"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
+              onKeyDown={(event) => {
+                // Enter sends, Shift+Enter adds a new line.
+                if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
               disabled={!conversation || loading}
             />
             <Button

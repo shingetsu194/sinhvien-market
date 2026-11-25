@@ -1359,6 +1359,8 @@ class NextApiController extends ApiController
         $isBuyer = (int)$c['buyer_id'] === $userId;
         return [
             'id' => (int)$c['id'], 'ownerId' => $userId,
+            // The viewer's side of the deal: only the buyer may send price offers.
+            'myRole' => $isBuyer ? 'buyer' : 'seller',
             'productId' => (int)$c['product_id'], 'productTitle' => $c['product_title'],
             'otherUserId' => $isBuyer ? (int)$c['seller_id'] : (int)$c['buyer_id'],
             'otherUserName' => $isBuyer ? $c['seller_name'] : $c['buyer_name'],
